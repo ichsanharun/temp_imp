@@ -7,7 +7,7 @@
  * This is controller for Adjusment_stock
  */
 
-class Adjusment_stock extends Admin_Controller {
+class Adjusment extends Admin_Controller {
 
     /**
      * Load the models, library, etc
@@ -129,11 +129,7 @@ class Adjusment_stock extends Admin_Controller {
                                 'brand'=>$brand,
                                 'satuan'=>$satuan,
                                 'kdcab'=>$this->auth->user_cab(),
-                                'qty_stock_awal'=>$qty,
-                                'qty_avl_awal'=>$qty,
                                 'qty'=>$qty,
-                                'qty_stock_akhir'=>$qty,
-                                'qty_avl_akhir'=>$qty,
                                 'nilai_barang'=>$nilai_barang,
                                 'noreff'=>$noreff,
                                 'notes'=>$notes,

@@ -180,16 +180,15 @@ date_default_timezone_set("Asia/Bangkok");
             <td style="" width="1%"><center><?php echo $v->jumlah?></center></td>
             <td style="" width="1%"><center><?php echo $v->satuan?></center></td>
             <td style="text-align: right;"><?php echo formatnomor($hrg_view)?></td>
-            <?php if (in_array("diskon_standart", $diskon)) {
+            <?php
               echo '<td style="text-align: center;">'.$v->persen_diskon_stdr.'</td>';
-            }else {
-              echo '<td style="text-align: center;">-</td>';
-            } ?>
+            ?>
 
             <td style="text-align: center;"><center><?php echo $v->diskon_promo_persen?></center></td>
             <td style="text-align: center;"><center><?php echo $v->diskon_promo_rp?></center></td>
             <td style="text-align: right;"><?php echo formatnomor($sub_total_view)?></td>
         </tr>
+
       <?php } ?>
     </table>
 

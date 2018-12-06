@@ -60,7 +60,8 @@ date_default_timezone_set("Asia/Bangkok");
         #tabel-laporan td{
             border : solid 1px #000;
             margin: 0px;
-            height: 30px;
+            height: 23px;
+            font-size: 8pt;
         }
 
         #footer

@@ -7,13 +7,6 @@ date_default_timezone_set("Asia/Bangkok");
     <title></title>
     <style>
 
-        {
-            margin:0;
-            padding:0;
-            font-family:Arial;
-            font-size:10pt;
-            color:#000;
-        }
         body
         {
             width:100%;
@@ -49,7 +42,7 @@ date_default_timezone_set("Asia/Bangkok");
         #tabel-laporan th{
             border-top: solid 1px #000;
             border-bottom: solid 1px #000;
-            margin: 0px;
+
         }
 
         #footer
@@ -87,11 +80,20 @@ date_default_timezone_set("Asia/Bangkok");
 <body>
 <div id="wrapper">
     <table width="100%" border="0" id="header-tabel">
+      <?php  ?>
         <tr>
-            <th colspan="3" width="20%" style="text-align: left;">PT IMPORTA JAYA ABADI<br>YOGYAKARTA</th>
-            <th style="border-right: none;">SALES ORDER (SO)<br><?php echo 'NO. : '.@$so_data->no_so?></th>
-            <th colspan="3" style="border-left: none;"></th>
+          <th width="30%" style="text-align: left;">
+            <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
+          </th>
+          <th colspan="3" style="border-right: none;text-align: center;padding-left:0% !important;margin-left:-10px !important" width="100%">SALES ORDER (SO)<br><?php echo 'NO. : '.@$so_data->no_so?></th>
+          <th colspan="4" style="border-left: none;"></th>
+
+            <!--th colspan="3" width="30%" style="text-align: left;">PT IMPORTA JAYA ABADI<br><?php //echo @$cabang->namacabang?></th-->
+
         </tr>
+      </table>
+      <hr style="padding:0;margin:0">
+      <table width="100%" border="0" id="header-tabel">
         <tr>
             <td width="10%">SALES</td>
             <td width="1%">:</td>

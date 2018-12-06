@@ -180,9 +180,20 @@
 		window.location.href = base_url + active_controller+'/cancel_invoice/'+kode;
 	}
 
-	function CustomePrint(inv){
+	function CustomePrint_old(inv){
 		$('#dialog-print-invoice').modal('show');
 		$('#no_invoice').val(inv);
+	}
+
+  function CustomePrint(inv){
+    var noinv = $('#no_invoice').val();
+    var customediskon = $('#set_display_diskon').val();
+    var url = siteurl+'invoice/print_custom/'+inv;
+    $('#dialog-print-invoice').modal('hide');
+
+    //$.post(url,{'NO_INV':noinv,'DISPLAY_DISKON':customediskon},function(result){
+    $('#dialog-popup-invoice').modal('show');
+    $("#MyModalBodyPrintPreview").html('<iframe src="'+url+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 
 	function cekdiskon(diskon){

@@ -1847,15 +1847,18 @@ class Salesorder extends Admin_Controller {
 
     function print_request($noso){
         $no_so = $noso;
-        $mpdf=new mPDF('','','','','','','','','','');
+        $session = $this->session->userdata('app_session');
+        $mpdf=new mPDF('','','','','','','','0','0','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
         $so_data = $this->Salesorder_model->find_data('trans_so_header',$no_so,'no_so');
+        $cabang = $this->Salesorder_model->find_data('cabang',$session['kdcab'],'kdcab');
         $customer = $this->Salesorder_model->cek_data(array('id_customer'=>$so_data->id_customer),'customer');
         $detail = $this->Detailsalesorder_model->find_all_by(array('no_so' => $no_so));
 
         $this->template->set('so_data', $so_data);
+        $this->template->set('cabang', $cabang);
         $this->template->set('customer', $customer);
         $this->template->set('detail', $detail);
         $show = $this->template->load_view('print_data',$data);
@@ -1931,7 +1934,7 @@ class Salesorder extends Admin_Controller {
                           <td width="1%">:</td>
                           <td colspan="5">'.strtoupper(@$customer->alamat).'</td>
                       </tr>
-                  ';
+        ';
                     if('{PAGENO}' == 1){
                         $header .= '<tr>
                                     <td colspan="7">
@@ -1940,51 +1943,53 @@ class Salesorder extends Admin_Controller {
                                     </tr>';
                     }
 
-            $header .= '</table>
-            ';
+        $header .= '</table>
+        ';
 
             $this->mpdf->SetHTMLHeader($header,'0',true);
             $session = $this->session->userdata('app_session');
             $this->mpdf->SetHTMLFooter('
-            <table width="100%" border="0">
-                <tr>
-                    <td width="25%"><center>Dibuat Oleh,</center></td>
-                    <td width="25%"><center>Pertugas Gudang</center></td>
-                    <td width="25%"><center>Checker</center></td>
-                    <td width="25%"><center>Supir</center></td>
-                </tr>
-                <tr>
-                    <td style="height: 50px;"></td>
-                    <td style="height: 50px;"></td>
-                    <td style="height: 50px;"></td>
-                    <td style="height: 50px;"></td>
-                </tr>
-                <tr>
-                    <td><center>(Sales Planning & Support)</center></td>
-                    <td><center>(________________________)</center></td>
-                    <td><center>(________________________)</center></td>
-                    <td><center>(________________________)</center></td>
-                </tr>
-            </table>
-            <hr />
+            <hr>
+              <table width="100%" border="0">
+                  <tr>
+                      <td width="25%"><center>Dibuat Oleh,</center></td>
+                      <td width="25%"><center>Pertugas Gudang</center></td>
+                      <td width="25%"><center>Checker</center></td>
+                      <td width="25%"><center>Supir</center></td>
+                  </tr>
+                  <tr>
+                      <td style="height: 50px;"></td>
+                      <td style="height: 50px;"></td>
+                      <td style="height: 50px;"></td>
+                      <td style="height: 50px;"></td>
+                  </tr>
+                  <tr>
+                      <td><center>(    Adm Sales & Stok    )</center></td>
+                      <td><center>(________________________)</center></td>
+                      <td><center>(________________________)</center></td>
+                      <td><center>(________________________)</center></td>
+                  </tr>
+              </table>
+              <hr />
 
 
 
-                <div id="footer">
-                <table>
-                    <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($session["nm_lengkap"]) .' On '. date("d-m-Y H:i:s").'</td></tr>
-                </table>
-                </div>');
+                  <div id="footer">
+                  <table>
+                      <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($session["nm_lengkap"]) .' On '. date("d-m-Y H:i:s").'</td></tr>
+                  </table>
+                  </div>
+            ');
 
 
             $this->mpdf->AddPageByArray([
                     'orientation' => 'P',
                     'sheet-size'=> [210,148],
                     'margin-top' => 40,
-                    'margin-bottom' => 40,
+                    'margin-bottom' => 46,
                     'margin-left' => 5,
                     'margin-right' => 5,
-                    'margin-header' => 1,
+                    'margin-header' => 0,
                     'margin-footer' => 0,
                 ]);
             $this->mpdf->WriteHTML($show);

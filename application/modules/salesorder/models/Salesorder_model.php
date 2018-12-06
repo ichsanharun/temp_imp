@@ -112,8 +112,12 @@ class Salesorder_model extends BF_Model
             }
         }
         $cek = $kdcab.'-SO-'.date('y').$kode_bln;
-        $query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
-        WHERE no_so LIKE '%$cek%'")->num_rows();
+        /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
+        WHERE no_so LIKE '%$cek%'")->num_rows();*/
+        $this->db->select("MAX(no_so) as max_id");
+        $this->db->like('no_so', $cek);
+        $this->db->from('trans_so_header');
+        $query_cek = $this->db->count_all_results();
         if ($query_cek == 0) {
           $this->db->where(array('kdcab'=>$kdcab))
           ->update("cabang",array('no_so'=>0));

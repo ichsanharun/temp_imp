@@ -37,12 +37,14 @@ class Kendaraan extends Admin_Controller {
     }
 
     public function savekendaraan(){
+      $session = $this->session->userdata('app_session');
     	$datainsert = array(
-            'model' => $this->input->post('model'),
-    		'nm_kendaraan' => $this->input->post('no_kendaraan'),
-    		'no_rangka' => $this->input->post('no_rangka'),
-    		'stnk_expired' => $this->input->post('stnk_expired'),
-    		'keur_expired' => $this->input->post('keur_expired')
+        'model'         => $this->input->post('model'),
+    		'nm_kendaraan'  => $this->input->post('no_kendaraan'),
+    		'no_rangka'     => $this->input->post('no_rangka'),
+    		'stnk_expired'  => $this->input->post('stnk_expired'),
+    		'keur_expired'  => $this->input->post('keur_expired'),
+        'kdcab'         => $session['kdcab'],
     		);
     	$this->db->trans_begin();
     	if(!empty($this->input->post('id_kendaraan'))){
@@ -68,7 +70,7 @@ class Kendaraan extends Admin_Controller {
 	          'msg' => "SUKSES, simpan data kendaraan..!!!"
 	          );
 	    }
-    	
+
         echo json_encode($param);
     }
 

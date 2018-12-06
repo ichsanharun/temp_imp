@@ -10,25 +10,25 @@
                         <div class="row">
                           <div class="form-group">
                               <!--div class="col-sm-8" style="padding-top: 8px;">
-                                  <?php echo ": ".$data_cust->nm_customer?>
-                                  <input type="hidden" name="idcustomer_do" value="<?php echo $data_cust->id_customer?>">
-                                  <input type="hidden" name="nmcustomer_do" value="<?php echo $data_cust->nm_customer?>">
+                                  <?php echo ": ".$data_cust[0]->nm_customer?>
+                                  <input type="hidden" name="idcustomer_do" value="<?php echo $data_cust[0]->id_customer?>">
+                                  <input type="hidden" name="nmcustomer_do" value="<?php echo $data_cust[0]->nm_customer?>">
                               </div-->
                               <label for="idcustomer_do" class="col-sm-4 control-label">Nama Customer </font></label>
                               <div class="col-sm-8">
                                 <div class="input-group">
                                   <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                  <select id="idcustomer_do" name="id_customer" class="form-control input-sm" style="width: 100%;" tabindex="-1" required onchange="getcustomer()">
+                                  <select id="idcustomer_do" name="idcustomer_do" class="form-control input-sm" style="width: 100%;" tabindex="-1" required onchange="getcustomer()">
                                     <option value=""></option>
                                     <?php
                                     foreach(@$customer as $kc=>$vc){
                                     ?>
-                                      <option value="<?php echo $vc->id_customer; ?>" <?php if(isset($data_cust->id_customer) ){echo "selected";} ?>>
+                                      <option value="<?php echo $vc->id_customer; ?>" <?php echo set_select('nmcustomer_do', $vc->id_customer, isset($data_cust[0]->nm_customer) && $data_cust[0]->id_customer == $vc->id_customer) ?>>
                                           <?php echo $vc->id_customer.' , '.$vc->nm_customer ?>
                                       </option>
                                     <?php } ?>
                                   </select>
-                                  <input type="hidden" name="nm_customer" id="nmcustomer_do" value="<?php echo $data_cust->nm_customer?>">
+                                  <input type="hidden" name="nmcustomer_do" id="nmcustomer_do" value="<?php echo $data_cust[0]->nm_customer?>">
                                 </div>
                               </div>
 
@@ -39,11 +39,11 @@
                             <label for="alamat" class="col-sm-4 control-label">Alamat Customer </font></label>
                             <div class="col-sm-8" >
                               <?php
-                              $alamat		= (isset($data_cust->alamat_npwp) && $data_cust->alamat_npwp)?$data_cust->alamat_npwp:$data_cust->alamat;
+                              $alamat		= (isset($data_cust[0]->alamat_npwp) && $data_cust[0]->alamat_npwp)?$data_cust[0]->alamat_npwp:$data_cust[0]->alamat;
                               echo '
                               <div class="input-group">
                               <span class="input-group-addon"><i class="fa fa-building"></i></span>
-                              <textarea name="alamatcustomer" class="form-control input-sm" id="alamat" height=100 readonly>'.$data_cust->alamat.'</textarea>
+                              <textarea name="alamat" class="form-control input-sm" id="alamat" height=100 readonly>'.$data_cust[0]->alamat.'</textarea>
                               </div>'
                               ?>
                             </div>
@@ -57,7 +57,7 @@
                             <div class="col-sm-8" style="padding-top: 8px;">
                               <div class="input-group">
                               <span class="input-group-addon"><i class="fa fa-building"></i></span>
-                              <input type="text" name="npwpcustomer" class="form-control input-sm" id="npwp" value="<?php echo " ".$data_cust->npwp?>" readonly>
+                              <input type="text" name="npwp" class="form-control input-sm" id="npwp" value="<?php echo ": ".$data_cust[0]->npwp?>" readonly>
                               </div>
 
                             </div>
@@ -74,7 +74,7 @@
                             <div class="col-sm-8">
                               <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                <input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>" readonly>
+                                <input type="text" name="tgl_inv" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>" readonly>
                               </div>
                             </div>
                           </div>
@@ -83,7 +83,7 @@
                     </div>
 
                     <div class="col-sm-6 form-horizontal">
-                        <div class="form-group ">
+                         <div class="form-group ">
                             <?php $tgldo=date('Y-m-d')?>
                             <label for="tgldo" class="col-sm-4 control-label">Alamat NPWP </label>
                             <div class="col-sm-8">
@@ -92,7 +92,7 @@
                                 echo '
                                 <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-building"></i></span>
-                                <textarea name="alamat_npwp" class="form-control input-sm" id="alamat_npwp" height=100 readonly>'.$data_cust->alamat_npwp.'</textarea>
+                                <textarea name="alamat_npwp" class="form-control input-sm" id="alamat_npwp" height=100 readonly>'.$data_cust[0]->alamat_npwp.'</textarea>
                                 </div>'
                                 ?>
 
@@ -103,7 +103,11 @@
                             <div class="col-sm-8" style="padding-top: 8px;">
                               <div class="input-group">
                               <span class="input-group-addon"><i class="fa fa-building"></i></span>
+                              <!--input type="text" name="npwp" class="form-control input-sm" id="npwp" value="<?php echo ": ".@$records[0]['top']->top?>" readonly-->
+                              <?php $key = implode(",",$records[0]);
 
+                              $val = explode(",",$key);
+                              ?>
                               <input type="text" name="npwp" class="form-control input-sm" id="npwp" value="<?php echo $records[0]['detail_data'][0]['top']; ?>" readonly>
                               </div>
 
@@ -117,7 +121,7 @@
                                 $jthtempo = date('d M Y',strtotime('+'.$records[0]['detail_data'][0]['top'].' days',strtotime($tglnow)));
                                 echo ": ".$jthtempo;
                                 ?>
-                                <input type="hidden" name="tgljatuhtempo" value="<?php echo date('Y-m-d',strtotime($jthtempo))?>">
+                                <input type="hidden" name="tgljthtempo" value="<?php echo date('Y-m-d',strtotime($jthtempo))?>">
                             </div>
                         </div>
                     </div>
@@ -188,14 +192,13 @@
                 <?php
                 $n = $i =0;
 				if($records){
-
-					foreach($records as $keys => $vals){
+					foreach($records as $keys=>$vals){
 						$i++;
 						//echo"<input type='hidden' name='det_do[$i]' value='".$vals['no_do']."'>";
 						$kode_sales		= $vals['id_salesman'];
 						$salesman		= $vals['nm_salesman'];
-            echo $keys."<br>";
-						foreach($vals['detail_data'] as $values){
+
+						foreach($vals['detail_data'] as $key=>$values){
 							$n++;
 							$qty_supply			= $values['qty_supply'];
 							$kunci 		= array('no_so'=>$values['no_so'],'id_barang'=>$values[id_barang]);
@@ -203,15 +206,13 @@
               $headerso	= $this->Invoice_model->cek_data(array('no_so'=>$values['no_so']),'trans_so_header');
 
               $harga_normal       = $detailso->harga_normal;
-
               if ($headerso->ppn > 0) {
-                //$harga  = $detailso->harga_normal/110*100;
+                $harga  = $detailso->harga_normal/110*100;
                 $ppn    = $harga_normal - $harga;
                 $ppn_all = $ppn*$qty_supply;
               }else {
                 $harga = $harga_normal;
               }
-              $harga              = $harga_normal;
               $diskon_std_persen  = $detailso->diskon_persen;
               $diskon_std_rp      = $diskon_std_persen/100*$harga_normal;
               $harga_setelah_diskon_std = $harga_normal - $diskon_std_rp;
@@ -219,7 +220,7 @@
               $diskon_promo_persen= $detailso->diskon_promo_persen;
               $diskon_promo_rp    = $detailso->diskon_promo_persen/100*$harga_setelah_diskon_std;
               $harga_setelah_diskon_promo = $harga_setelah_diskon_std - $diskon_promo_rp;
-              //-------------------------END OF HARGA------------------------//
+
               $diskon_toko        = $headerso->persen_diskon_toko;
               $diskon_toko_rp     = $diskon_toko/100*$harga_setelah_diskon_promo;
               $diskon_toko_rp_all = $diskon_toko_rp*$qty_supply;
@@ -229,10 +230,7 @@
               $diskon_cash_rp     = $diskon_cash/100*$harga_setelah_diskon_toko;
               $diskon_cash_rp_all = $diskon_cash_rp*$qty_supply;
               $harga_setelah_diskon_cash = $harga_setelah_diskon_toko - $diskon_cash_rp;
-
-              $hargajualbefdis += $harga*$qty_supply;
-              $hargajualafterdistoko += $harga_setelah_diskon_toko*$qty_supply;
-              $dpp_sebelum += $harga_setelah_diskon_promo*$qty_supply;
+              $dpp_sebelum += $harga_setelah_diskon_std*$qty_supply;
 
 							$dpp_barang			= $qty_supply * $harga_setelah_diskon_cash;
 							$diskon_barang		= $diskon_so;
@@ -242,9 +240,7 @@
               $grand_diskon_toko +=$diskon_toko_rp_all;
               $grand_diskon_cash +=$diskon_cash_rp_all;
               $grand_ppn += $ppn_all;
-              $grand_setelah_toko += $harga_setelah_diskon_toko*$qty_supply;
               $grand 				+= $dpp_barang;
-              $grand = ceil($grand);
 
 							echo"<tr>";
 								if(!empty($kode_sales) && $kode_sales !='-'){
@@ -255,7 +251,6 @@
 								echo form_input(array('id'=>'det_do_'.$i,'name'=>'det_do['.$i.']','class'=>'form-control input-sm','type'=>'hidden'),$vals['no_do']);
                 $nodo = $vals['no_do'];
 								echo"<td class='text-center'>".$n."</td>";
-
 								echo"<td class='text-center'>".$values['no_do']."</td>";
 								echo"<td class='text-center'>".$salesman."</td>";
 								//echo"<td class='text-center'>".$values[no_so]."</td>";
@@ -266,51 +261,22 @@
                 echo"<td class='text-center'>".number_format($diskon_std_persen)."%</td>";
 								echo"<td class='text-center'>".number_format($harga_setelah_diskon_std)."</td>";
 								echo"<td class='text-center'>".number_format($harga_setelah_diskon_std*$qty_supply)."</td>";
-                ?>
-                  <input type="hidden" name="id[]" value="<?php echo $n?>">
-                  <input type="hidden" name="id_barang[]" value="<?php echo $values['id_barang']?>">
-                  <input type="hidden" name="nm_barang[]" value="<?php echo $values['nm_barang']?>">
-                  <input type="hidden" name="jumlah[]" value="<?php echo $qty_supply?>">
-                  <input type="hidden" name="hargajual[]" value="<?php echo $harga?>">
-                  <input type="hidden" name="persen_diskon_stdr[]" value="<?php echo $diskon_std_persen?>">
-                  <input type="hidden" name="harga_after_diskon_stdr[]" value="<?php echo $harga_setelah_diskon_std?>">
-                  <input type="hidden" name="diskon_promo_persen[]" value="<?php echo $diskon_promo_persen?>">
-                  <input type="hidden" name="diskon_promo_persen_rpnya[]" value="<?php echo $diskon_promo_rp?>">
-                  <input type="hidden" name="harga_nett_dari_so[]" value="<?php echo $values['subtotal']?>">
-                  <input type="hidden" name="harga_nett[]" value="<?php echo $dpp_sebelum?>">
-                  <input type="hidden" name="subtot_bef_diskon[]" value="<?php echo $harga*$qty_supply?>">
-                  <input type="hidden" name="subtot_after_diskon[]" value="<?php echo $harga_setelah_diskon_promo*$qty_supply?>">
-                  <input type="hidden" name="ppn[]" value="<?php echo $headerso->ppn?>">
-                  <input type="hidden" name="tgljual[]" value="<?php echo $headerso->tanggal?>">
-                  <input type="hidden" name="no_do[]" value="<?php echo $values['no_do']?>">
-
-                <?php
 							echo"</tr>";
-
 						}
 
 
 					}
 				}
         $dpp = $grand/(100 + $headerso->ppn)*100;
+        
+        $dpp_sebelum_cash = $dpp/97*100;
+        $dpp_sebelum_toko = $dpp_sebelum_cash/90*100;
+        $dt = $dpp_sebelum_toko - $dpp_sebelum_cash;
+        $dc = $dpp_sebelum_cash - $dpp;
         $pn = $grand-$dpp;
                 ?>
-
             </tbody>
             <input type="hidden" name="nd" value="<?php echo $nodo?>">
-            <input type="hidden" name="id_salesman" value="<?php echo $values['id_salesman']?>">
-            <input type="hidden" name="nm_salesman" value="<?php echo $values['nm_salesman']?>">
-            <input type="hidden" name="diskon_toko_persen" value="<?php echo $diskon_toko?>">
-            <input type="hidden" name="diskon_cash_persen" value="<?php echo $diskon_cash?>">
-            <input type="hidden" name="hargajualbefdis" value="<?php echo ceil($hargajualbefdis)?>">
-            <input type="hidden" name="hargajualafterdis" value="<?php echo ceil($dpp_sebelum)?>">
-            <input type="hidden" name="hargajualafterdistoko" value="<?php echo ceil($hargajualafterdistoko)?>">
-            <input type="hidden" name="hargajualafterdiscash" value="<?php echo ceil($grand)?>">
-            <input type="hidden" name="diskon_stdr_rp" value="<?php echo ceil($diskon_std_rp*$qty_supply)?>">
-            <input type="hidden" name="dpp" value="<?php echo ceil($dpp)?>">
-            <input type="hidden" name="n_ppn" id="n_ppn" value="<?php echo ceil($pn)?>">
-            <input type="hidden" name="hargajualtotal" id="n_grand" value="<?php echo ceil($grand)?>">
-
             <tfoot>
                 <tr>
                     <td colspan="8" class="text-right"><b>SubTotal :</b></td>
@@ -338,7 +304,7 @@
                 </tr>
                 <tr>
                     <th colspan="8" class="text-right">GRAND TOTAL : </th>
-                    <th colspan="2" class="text-right"><b><span id="text-grand"><?php echo formatnomor($grand)?></span></b></th>
+                    <th colspan="2" class="text-right"><b><?php echo formatnomor($grand)?></b></th>
                     <th></th>
                 </tr>
             </tfoot>
@@ -373,22 +339,6 @@
             placeholder: "Pilih",
             allowClear: true
         });
-        if ($("#n_ppn").val() == 0) {
-          var x = <?php echo $grand;?>;
-          var string_harga = x.toString();
-          var cek = parseInt(string_harga.substr(-3));
-          if (cek > 0) {
-            var pembantu = 1000 - cek;
-            var hasil = parseInt(x) + parseInt(pembantu);
-            //return hasil;
-          $("#n_grand").val(hasil);
-          $("#text-grand").text(hasil);
-        }else {
-          $("#n_grand").val(x);
-          $("#text-grand").text(x);
-        }
-          //alert(hasil);
-        }
         /*
         $(".datepicker").datepicker({
             format : "yyyy-mm-dd",
@@ -503,17 +453,6 @@
 				});
 		});
     });
-    function pembulatan(x){
-      var string_harga = x.toString();
-      var cek = parseInt(string_harga.substr(-3));
-      if (cek > 0) {
-        var pembantu = 1000 - cek;
-        var hasil = parseInt(x) + parseInt(pembantu);
-        return hasil;
-      }else {
-        return x;
-      }
-    }
     function getcustomer(){
         var idcus = $('#idcustomer_do').val();
         if(idcus != ''){

@@ -7,7 +7,7 @@
  * This is controller for Adjusment_stock
  */
 
-class Adjusment_stock extends Admin_Controller {
+class Adjusment extends Admin_Controller {
 
     /**
      * Load the models, library, etc
@@ -28,7 +28,7 @@ class Adjusment_stock extends Admin_Controller {
         $this->load->model(array('Barang/Barang_model',
                                  'Barang_stock/Barang_stock_model',
                                  'Trans_stock/Trans_stock_model',
-                                 'Adjusment_stock/Adjusment_stock_model',
+                                 'Adjusment/Adjusment_stock_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
 
@@ -55,8 +55,46 @@ class Adjusment_stock extends Admin_Controller {
         $barang = $this->Adjusment_stock_model->pilih_barang($this->auth->user_cab())->result();
 
         $this->template->set('barang',$barang);
-		$this->template->render('adjus_stock_form');
+		    $this->template->render('adjus_stock_form');
    	}
+
+    public function create_coba()
+   	{
+      $session = $this->session->userdata('app_session');
+      $this->auth->restrict($this->addPermission);
+      $data           = $this->Adjusment_stock_model->find_all_by( array('kdcab'=>$this->auth->user_cab(), 'deleted'=>0) );
+      $itembarang     = $this->Adjusment_stock_model->pilih_item($session['kdcab'])->result();
+
+      $this->template->set('itembarang',$itembarang);
+
+      $this->template->set('results', $data);
+		    $this->template->render('adjust_form');
+   	}
+
+    public function list_barang(){
+        $session       = $this->session->userdata('app_session');
+        $itembarang    = $this->Adjusment_stock_model->pilih_item($session['kdcab'])->result();
+        $this->template->set('itembarang',$itembarang);
+
+        $this->template->title('Item Barang');
+        $this->template->render('list_barang');
+
+    }
+
+    function get_item_barang(){
+        $idbarang   = $_GET['idbarang'];
+        $getparamid 		  = explode(";",$this->input->post('idbarang'));
+        $session    = $this->session->userdata('app_session');
+        //$datbarang  = $this->Adjusment_stock_model->get_item_barang($idbarang,$session['kdcab'])->row();
+                          $this->db->where_in('id_barang',$getparamid);
+        $list_teripilih = $this->db->get('barang_stock')->result_array();
+        $Arr_Data		      = array();
+        foreach($list_teripilih as $key=>$vals){
+  				$Arr_Data[$vals['id_barang']]	= $vals;
+  			}
+
+        echo json_encode($Arr_Data);
+    }
 
    	//Edit
    	public function edit()
@@ -129,11 +167,7 @@ class Adjusment_stock extends Admin_Controller {
                                 'brand'=>$brand,
                                 'satuan'=>$satuan,
                                 'kdcab'=>$this->auth->user_cab(),
-                                'qty_stock_awal'=>$qty,
-                                'qty_avl_awal'=>$qty,
                                 'qty'=>$qty,
-                                'qty_stock_akhir'=>$qty,
-                                'qty_avl_akhir'=>$qty,
                                 'nilai_barang'=>$nilai_barang,
                                 'noreff'=>$noreff,
                                 'notes'=>$notes,
@@ -248,6 +282,204 @@ class Adjusment_stock extends Admin_Controller {
             //Save Log
             simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
         }
+
+        $param = array(
+                'save' => $result
+                );
+
+        echo json_encode($param);
+    }
+    public function save_data_adjus(){
+      $session = $this->session->userdata('app_session');
+      $id_adjusment   = $this->Adjusment_stock_model->get_kode_adj($this->auth->user_cab());
+        $qty_adjus = $this->input->post("qty_adjus");
+        $n=0;
+        foreach ($qty_adjus as $key => $value) {
+          $n++;
+          $detbarang = $this->Barang_stock_model->find_by(array('id_barang' => $key));
+          $id_barang      = @$detbarang->id_barang;
+          $nm_barang      = @$detbarang->nm_barang;
+          $kategori       = @$detbarang->kategori;
+          $jenis          = @$detbarang->jenis;
+          $brand          = @$detbarang->brand;
+          $satuan         = @$detbarang->satuan;
+          //$type           = $this->input->post("tipe")[$key];
+          $qty            = $this->input->post("qty_adjus")[$key];
+          $qty_stock      = @$detbarang->qty_stock;
+          $qty_avl        = @$detbarang->qty_avl;
+          //$noreff         = @$detbarang->noreff;
+          $nilai_barang   = $this->input->post("harga")[$key];
+          //$notes          = @$detbarang->notes;
+          $tipe_adjusment = $this->input->post("tipe")[$key];
+          $date           = date('Y-m-d');
+
+
+
+
+
+        //Trans_stock
+        $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$n;
+        if($tipe_adjusment=='IN'){
+            $tipe           = 'IN';
+            $jenis_trans    = 'IN_Adjusment';
+            $qty_stock_new  = $qty_stock + $qty;
+            $qty_avl_new    = $qty_avl + $qty;
+        }else{
+            $tipe           = 'OUT';
+            $jenis_trans    = 'OUT_Adjusment';
+            $qty_stock_new  = $qty_stock - $qty;
+            $qty_avl_new    = $qty_avl - $qty;
+        }
+
+        if($type=="edit")
+        {
+            $this->auth->restrict($this->managePermission);
+
+            if($id_adjusment!="")
+            {
+                $data = array(
+                            array(
+                                'id_adjusment'=>$id_adjusment,
+                                'tipe_adjusment'=>$tipe_adjusment,
+                                'date'=>$date,
+                                'id_barang'=>$id_barang,
+                                'nm_barang'=>$nm_barang,
+                                'jenis'=>$jenis,
+                                'kategori'=>$kategori,
+                                'brand'=>$brand,
+                                'satuan'=>$satuan,
+                                'kdcab'=>$this->auth->user_cab(),
+                                'qty'=>$qty,
+                                'nilai_barang'=>$nilai_barang,
+                                'noreff'=>$noreff,
+                                'notes'=>$notes,
+                            )
+                        );
+
+                //Update data
+                $result = $this->Adjusment_stock_model->update_batch($data,'id_adjusment');
+
+                $keterangan     = "SUKSES, Edit data Adjusment Barang ".$id_adjusment.", atas barang : ".$id_barang;
+                $status         = 1;
+                $nm_hak_akses   = $this->addPermission;
+                $kode_universal = $id_adjusment;
+                $jumlah         = 1;
+                $sql            = $this->db->last_query();
+
+                $barang       = $id_barang;
+            }
+            else
+            {
+                $result = FALSE;
+
+                $keterangan     = "GAGAL, Edit data Adjusment Barang ".$id_adjusment.", atas barang : ".$id_barang;
+                $status         = 1;
+                $nm_hak_akses   = $this->addPermission;
+                $kode_universal = $id_adjusment;
+                $jumlah         = 1;
+                $sql            = $this->db->last_query();
+            }
+
+            simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+
+        }
+        else
+        {
+            $this->auth->restrict($this->addPermission);
+
+            $data_adj = array(
+                        'id_adjusment'=>$id_adjusment,
+                        'tipe_adjusment'=>$tipe_adjusment,
+                        //'date'=>$date,
+                        'id_barang'=>$id_barang,
+                        'nm_barang'=>$nm_barang,
+                        'jenis'=>$jenis,
+                        'kategori'=>$kategori,
+                        'brand'=>$brand,
+                        'satuan'=>$satuan,
+                        //'kdcab'=>$this->auth->user_cab(),
+                        'qty'=>$qty,
+                        'qty_stock_awal'=>$qty_stock,
+                        'qty_avl_awal'=>$qty_avl,
+                        'qty_stock_akhir'=>$qty_stock_new,
+                        'qty_avl_akhir'=>$qty_avl_new,
+                        'nilai_barang'=>$nilai_barang
+                        );
+
+            $data_adj_trans = array(
+                        'id_st'=>$id_st,
+                        'tipe'=>$tipe,
+                        'jenis_trans'=>$jenis_trans,
+                        'noreff'=>$id_adjusment,
+                        'id_barang'=>$id_barang,
+                        'nm_barang'=>$nm_barang,
+                        'jenis'=>$jenis,
+                        'kategori'=>$kategori,
+                        'brand'=>$brand,
+                        'satuan'=>$satuan,
+                        'kdcab'=>$this->auth->user_cab(),
+                        'date_stock'=>date('Y-m-d H:i:s'),
+                        'qty'=>$qty,
+                        'qty_stock_awal'=>$qty_stock,
+                        'qty_avl_awal'=>$qty_avl,
+                        'qty_stock_akhir'=>$qty_stock_new,
+                        'qty_avl_akhir'=>$qty_avl_new,
+                        'nilai_barang'=>$nilai_barang,
+                        'notes'=>$notes,
+                        );
+
+            $this->db->trans_begin();
+            $this->auth->restrict($this->viewPermission);
+
+              $data_stock = array(
+                'qty_stock'=>$qty_stock_new,
+                'qty_avl'=>$qty_avl_new,
+                'harga'=>$nilai_barang,
+                'modified_on'=>date("Y-m-d H:i:s"),
+                'modified_by'=>$session['id_user']
+              );
+              $this->db->where(array('id_barang'=>$id_barang,'kdcab'=>$this->auth->user_cab()));
+              $this->db->update('barang_stock',$data_stock);
+
+            $this->db->insert('stock_adjusment_detail', $data_adj);
+            $this->Trans_stock_model->insert($data_adj_trans);
+        }
+
+            if($this->db->trans_status()===FALSE){
+                $keterangan     = "GAGAL, tambah data Adjusment Barang ".$id_adjusment.", atas barang : ".$id_barang;
+                $status         = 0;
+                $nm_hak_akses   = $this->addPermission;
+                $kode_universal = 'NewData';
+                $jumlah         = 1;
+                $sql            = $this->db->last_query();
+                $result         = FALSE;
+                $this->db->trans_rollback();
+            }else{
+                $keterangan     = "SUKSES, tambah data Adjusment Barang ".$id_adjusment.", atas barang : ".$id_barang;
+                $status         = 1;
+                $nm_hak_akses   = $this->addPermission;
+                $kode_universal = 'NewData';
+                $jumlah         = 1;
+                $sql            = $this->db->last_query();
+                $result         = TRUE;
+                $this->db->trans_commit();
+            }
+
+            //Save Log
+            simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
+        }
+        $data_adj_h = array(
+                    'id_adjusment'=>$id_adjusment,
+                    'date'        =>$date,
+                    'kdcab'       =>$this->auth->user_cab(),
+                    'noreff'      =>$noreff,
+                    'notes'       =>$notes,
+                    'created_by'  =>$session['id_user'],
+                    'created_on'  =>date("Y-m-d H:i:s"),
+                    'modified_on' =>date("Y-m-d H:i:s"),
+                    'modified_by' =>$session['id_user']
+                    );
+        $this->db->insert('stock_adjusment_header', $data_adj_h);
 
         $param = array(
                 'save' => $result

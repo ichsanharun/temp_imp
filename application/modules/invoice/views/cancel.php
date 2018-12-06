@@ -2,75 +2,75 @@
 <form method="POST" id="form_proses">
 <div class="nav-tabs-salesorder">
     <div class="tab-content">
-        <div class="tab-pane active" id="salesorder">            
-			<div class="box box-primary">				
-				<div class="box-body">					
-					<div class='form-group row'>						
+        <div class="tab-pane active" id="salesorder">
+			<div class="box box-primary">
+				<div class="box-body">
+					<div class='form-group row'>
 						<label class='control-label col-sm-2'><b>No Invoice</b></label>
 						<div class='col-sm-4'>
 							 <div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-bookmark"></i></span> 
+								<span class="input-group-addon"><i class="fa fa-bookmark"></i></span>
 									<?php
 										echo form_input(array('id'=>'no_invoice','name'=>'no_invoice','class'=>'form-control input-sm','readOnly'=>true),$row_header->no_invoice);
-									?>											
-								
+									?>
+
 							</div>
-						</div>	
+						</div>
 						<label class='label-control col-sm-2'><b>Tgl Invoice</b></label>
 						<div class='col-sm-4'>
 							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-calendar"></i></span> 
-								<?php					
+								<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+								<?php
 									echo form_input(array('id'=>'tgl_invoice','name'=>'no_invoice','class'=>'form-control input-sm','disabled'=>true),date('d M Y',strtotime($row_header->tanggal_invoice)));
-								?>	
+								?>
 							</div>
 						</div>
-						
+
 					</div>
-					
-					<div class='form-group row'>						
+
+					<div class='form-group row'>
 						<label class='control-label col-sm-2'><b>Customer</b></label>
 						<div class='col-sm-4'>
 							 <div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-home"></i></span> 
+								<span class="input-group-addon"><i class="fa fa-home"></i></span>
 									<?php
 										echo form_input(array('id'=>'customer','name'=>'customer','class'=>'form-control input-sm','disabled'=>true),$row_header->nm_customer);
-									?>											
-								
+									?>
+
 							</div>
-						</div>	
+						</div>
 						<label class='label-control col-sm-2'><b>Alamat</b></label>
 						<div class='col-sm-4'>
 							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-map"></i></span> 
-								<?php					
+								<span class="input-group-addon"><i class="fa fa-map"></i></span>
+								<?php
 									echo form_textarea(array('id'=>'alamat','name'=>'alamat','class'=>'form-control input-sm','cols'=>'75','rows'=>'1','disabled'=>true),$row_header->alamatcustomer);
-								?>	
+								?>
 							</div>
 						</div>
-						
+
 					</div>
-					<div class='form-group row'>						
+					<div class='form-group row'>
 						<label class='control-label col-sm-2'><b>Alasan Batal</b></label>
 						<div class='col-sm-4'>
 							 <div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-file"></i></span> 
+								<span class="input-group-addon"><i class="fa fa-file"></i></span>
 									<?php
 										echo form_textarea(array('id'=>'cancel_reason','name'=>'cancel_reason','class'=>'form-control input-sm','cols'=>'75','rows'=>'2'));
-									?>											
-								
+									?>
+
 							</div>
-						</div>	
+						</div>
 						<label class='label-control col-sm-2'><b>Faktur Pajak</b></label>
 						<div class='col-sm-4'>
 							<div class="input-group">
-								<span class="input-group-addon"><i class="fa fa-credit-card"></i></span> 
-								<?php					
-									echo form_dropdown('faktur_pajak',array('B'=>'BLOK','O'=>'RE-OPEN'), 'B', array('id'=>'faktur_pajak','class'=>'form-control input-sm'));
-								?>	
+								<span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+								<?php
+									echo form_dropdown('faktur_pajak',array('B'=>'BLOK','O'=>'RE-OPEN'), 'O', array('id'=>'faktur_pajak','class'=>'form-control input-sm'));
+								?>
 							</div>
 						</div>
-						
+
 					</div>
 				</div>
 				<div class="box-body">
@@ -84,10 +84,10 @@
 								<th class="text-center">Qty</th>
 								<th class="text-center">Harga</th>
 								<th class="text-center">Diskon</th>
-								<th class="text-center">Total Harga</th>								
+								<th class="text-center">Total Harga</th>
 							</tr>
 						</thead>
-						<tbody>						
+						<tbody>
 							<?php
 							if($row_detail){
 								$loop		= 0;
@@ -96,7 +96,7 @@
 									$Harga			= $valD->hargajual;
 									$Qty			= $valD->jumlah;
 									$Diskon			= $valD->diskon;
-									
+
 									$Total_Bersih	= ($Harga - $Diskon) * $Qty;
 									echo"<tr>";
 										echo"<td class='text-center'>".$loop."</td>";
@@ -109,7 +109,7 @@
 										echo"<td class='text-right'>".number_format($Total_Bersih)."</td>";
 									echo"</tr>";
 								}
-							}							
+							}
 							?>
 						</tbody>
 						<tfoot>
@@ -137,7 +137,7 @@
 					</table>
 				</div>
 			</div>
-			
+
         </div>
     </div>
 </div>
@@ -163,19 +163,19 @@
 	var base_url			= '<?php echo base_url(); ?>';
 	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
     $(document).ready(function(){
-       
+
         $('#detail_invoice').DataTable();
-		
+
 		$('#proses_inv').click(function(e){
 			var alasan	= $('#cancel_reason').val();
 			if(alasan=='' || alasan==null || alasan=='-'){
 				swal({
 				  title: "Error Message!",
 				  text: 'Alasan Batal Belum Diinput, Mohon Input Alasan Batal Terlebih Dahulu.....',
-				  type: "warning",								  
+				  type: "warning",
 				  timer: 5000
 				});
-				
+
 				return false;
 			}
 			  e.preventDefault();
@@ -193,7 +193,7 @@
 					},
 					function(isConfirm) {
 					  if (isConfirm) {
-							
+
 							var formData 	=new FormData($('#form_proses')[0]);
 							var baseurl=base_url + active_controller +'/cancel_invoice';
 							$.ajax({
@@ -202,12 +202,12 @@
 								data		: formData,
 								cache		: false,
 								dataType	: 'json',
-								processData	: false, 
-								contentType	: false,				
+								processData	: false,
+								contentType	: false,
 								success		: function(data){
-									
+
 									var kode_bast	= data.kode;
-									if(data.status == 1){											
+									if(data.status == 1){
 										swal({
 											  title	: "Save Success!",
 											  text	: data.pesan,
@@ -219,7 +219,7 @@
 											});
 										window.location.href = base_url + active_controller;
 									}else{
-										
+
 										if(data.status == 2){
 											swal({
 											  title	: "Save Failed!",
@@ -241,15 +241,15 @@
 											  allowOutsideClick	: false
 											});
 										}
-										
+
 									}
 								},
 								error: function() {
-									
+
 									swal({
 									  title				: "Error Message !",
-									  text				: 'An Error Occured During Process. Please try again..',						
-									  type				: "warning",								  
+									  text				: 'An Error Occured During Process. Please try again..',
+									  type				: "warning",
 									  timer				: 7000,
 									  showCancelButton	: false,
 									  showConfirmButton	: false,
@@ -264,7 +264,7 @@
 				});
 		});
     });
-   
+
     function kembali_inv(){
         window.location.href = base_url + active_controller;
     }

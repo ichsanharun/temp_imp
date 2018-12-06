@@ -87,7 +87,7 @@
     </div>
 	<div class="box-footer">
 		<input type="hidden" name="cekcus" id="cekcus" class="form-control input-sm">
-      	<input type="hidden" id="cekcustomer" class="form-control input-sm">
+    <input type="hidden" id="cekcustomer" name="cekcustomer" class="form-control input-sm">
 		<button class="btn btn-primary" id="btn-proses-do" type="button"> Proses Invoice</button>&nbsp;&nbsp;<button class="btn btn-danger" id="btn-proses-back" type="button"> Kembali</button>
 	</div>
 </div>

@@ -1,8 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
- * @author Yunaz
- * @copyright Copyright (c) 2018, Yunaz
+ * @author Ichsan
+ * @copyright Copyright (c) 2018, Ichsan
  *
  * This is controller for Salesorder
  */
@@ -48,16 +48,7 @@ class Deliveryorder_2 extends Admin_Controller {
     //Create New Delivery Order
     public function create(){
       $session = $this->session->userdata('app_session');
-        //$this->auth->restrict($this->addPermission);
-        /*
-        $nodo = $this->Deliveryorder_model->generate_nodo($session['kdcab']);
 
-        $marketing = $this->Deliveryorder_model->pilih_marketing()->result();
-        $getitemdo = $this->Detaildeliveryorder_model->find_all_by(array('no_do'=>$nodo));
-
-        $this->template->set('marketing',$marketing);
-        $this->template->set('detaildo',$getitemdo);
-        */
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$session['kdcab']));
         $this->template->set('customer',$customer);
 
@@ -105,7 +96,7 @@ class Deliveryorder_2 extends Admin_Controller {
   			}
   			unset($driver);
   		}
-          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan()->result();
+          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan($session['kdcab'])->result();
           $Arr_Kendaraan = array();
           if($kendaraan){
               foreach($kendaraan as $keyK=>$valK){
@@ -294,8 +285,9 @@ class Deliveryorder_2 extends Admin_Controller {
           //echo count($detail['noso_todo']);die();
 
           $this->db->trans_begin();
-
+          $x = 0;
           for($i=0;$i < count($detail['noso_todo']);$i++){
+            $x++;
               $key = array(
               'no_so' => $_POST['noso_todo'][$i],
               'id_barang' => $_POST['id_barang'][$i]
@@ -357,6 +349,21 @@ class Deliveryorder_2 extends Admin_Controller {
               $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']),'barang_stock');
               $this->db->where(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']));
               $this->db->update('barang_stock',array('qty_stock'=>$count->qty_stock-$_POST['qty_supply'][$i]));
+              $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$x;
+              $data_adj_trans = array(
+                          'id_st'=>$id_st,
+                          'tipe'=>'OUT',
+                          'jenis_trans'=>'OUT_Pembelian',
+                          'noreff'=>$no_do,
+                          'id_barang'=>$getitemso->id_barang,
+                          'nm_barang'=>$getitemso->nm_barang,
+                          'kdcab'=>$this->auth->user_cab(),
+                          'date_stock'=>date('Y-m-d H:i:s'),
+                          'qty'=>$_POST['qty_supply'][$i],
+                          'nilai_barang'=>$getitemso->harga_normal,
+                          'notes'=>'DO',
+                          );
+                          $this->Trans_stock_model->insert($data_adj_trans);
               //Update STOK REAL
           }
           //$cek_close=0;
@@ -579,8 +586,9 @@ class Deliveryorder_2 extends Admin_Controller {
         //$mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         //$mpdf->RestartDocTemplate();
-
+        $session = $this->session->userdata('app_session');
         $do_data = $this->Deliveryorder_model->find_data('trans_do_header',$nodo,'no_do');
+        $cabang = $this->Deliveryorder_model->find_data('cabang',$session['kdcab'],'kdcab');
         $customer = $this->Deliveryorder_model->cek_data(array('id_customer'=>$do_data->id_customer),'customer');
         $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $nodo,'qty_supply >'=>0));
         $det_do = $this->Deliveryorder_model->find_data('trans_do_detail',$nodo,'no_do');
@@ -611,7 +619,7 @@ class Deliveryorder_2 extends Admin_Controller {
                         <td width="1%">:'.@$det_do->no_so.'</td>
                         <td colspan="2"></td>
                         <td></td>
-                        <td width="15%">Yogyakarta,</td>
+                        <td width="15%">'.@$cabang->namacabang.',</td>
                         <td>'.date('d-M-Y').'</td>
                     </tr>
                     <tr>
@@ -662,7 +670,7 @@ class Deliveryorder_2 extends Admin_Controller {
                 <td width="15%" colspan="3" style="height: 50px;"></td>
             </tr>
             <tr>
-                <td width="17%"><center>( Sales Planning & Support )</center></td>
+                <td width="17%"><center>( Admin Sales )</center></td>
                 <td width="15%"><center>( KA.Gudang )</center></td>
                 <td width="15%"><center>( Sopir )</center></td>
                 <td width="15%"><center>( TTD & CAP TOKO )</center></td>
@@ -747,8 +755,8 @@ class Deliveryorder_2 extends Admin_Controller {
     function print_proforma($nodo){
       $mpdf=new mPDF('utf-8', array(210,145), 10 ,'Arial', 5, 5, 16, 16, 1, 4, 'P');
       $mpdf->SetImportUse();
-
-
+      $session = $this->session->userdata('app_session');
+      $cabang = $this->Deliveryorder_model->find_data('cabang',$session['kdcab'],'kdcab');
         $do_data = $this->Deliveryorder_model->find_data('trans_do_header',$nodo,'no_do');
         $customer = $this->Deliveryorder_model->cek_data(array('id_customer'=>$do_data->id_customer),'customer');
         $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $nodo,'qty_supply >'=>0));
@@ -787,7 +795,7 @@ class Deliveryorder_2 extends Admin_Controller {
               <td width="5%">NO. SJ</td>
 
               <td colspan="3" width="50%">: '. @$do_data->no_do.'</td>
-              <td>Yogyakarta,</td>
+              <td>'. @$cabang->namacabang.',</td>
               <td width="1%"> </td>
               <td>'.date('d M Y',strtotime(@$do_data->tgl_do)).'</td>
           </tr>
@@ -820,7 +828,7 @@ class Deliveryorder_2 extends Admin_Controller {
       </table>';
 
         $this->mpdf->SetHTMLHeader($header,'0',true);
-        $session = $this->session->userdata('app_session');
+
 
 
         $this->mpdf->SetHTMLFooter('
