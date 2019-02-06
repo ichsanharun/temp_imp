@@ -59,7 +59,23 @@
 			    	</select>
 			    </div>
 		  	</div>
-			
+			<div class="form-group <?= form_error('kdcab') ? ' has-error' : ''; ?>">
+			    <label for="kdcab" class="col-md-2 control-label">Cabang</label>
+			    <div class="col-md-3">
+			    	<select name="kdcab" id="kdcab" class="form-control">
+			    		<option value="">Pilih Cabang</option>
+			    		<?php 
+			    		foreach($cabang as $k=>$v){
+			    			$selected = '';
+			    			if($v->kdcab == $data->kdcab){
+			    				$selected='selected="selected"';
+			    			} 
+			    		?>
+			    		<option value="<?php echo $v->kdcab?>" <?php echo $selected?>><?php echo $v->namacabang?></option>
+			    		<?php } ?>
+			    	</select>
+			    </div>
+		  	</div>
 			<div class="box-footer">
 		  	<div class="form-group">
 			    <div class="col-sm-offset-2 col-sm-10">

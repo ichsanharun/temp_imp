@@ -15,12 +15,12 @@ class Reportdetailpenjualan extends Admin_Controller {
      *
      */
     //Permission
-    /*
-    protected $viewPermission   = "Reportstok.View";
-    protected $addPermission    = "Reportstok.Add";
-    protected $managePermission = "Reportstok.Manage";
-    protected $deletePermission = "Reportstok.Delete";
-    */
+
+    protected $viewPermission   = "Reportdetailpenjualan.View";
+    protected $addPermission    = "Reportdetailpenjualan.Add";
+    protected $managePermission = "Reportdetailpenjualan.Manage";
+    protected $deletePermission = "Reportdetailpenjualan.Delete";
+
     public function __construct()
     {
         parent::__construct();

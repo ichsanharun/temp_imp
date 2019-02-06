@@ -32,28 +32,21 @@
 
     <div class="col-lg-6">
       <div class="box-header text-left"><b>Pilih Periode : </b>
+        <?php
+        $periode_th = $this->Salesorder_model->select('LEFT(tanggal,7) as tgl')->group_by('LEFT(tanggal,7)')->find_all();
+
+        //print_r($periode_th);
+         ?>
         <select id="periode" name="periode" class="form-control input-sm" style="width: 25%;" tabindex="-1" required>
             <option value=""></option>
             <?php
-              for ($i=1; $i < 13; $i++) {
-                if ($i < 10) {
-                  $bln = "0".$i;
-                  $per = date("Y")."-0".$i;
-                  $valper = "0".$i."/".date("Y");
-                }else {
-                  $bln = $i;
-                  $per = date("Y")."-".$i;
-                  $valper = $i."/".date("Y");
-                }
-                if (date("m") == $bln) {
-                  $selected = 'selected="selected"';
-                }
-                ?>
-            <option value="<?php echo $valper; ?>" id="<?php echo $per; ?>">
-              <?php echo date("M Y", strtotime($per)); ?>
-            </option>
+            foreach($periode_th as $kso=>$vso){
+              $selected = '';
+              ?>
+              <option value="<?php echo date("m/Y", strtotime($vso->tgl)); ?>" <?php echo $selected?>>
+            <?php echo date("M Y", strtotime($vso->tgl)); ?>
             <?php } ?>
-            <option value="<?php echo "/".date("Y"); ?>"><?php echo date("Y"); ?></option>
+            <option value="All">All</option>
         </select>
         <?php if ($ENABLE_VIEW) : ?>
     			<span class="pull-right">
@@ -85,10 +78,11 @@
             $n = 1;
             foreach(@$results as $kso=>$vso){
                 $no = $n++;
-                $sts = "OPEN";
+                //$sts = "OPEN";$vso->stsorder
+                $sts = $vso->stsorder;
                 $badge = "bg-green";
                 $disbtn = '';
-                if($vso->stsorder == "CLS"){
+                if($vso->stsorder == "CLOSE"){
                   $sts = "CLOSE";
                   $disbtn = 'style="cursor: not-allowed;';
                   //$disbtn = 'disabled="disabled"';
@@ -239,7 +233,12 @@
       });
       var table = $('#reportso').DataTable();
       $('#periode').on( 'change', function () {
-      table.search( this.value ).draw();
+        if (this.value == "All") {
+          var value = "";
+        }else {
+          var value = this.value;
+        }
+      table.search( value ).draw();
       } );
       var tabledetail = $('#detailreportso').DataTable();
       // Add smooth scrolling to all links
@@ -279,11 +278,23 @@
 
       function getexcel(){
             var tgl = $('#periode').val();
-            var explode = tgl.split('/');
-            var tglso = explode[1].concat('-',explode[0]);
+            console.log(tgl);
+            if (tgl == "All") {
+              var tglso = "All";
+            }else {
+              var explode = tgl.split('/');
+              var tglso = explode[1].concat('-',explode[0]);
+
+            }
             var uri3 = '<?php echo $this->uri->segment(3)?>';
             var uri4 = '<?php echo $this->uri->segment(4)?>';
-            window.location.href = siteurl+"reportso/downloadExcel/"+uri3+"/"+tglso;
+            //window.location.href =
+            tujuan= siteurl+"reportso/downloadExcel_old/"+uri3+"/"+tglso;
+            $('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
+            //param=noso;
+            //tujuan = siteurl+'reportso/print_request/'+param;
+
+              $("#repso").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
           }
 
     function PreviewPdf(noso)

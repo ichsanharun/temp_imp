@@ -1,0 +1,673 @@
+#container {
+	margin:0 auto;
+	padding:0;
+	max-width:960px;
+	min-height:100%;
+}
+
+#header {
+	margin:0;
+	padding:0;
+}
+
+.logo {
+	margin:0;
+	padding:0;
+	width:450px;
+	float:left;
+}
+
+.open {
+	margin:20px 0px;
+	padding:0;
+	width:200px;
+	float:right;
+}
+
+#maincontent {
+	margin:0;
+	padding:0;
+	float:left;
+	width:960px;
+	background:#fff url(../images/back-content.png) top left repeat-x;
+}
+
+#sidebar {
+	margin:0px 10px 0px 20px;
+	padding:0;
+	float:left;
+	width:250px;
+}
+
+.title {
+	margin:0px 0px 5px 0px;
+	padding:0;
+	width:200px;
+	font:bold 20px "Myriad Pro";
+	text-transform:uppercase;
+	float:right;
+}
+
+.title-2 {
+	margin:0;
+	padding:10px 0px;
+	width:100%;
+	background:#1f95d3;
+	font:16px "Myriad Pro";
+	color:#fff;
+	text-transform:uppercase;
+	text-align:center;
+	float:right;
+}
+
+.title-3 {
+	margin:0px 5px;
+	padding:5px 10px;
+	float:left;
+	width:640px;
+	background:url(../images/back-title-3.png) top left repeat-y;
+	font:bold 16px "Myriad Pro";
+	color:#fff;
+	border-bottom:1px solid #ccc;
+	border-top:1px solid #ccc;
+}
+
+.title-4 {
+	margin:0;
+	padding:0;
+	font:bold 16px Calibri;
+}
+
+.title-5 {
+	margin:5px 0px;
+	padding:0;
+	width:100%;
+	font:bold 16px "Myriad Pro";
+	text-transform:uppercase;
+	text-shadow:1px 1px 1px #666;
+	float:right;
+}
+
+.box {
+	margin:0;
+	padding:0;
+	width:245px;
+	border-top:1px solid #666;
+	font-family:"Myriad Pro";
+	float:left;
+	color:#fff;
+}
+
+.box-2 {
+	margin:0;
+	padding:0;
+	width:100%;
+	float:left;
+}
+
+#box-nav {
+	background:url(../images/back_nav.jpg) top left repeat-y;
+	color:#fff;	
+}
+#nav {
+	margin:-5px 0px 0px 0px;
+	padding:20px 0px;
+	width:100%;
+	float:right;
+}
+#nav ul {
+	margin:0;
+	padding:0;
+	width:200px;
+	float:right;
+}
+#nav ul li {
+	margin:0;
+	padding:5px 0px;
+	display:block;
+	border-top:1px solid #fff;
+}
+#nav ul li a {
+	padding:0;
+	color:#fff;
+	font-size:14px;
+}
+#nav ul li a:hover, #nav ul li a.current {
+	color:#ccc;
+	text-decoration:none;
+}
+#nav ul li a img {
+	vertical-align:middle;
+	width:20px;
+	margin:-5px 10px 0px 0px;
+}
+
+#box-login {
+	padding:10px 0px;
+	background:url(../images/back-login.jpg) top left no-repeat;
+}
+
+#login {
+	margin:0;
+	padding:0;
+	float:right;
+	width:200px;
+	font-size:11px;
+}
+#login input[type="text"], #login input[type="password"] {
+	width:150px;
+	max-width:150px;
+	min-width:150px;
+	margin:5px 0px;
+}
+#login input[type="checkbox"] {
+	float:left;
+	width:20px;
+}
+#login div {
+	margin:0;
+	padding:0;
+	float:left;
+	width:150px;
+}
+
+#box-cs {
+	padding:10px 0px;
+	background:url(../images/back-cs.jpg) top left no-repeat;
+}
+#box-cs div#ym {
+	margin:0;
+	padding:0;
+	width:200px;
+	float:right;
+	font:11px Arial, Helvetica, sans-serif;
+	text-transform:uppercase;
+}
+#box-cs div#ym div {
+	margin-left:20px;
+}
+#box-cs div#visitor {
+	margin:0;
+	padding:0;
+	float:left;
+	width:230px;
+	text-align:center;
+	font:14px Arial, Helvetica, sans-serif;
+}
+
+#box-content {
+	margin:0;
+	padding:0;
+	float:right;
+	width:680px;
+}
+
+#menu {
+	margin:19px 0 0 0;
+	padding:0;
+	float:left;
+	width: 100%;
+}
+#menu li {
+	margin:0;
+	padding:0;
+	float:left;
+}
+#menu li a {
+	padding:20px 8px;
+	color:#fff;
+	text-transform:uppercase;
+	text-shadow:1px 1px 1px #000;
+	font:bold 13px "Myriad Pro";
+	letter-spacing:1px;
+}
+#menu li a:hover, #menu li a.active {
+	padding-bottom:30px;
+	text-decoration:none;
+}
+#menu li a#green {
+	background:#9bbb3b;
+}
+#menu li a#orange {
+	background:#faa21b;
+}
+#menu li a#red {
+	background:#ca3432;
+}
+#menu li a#blue{
+	background:#17c2e6;
+}
+
+#box-slide {
+	margin:40px 0px 20px 0px;
+	padding:0;
+	float:left;
+    	height: 400px;
+    	width: 97%;
+}
+#box-slide img {
+	margin:0px 5px;
+	padding:0;
+	float:left;
+    
+    height: 400px;
+}
+
+#home {
+	margin:10px 10px 10px 5px;
+	padding:10px 0px;
+	border-top:1px solid #ccc;
+	border-bottom:1px solid #ccc;
+	width:660px;
+	float:left;
+	font:12px Calibri;
+}
+
+#about {
+	margin:50px 10px 10px 5px;
+	padding:10px 0px;
+	width:660px;
+	float:left;
+	font:12px Calibri;
+}
+
+#facilities {
+	margin:90px 0px 0px 0px;
+	padding:10px 10px 10px 5px;
+}
+#facilities img {
+	width:300px;
+	float:left;
+	margin:10px;
+}
+
+#box-contact {
+	margin:80px 10px 10px 0px;
+	padding:0px 10px 0px 0px;
+	width:100%;
+}
+
+#contact {
+	margin:10px 0px;
+	padding:0;
+}
+#contact table {
+	margin:0;
+	padding:0;
+	width:210px;
+}
+#contact table tr {
+	margin:0;
+	padding:0;
+}
+#contact table tr td {
+	margin:0;
+	padding:0;
+	font:12px Calibri;
+}
+#contact table tr td input[type="submit"], #contact table tr td input[type="reset"]  {
+	float:right;
+}
+
+.address {
+	margin:0px 0px 10px 0px;
+	padding:5px 0px;
+	width:100%;
+	background:#18c1e5;
+	font:14px Calibri;
+	color:#fff;
+	float:right;
+}
+.address h5 {
+	margin:0px 0px 0px 5px;
+	color:#fff;
+}
+.address table {
+	margin:0;
+	padding:0;
+}
+.address table tr {
+	vertical-align:middle;
+}
+.address table tr td {
+	padding:5px;
+	vertical-align:top;
+}
+.address table tr td img {
+	width:20px;
+}
+.address table tr td a {
+	color:#fff;
+}
+
+#maps {
+	margin:0px 0px 0px 5px;
+	padding:0;
+	width:660px;
+	float:left;
+}
+
+#gallery {
+	margin:90px 0px 0px 0px;
+	padding:0;
+	width:100%;
+}
+
+.image {
+	margin:0;
+	padding:0;
+}
+.image li {
+	margin:0px 10px 20px 0px;
+	padding:0;
+	float:left;
+	text-align:center;
+	width:150px;
+	height:168px;
+}
+.image li a {
+	font:14px Calibri;
+}
+.image li a div {
+	margin:0;
+	padding:0;
+	float:left;
+	border:1px solid #ccc;
+}
+.image li a div img {
+	margin:0;
+	padding:0;
+	border:4px solid #fff;
+	width:140px;
+}
+.image li a div img:hover {
+	opacity:0.8;
+}
+
+
+#guestbook {
+	margin:0px 10px 0px 0px;
+	padding:0;
+	float:right;
+}
+#guestbook a {
+	font:bold 14px Calibri;
+}
+#guestbook a table tr td {
+	vertical-align:middle;
+}
+#guestbook a table tr td:hover {
+	text-decoration:underline;
+} 
+#guestbook a table tr td img {
+	width:20px;
+	float:right;
+}
+
+#living {
+	margin:20px 0px 0px 0px;
+	padding:0;
+	float:left;
+	width:100%;
+}
+#living li {
+	border:1px solid #4A9ED7;
+	width:100%;
+	display:block;
+	float:left;
+}
+#living li div.name {
+	margin:0;
+	padding:5px 0px;
+	background:#4A9ED7;
+	color:#fff;
+	float:left;
+	width:100%;
+}
+#living li div.name h4 {
+	color:#fff;
+	float:left;
+	margin:0px 10px;
+} 
+#living li div.name div.date {
+	color:#fff;
+	font:12px Calibri;
+	margin:10px;
+	float:right;
+}
+#living li div.que {
+	margin:10px;
+	padding:5px;
+	font:14px Calibri;
+	float:left;
+	width:625px;
+}
+#living li div.ans {
+	border:1px solid #4A9ED7;
+}
+#living li div.ans table tr td {
+	vertical-align:middle;
+}
+#living li div.ans table tr td img {
+	width:20px;
+}
+
+
+.content-1 {
+	float:left;
+	margin:0px 10px 0px 0px;
+	padding:0;
+	width:400px;
+}
+.content-1 ul {
+	margin:0px 0px 0px 20px;
+	padding:0;
+}
+.content-1 ul li {
+	margin:0;
+	padding:0;
+	list-style:disc;
+}
+.content-1 table {
+	margin:0;
+	padding:0;
+}
+.content-1 table tr {
+	margin:0;
+	padding:0;
+}
+.content-1 table tr td {
+	margin:0;
+	padding:5px;
+}
+
+
+.content-2 {
+	float:right;
+	margin:0px 0px 0px 10px;
+	padding:0;
+	width:240px;
+}
+
+#text {
+	margin:0;
+	padding:0;
+	width:100%;
+	float:right;
+	font:11px Arial, Helvetica, sans-serif;
+}
+#text img {
+	margin:0px 5px 0px 0px;
+	padding:0;
+	float:left;
+	vertical-align:middle;
+}
+#text p {
+	float:left;
+	width:200px;
+}
+
+#ad {
+	margin:5px 20px 5px 5px;
+	padding:20px 0px;
+	text-align:center;
+	width:660px;
+	background:#4a9ed7;
+	font:bold 40px Arial, Helvetica, sans-serif;
+	color:#b4d7ef;
+	float:left;
+}
+
+.ad-2 {
+	margin:0px 0px 10px 0px;
+	padding:5px 0px;
+	width:100%;
+	background:#18c1e5;
+	font:14px "Myriad Pro";
+	color:#fff;
+	text-transform:uppercase;
+	text-align:center;
+	float:right;
+}
+
+#box-yearly {
+	margin:10px 0px;
+	padding:0;
+	width:660px;
+	float:left;
+}
+#box-yearly ul {
+	margin:0;
+	padding:0;
+}
+#box-yearly ul li {
+	margin:10px 5px 10px 5px;
+	padding:10px;
+	background:#4a9ed7;
+	float:left;
+	font:12px Calibri;
+	color:#fff;
+	width:135px;
+	height: 250px;
+	position: relative;
+}
+#box-yearly ul li font.title-4, #box-yearly ul li h5 {
+	display: block; width: 100%; height: 38px;
+	overflow: hidden; color: #fff;
+}
+#box-yearly ul li center div.boximg {
+	width: 130px; height: 87px; overflow: hidden;
+	margin:5px 0px;
+	padding:0;
+}
+#box-yearly ul li center img {
+	width:130px;
+}
+#box-yearly ul li center p {
+	margin:0px 5px;
+	line-height:12px;
+	letter-spacing:0px;
+}
+#box-yearly ul li a { color: #fff; text-decoration: none; }
+#box-yearly ul li a img { vertical-align: middle;margin-right: 3px; }
+#box-yearly ul li center a button {
+	margin:5px 0px;
+	padding:5px 10px;
+	right:35px;
+	text-align:center;
+	background:#fff;
+	font: icon 14px "Myriad Pro";
+	color:#4a9ed7;
+	text-transform:uppercase;
+	border:none;
+	border-radius:0px;
+	-moz-border-radius:0px;
+	-webkit-border-radius:0px;
+	text-shadow:none;
+	bottom:10px;
+	position:absolute;
+}
+#box-yearly ul li center a button:hover {
+	color:#79bfe4;
+	text-decoration:none;
+}
+
+#kinder {
+	margin:20px 0px;
+	padding:0;
+}
+#kinder li {
+	margin:10px 0px;
+	padding:0;
+	width:100%;
+	float:left;
+	list-style:none;
+}
+#kinder li img {
+	margin:0px 5px 0px 0px;
+	padding:0;
+	width:100px;
+	float:left;
+}
+#kinder li div.text {
+	float:left;
+	width:240px;
+}
+#kinder li div.text p {
+	line-height:16px;
+}
+
+/*
+#footer {
+	margin:30px 10px;
+	padding:0;
+	text-align:right;
+	float:right;
+	font:bold 10px Verdana, Arial, Helvetica, sans-serif;
+	color:#ccc;
+}
+#footer a {
+	color:#4a9ed7;
+	text-decoration:underline;
+}
+#footer a:hover {
+	text-decoration:none;
+}
+*/
+
+#footer {
+	margin:0;
+	padding:5px 0px;
+	float:left;
+	width:100%;
+	background:#4A9ED7;
+}
+
+.copy {
+	margin:0px 10px;
+	padding:0;
+	float:left;
+	width:350px;
+	font:13px Calibri;
+	color:#fff;
+	line-height:25px;
+}
+
+.address-foot {
+	float:right;
+	text-align:right;
+	width:500px;
+}
+
+.list {
+	margin:20px;
+	padding:0;
+}
+.list li {
+	list-style-type:disc;
+	margin:5px 0px;
+	padding:0;
+}
+.list li a {
+	font-size: 16px;
+}

@@ -2,7 +2,6 @@
   <div class="box-body" style="border: solid 1px #fff">
     <input type="hidden" name="id_brg" id="id_brg" value="<?php echo $data->id_barang;?>">
     <div class="col-lg-6">
-
       <div class="form-group">
         <label for="sts_aktif" class="col-sm-5 control-label">Status<font size="4" color="red"><B>*</B></font></label>
         <div class="col-sm-7">
@@ -77,6 +76,15 @@
             <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
             <input type="text" class="form-control" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'');" id="diskon_qty_gratis" name="diskon_qty_gratis" placeholder="Input Leadtime Produksi" value="<?php echo set_value('diskon_qty_gratis', isset($data->diskon_qty_gratis) ? $data->diskon_qty_gratis : ''); ?>" required>
+            </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="harga" class="col-sm-5 control-label">Harga<font size="4" color="red"><B>*</B></font></label>
+        <div class="col-sm-7">
+            <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-credit-card"></i></span>
+            <input type="text" class="form-control" onkeyup="this.value=this.value.replace(/[^0-9\.]/g,'');" id="harga" name="harga" placeholder="Harga Produk" value="<?php echo set_value('harga', isset($data->harga) ? $data->harga : ''); ?>" required>
             </div>
         </div>
       </div>

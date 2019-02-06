@@ -8,13 +8,13 @@
  */
 
 class Productcosting extends Admin_Controller {
-    /*
+
     //Permission
-    protected $viewPermission   = "Customer.View";
-    protected $addPermission    = "Customer.Add";
-    protected $managePermission = "Customer.Manage";
-    protected $deletePermission = "Customer.Delete";
-    */
+    protected $viewPermission   = "Productcosting.View";
+    protected $addPermission    = "Productcosting.Add";
+    protected $managePermission = "Productcosting.Manage";
+    protected $deletePermission = "Productcosting.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -31,7 +31,7 @@ class Productcosting extends Admin_Controller {
         $cabang = $this->Productcosting_model->get_cabang()->result();
         $kursyuan = $this->Kurs_model->get_kurs(38)->row();//id di tabel mata_uang
         $kursusd = $this->Kurs_model->get_kurs(6)->row();//CHINA id 38 dan USA id 6
-        
+
         $this->template->set('barang', $barang);
         $this->template->set('cabang', $cabang);
         $this->template->set('yuan', $kursyuan);
@@ -46,7 +46,7 @@ class Productcosting extends Admin_Controller {
         $kursyuan = $this->Kurs_model->get_kurs(38)->row();//id di tabel mata_uang
         $kursusd = $this->Kurs_model->get_kurs(6)->row();//CHINA id 38 dan USA id 6
         $costing = $this->Productcosting_model->cek_data(array('id_barang'=>$this->uri->segment(3)),'product_costing');
-        
+
         $this->template->set('costing', $costing);
         $this->template->set('barang', $barang);
         $this->template->set('cabang', $cabang);
@@ -96,7 +96,7 @@ class Productcosting extends Admin_Controller {
             //'22' => $this->input->post('biayalogm3next'),
             'volume_produk_cbm' => $this->input->post('volumeprodukcbm'),
             'log_cost_pcs' => $this->input->post('biayalogpcs')
-            
+
             );
         if($this->input->post('matauang') == "RMB"){
             $costheader['harga_beli_yuan'] = $this->input->post('hargabelireal');

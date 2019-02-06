@@ -15,12 +15,12 @@ class Reportar extends Admin_Controller {
      *
      */
     //Permission
-    /*
-    protected $viewPermission   = "Reportstok.View";
-    protected $addPermission    = "Reportstok.Add";
-    protected $managePermission = "Reportstok.Manage";
-    protected $deletePermission = "Reportstok.Delete";
-    */
+
+    protected $viewPermission   = "Reportar.View";
+    protected $addPermission    = "Reportar.Add";
+    protected $managePermission = "Reportar.Manage";
+    protected $deletePermission = "Reportar.Delete";
+
     public function __construct()
     {
         parent::__construct();

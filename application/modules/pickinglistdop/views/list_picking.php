@@ -1,8 +1,8 @@
 <?php
-    $ENABLE_ADD     = has_permission('Salesorder.Add');
-    $ENABLE_MANAGE  = has_permission('Salesorder.Manage');
-    $ENABLE_VIEW    = has_permission('Salesorder.View');
-    $ENABLE_DELETE  = has_permission('Salesorder.Delete');
+    $ENABLE_ADD     = has_permission('PickingListdop.Add');
+    $ENABLE_MANAGE  = has_permission('PickingListdop.Manage');
+    $ENABLE_VIEW    = has_permission('PickingListdop.View');
+    $ENABLE_DELETE  = has_permission('PickingListdop.Delete');
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 <div class="box">

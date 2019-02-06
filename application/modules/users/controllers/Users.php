@@ -34,7 +34,8 @@ class Users extends Front_Controller {
             redirect('/');
         }
 
-    	$identitas = $this->identitas_model->find(1);
+    	//$identitas = $this->identitas_model->find(1); => ERROR variable nama_program not define krn ga ada fieldnya di tabel identitas
+        $identitas = $this->identitas_model->find_by(array('ididentitas'=>1));// By Muhaemin => Di Form Login
 
     	if(isset($_POST['login']))
     	{

@@ -111,86 +111,93 @@ date_default_timezone_set("Asia/Bangkok");
             <th width="5%">NO</th>
             <th width="30%">NAMA PRODUK</th>
             <th width="5%">QTY</th>
-            <th width="10%">SATUAN<br>(SET/PCS)</th>
-            <th width="10%">HARGA</th>
-            <th width="1%">DISKON STD(%)</th>
-            <th width="1%">DISKON PROMO(%)</th>
-            <th width="1%">DISKON PROMO(Rp)</th>
-            <th width="10%">JUMLAH</th>
+            <th width="7">SATUAN</th>
+            <th width="10%">HARGA NORMAL</th>
+            <th width="5%">DISKON</th>
+            <th width="10%">HARGA SETELAH DISKON</th>
+            <th width="10%">TOTAL</th>
             <!--<th width="20%">KETERANGAN</th>-->
         </tr>
         <?php
         $n=1;
         foreach(@$detail as $k=>$v){
-            $header_so = $this->Deliveryorder_model->find_data('trans_so_header',$v->no_so,'no_so');
-            $det_so = $this->Deliveryorder_model->find_data('trans_so_detail',$v->no_so,'no_so');
+            $headerso = $this->Deliveryorder_model->cek_data(array('no_so'=>$v->no_so),'trans_so_header');
+            $detailso = $this->Deliveryorder_model->cek_data(array('no_so'=>$v->no_so,'id_barang'=>$v->id_barang),'trans_so_detail');
             $no=$n++;
             $hrg_view = $v->harga_after_diskon_stdr;
             $sub_total_view = $v->subtot_after_diskon;
 
-            if(@$set_custom != ""){
-                if (in_array("diskon_standart", $diskon)) {
-                  if (in_array("diskon_agen", $diskon)) {
-                    if (in_array("diskon_cash", $diskon)) {
-                      $hrg_view = $v->hargajual;
-                      $sub_total_view = $v->subtot_after_diskon;
+            $harga_normal       = $detailso->harga_normal;
 
-                    }else {
-                      $hrg_view = $v->hargajual;
-                      $sub_total_view = ceil($v->subtot_after_diskon*((100 - @$header->diskon_toko_persen)/100));
-
-                    }
-                  }else {
-                    if (in_array("diskon_cash", $diskon)) {
-                      $hrg_view = $v->hargajual;
-                      $sub_total_view = $v->subtot_after_diskon;
-
-                    }else {
-                      $hrg_view = $v->hargajual;
-                      $sub_total_view = ceil($v->subtot_after_diskon*((100 - @$header->diskon_cash_persen)/100));
-
-                    }
-                  }
-                }else {
-                  if (in_array("diskon_agen", $diskon)) {
-                    if (in_array("diskon_cash", $diskon)) {
-                      $hrg_view = $v->harga_after_diskon_stdr;
-                      $sub_total_view = $v->subtot_after_diskon;
-
-                    }else {
-                      $hrg_view = $v->harga_after_diskon_stdr;
-                      $sub_total_view = ceil($v->subtot_after_diskon*((100 - @$header->diskon_cash_persen)/100));
-
-                    }
-                  }else {
-                    if (in_array("diskon_cash", $diskon)) {
-                      $hrg_view = $v->harga_after_diskon_stdr;
-                      $sub_total_view = $v->subtot_after_diskon*((100 - @$header->diskon_toko_persen)/100);
-
-                    }else {
-                      $hrg_view = $v->harga_after_diskon_stdr;
-                      $sub_total_view = $v->subtot_after_diskon;
-
-                    }
-                  }
-                }
+            if ($headerso->ppn > 0) {
+              //$harga  = $detailso->harga_normal/110*100;
+              $ppn    = $harga_normal - $harga;
+              $ppn_all = $ppn*$qty_supply;
+            }else {
+              $harga = $harga_normal;
             }
+            $harga              = $harga_normal;
+            $diskon_std_persen  = $detailso->diskon_persen;
+            $diskon_std_rp      = $diskon_std_persen/100*$harga_normal;
+            $harga_setelah_diskon_std = $harga_normal - $diskon_std_rp;
+
+            $diskon_promo_persen= $detailso->diskon_promo_persen;
+            $diskon_promo_rp    = $detailso->diskon_promo_persen/100*$harga_setelah_diskon_std;
+            $harga_setelah_diskon_promo = $harga_setelah_diskon_std - $diskon_promo_rp;
+
+            $diskon_so = $detailso->diskon_so;
+            $tipe_diskon_so = $detailso->tipe_diskon_so;
+            if ($tipe_diskon_so == "rupiah_tambah") {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo + $diskon_so;
+              $tampil_diskon_so = "+Rp ".number_format($diskon_so);
+            }elseif ($tipe_diskon_so == "rupiah_kurang") {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo - $diskon_so;
+              $tampil_diskon_so = "-Rp ".number_format($diskon_so);
+            }else {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo*(100-$diskon_so)/100;
+              $tampil_diskon_so = $diskon_so." %";
+            }
+            //-------------------------END OF HARGA------------------------//
+            $diskon_toko        = $headerso->persen_diskon_toko;
+            $diskon_toko_rp     = $diskon_toko/100*$harga_setelah_diskon_so;
+            $diskon_toko_rp_all = $diskon_toko_rp*$qty_supply;
+            $harga_setelah_diskon_toko = $harga_setelah_diskon_so - $diskon_toko_rp;
+
+            $diskon_cash        = $headerso->persen_diskon_cash;
+            $diskon_cash_rp     = $diskon_cash/100*$harga_setelah_diskon_toko;
+            $diskon_cash_rp_all = $diskon_cash_rp*$qty_supply;
+            $harga_setelah_diskon_cash = $harga_setelah_diskon_toko - $diskon_cash_rp;
+
+            $hargajualbefdis += $harga*$qty_supply;
+            $hargajualafterdistoko += $harga_setelah_diskon_toko*$qty_supply;
+            $dpp_sebelum += $harga_setelah_diskon_so*$qty_supply;
+
+            $dpp_barang			= $qty_supply * $harga_setelah_diskon_cash;
+            $diskon_barang		= $diskon_so;
+            //$diskon_barang		= $qty_supply * $discount_satuan;
+            $harga_bersih		= $dpp_barang - $diskon_barang;
+            //$grand 				+= $harga_bersih;
+            $grand_diskon_toko +=$diskon_toko_rp_all;
+            $grand_diskon_cash +=$diskon_cash_rp_all;
+            $grand_ppn += $ppn_all;
+            $grand_setelah_toko += $harga_setelah_diskon_toko*$qty_supply;
+            $grand 				+= $dpp_barang;
+            $grand = ceil($grand);
+
         ?>
         <tr class="isi" style="">
             <td style="" width="1%"><center><?php echo $no?></center></td>
             <td style=""><?php echo $v->id_barang.' / '.$v->nm_barang?></td>
             <td style="" width="1%"><center><?php echo $v->qty_supply?></center></td>
             <td style="" width="1%"><center><?php echo $v->satuan?></center></td>
-            <td style="text-align: right;"><?php echo formatnomor(@$det_so->harga_normal)?></td>
-            <?php if ($det_so->diskon_persen != 0) {
-              echo '<td style="text-align: center;">'.@$det_so->diskon_persen.' %</td>';
-            }else {
-              echo '<td style="text-align: center;">0 %</td>';
-            } ?>
+            <td style="text-align: right;"><?php echo formatnomor($harga_normal)?></td>
+            <td style="text-align: center;">
+              <?php echo $diskon_std_persen.'+'.$diskon_promo_persen.'+('.$tampil_diskon_so.')' ?>
+            </td>
 
-            <td style="text-align: center;"><center><?php echo @$det_so->diskon_promo_persen?></center></td>
-            <td style="text-align: center;"><center><?php echo @$det_so->diskon_promo_rp?></center></td>
-            <td style="text-align: right;"><?php echo formatnomor(@$det_so->subtotal)?></td>
+            <td style="text-align: center;"><center><?php echo number_format($harga_setelah_diskon_so)?></center></td>
+            <td style="text-align: center;"><center><?php echo number_format($harga_setelah_diskon_so*$v->qty_supply)?></center></td>
+
         </tr>
       <?php } ?>
     </table>

@@ -10,12 +10,12 @@
 class Reportdo extends Admin_Controller {
 
   //Permission
-  /*
-  protected $viewPermission   = "Deliveryorder.View";
-  protected $addPermission    = "Deliveryorder.Add";
-  protected $managePermission = "Deliveryorder.Manage";
-  protected $deletePermission = "Deliveryorder.Delete";
-  */
+
+  protected $viewPermission   = "Reportdo.View";
+  protected $addPermission    = "Reportdo.Add";
+  protected $managePermission = "Reportdo.Manage";
+  protected $deletePermission = "Reportdo.Delete";
+
   public function __construct()
   {
       parent::__construct();
@@ -40,8 +40,9 @@ class Reportdo extends Admin_Controller {
   public function index()
   {
       //$this->auth->restrict($this->viewPermission);
-
-      $data = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all();
+      $session = $this->session->userdata('app_session');
+      $kdcab = $session['kdcab'];
+      $data = $this->Deliveryorder_model->where(array('LEFT(trans_do_header.no_do,3)'=>$kdcab))->order_by('no_do','DESC')->find_all();
       $this->template->set('results', $data);
       $this->template->title('Delivery Order');
       $this->template->render('list');
@@ -50,8 +51,10 @@ class Reportdo extends Admin_Controller {
   //Create New Delivery Order
   public function filter()
   {
+    $session = $this->session->userdata('app_session');
+      $kdcab = $session['kdcab'];
     $data = $this->Deliveryorder_model
-    ->where("tgl_do between '".$this->uri->segment(3)."' AND '".$this->uri->segment(4)."'")
+    ->where("tgl_do between '".$this->uri->segment(3)."' AND '".$this->uri->segment(4)."' AND LEFT(trans_do_header.no_do,3)='".$kdcab."'")
     ->order_by('no_do','DESC')->find_all();
     $this->template->set('results', $data);
     $this->template->title('Delivery Order');

@@ -29,7 +29,7 @@
               <td><?php echo $vso->nm_salesman?></td>
               <td><?php echo $vso->nm_supir?></td>
               <td><?php echo $vso->id_kendaraan?></td>
-              <td class="text-center">
+              <!--<td class="text-center">
                     <?php
                     if($vso->konfirm_do == "BELUM"){
                     ?>
@@ -44,6 +44,11 @@
                     <button type="button" class="btn btn-sm btn-info" onclick="claim('<?php echo $vso->no_do?>')">
                         <span class="glyphicon glyphicon-edit"></span> CLAIM
                     </button>
+                </td>-->
+                <td>
+                  <button type="button" class="btn btn-sm btn-info" onclick="claim('<?php echo $vso->no_do?>')">
+                      <span class="glyphicon glyphicon-edit"></span> CLAIM
+                  </button>
                 </td>
             </tr>
             <?php } ?>

@@ -21,9 +21,9 @@
                                   <select id="idcustomer_do" name="id_customer" class="form-control input-sm" style="width: 100%;" tabindex="-1" required onchange="getcustomer()">
                                     <option value=""></option>
                                     <?php
-                                    foreach(@$customer as $kc=>$vc){
+                                    foreach($customer as $kc=>$vc){
                                     ?>
-                                      <option value="<?php echo $vc->id_customer; ?>" <?php if(isset($data_cust->id_customer) ){echo "selected";} ?>>
+                                      <option value="<?php echo $vc->id_customer; ?>" <?php if($data_cust->id_customer == $vc->id_customer ){echo "selected";} ?>>
                                           <?php echo $vc->id_customer.' , '.$vc->nm_customer ?>
                                       </option>
                                     <?php } ?>
@@ -219,11 +219,24 @@
               $diskon_promo_persen= $detailso->diskon_promo_persen;
               $diskon_promo_rp    = $detailso->diskon_promo_persen/100*$harga_setelah_diskon_std;
               $harga_setelah_diskon_promo = $harga_setelah_diskon_std - $diskon_promo_rp;
+
+              $diskon_so = $detailso->diskon_so;
+              $tipe_diskon_so = $detailso->tipe_diskon_so;
+              if ($tipe_diskon_so == "rupiah_tambah") {
+                $harga_setelah_diskon_so = $harga_setelah_diskon_promo + $diskon_so;
+                $tampil_diskon_so = "+Rp ".number_format($diskon_so);
+              }elseif ($tipe_diskon_so == "rupiah_kurang") {
+                $harga_setelah_diskon_so = $harga_setelah_diskon_promo - $diskon_so;
+                $tampil_diskon_so = "-Rp ".number_format($diskon_so);
+              }else {
+                $harga_setelah_diskon_so = $harga_setelah_diskon_promo*(100-$diskon_so)/100;
+                $tampil_diskon_so = $diskon_so." %";
+              }
               //-------------------------END OF HARGA------------------------//
               $diskon_toko        = $headerso->persen_diskon_toko;
-              $diskon_toko_rp     = $diskon_toko/100*$harga_setelah_diskon_promo;
+              $diskon_toko_rp     = $diskon_toko/100*$harga_setelah_diskon_so;
               $diskon_toko_rp_all = $diskon_toko_rp*$qty_supply;
-              $harga_setelah_diskon_toko = $harga_setelah_diskon_promo - $diskon_toko_rp;
+              $harga_setelah_diskon_toko = $harga_setelah_diskon_so - $diskon_toko_rp;
 
               $diskon_cash        = $headerso->persen_diskon_cash;
               $diskon_cash_rp     = $diskon_cash/100*$harga_setelah_diskon_toko;
@@ -232,7 +245,7 @@
 
               $hargajualbefdis += $harga*$qty_supply;
               $hargajualafterdistoko += $harga_setelah_diskon_toko*$qty_supply;
-              $dpp_sebelum += $harga_setelah_diskon_promo*$qty_supply;
+              $dpp_sebelum += $harga_setelah_diskon_so*$qty_supply;
 
 							$dpp_barang			= $qty_supply * $harga_setelah_diskon_cash;
 							$diskon_barang		= $diskon_so;
@@ -263,23 +276,28 @@
 								echo"<td class='text-center'>".$values[satuan]."</td>";
 								echo"<td class='text-center'>".$qty_supply."</td>";
                 echo"<td class='text-center'>".number_format($harga_normal)."</td>";
-                echo"<td class='text-center'>".number_format($diskon_std_persen)."%</td>";
-								echo"<td class='text-center'>".number_format($harga_setelah_diskon_std)."</td>";
-								echo"<td class='text-center'>".number_format($harga_setelah_diskon_std*$qty_supply)."</td>";
+                echo"<td class='text-center'>
+                  ".number_format($diskon_std_persen)."% ,
+                  ".$tampil_diskon_so."
+                </td>";
+								echo"<td class='text-center'>".number_format($harga_setelah_diskon_so)."</td>";
+								echo"<td class='text-center'>".number_format($harga_setelah_diskon_so*$qty_supply)."</td>";
                 ?>
                   <input type="hidden" name="id[]" value="<?php echo $n?>">
                   <input type="hidden" name="id_barang[]" value="<?php echo $values['id_barang']?>">
                   <input type="hidden" name="nm_barang[]" value="<?php echo $values['nm_barang']?>">
                   <input type="hidden" name="jumlah[]" value="<?php echo $qty_supply?>">
-                  <input type="hidden" name="hargajual[]" value="<?php echo $harga?>">
+                  <input type="hidden" name="hargajual[]" value="<?php echo $harga_normal?>">
                   <input type="hidden" name="persen_diskon_stdr[]" value="<?php echo $diskon_std_persen?>">
                   <input type="hidden" name="harga_after_diskon_stdr[]" value="<?php echo $harga_setelah_diskon_std?>">
                   <input type="hidden" name="diskon_promo_persen[]" value="<?php echo $diskon_promo_persen?>">
                   <input type="hidden" name="diskon_promo_persen_rpnya[]" value="<?php echo $diskon_promo_rp?>">
+                  <input type="hidden" name="tipe_diskon_so[]" value="<?php echo $tipe_diskon_so?>">
+                  <input type="hidden" name="diskon_so[]" value="<?php echo $diskon_so?>">
                   <input type="hidden" name="harga_nett_dari_so[]" value="<?php echo $values['subtotal']?>">
-                  <input type="hidden" name="harga_nett[]" value="<?php echo $dpp_sebelum?>">
+                  <input type="hidden" name="harga_nett[]" value="<?php echo $harga_setelah_diskon_so?>">
                   <input type="hidden" name="subtot_bef_diskon[]" value="<?php echo $harga*$qty_supply?>">
-                  <input type="hidden" name="subtot_after_diskon[]" value="<?php echo $harga_setelah_diskon_promo*$qty_supply?>">
+                  <input type="hidden" name="subtot_after_diskon[]" value="<?php echo $harga_setelah_diskon_so*$qty_supply?>">
                   <input type="hidden" name="ppn[]" value="<?php echo $headerso->ppn?>">
                   <input type="hidden" name="tgljual[]" value="<?php echo $headerso->tanggal?>">
                   <input type="hidden" name="no_do[]" value="<?php echo $values['no_do']?>">
@@ -308,7 +326,7 @@
             <input type="hidden" name="hargajualafterdiscash" value="<?php echo ceil($grand)?>">
             <input type="hidden" name="diskon_stdr_rp" value="<?php echo ceil($diskon_std_rp*$qty_supply)?>">
             <input type="hidden" name="dpp" value="<?php echo ceil($dpp)?>">
-            <input type="hidden" name="n_ppn" id="n_ppn" value="<?php echo ceil($pn)?>">
+            <input type="hidden" name="n_ppn" id="n_ppn" value="<?php echo (Int)$pn?>">
             <input type="hidden" name="hargajualtotal" id="n_grand" value="<?php echo ceil($grand)?>">
 
             <tfoot>
@@ -373,7 +391,7 @@
             placeholder: "Pilih",
             allowClear: true
         });
-        if ($("#n_ppn").val() == 0) {
+        if ($("#n_ppn_old").val() == 0) {
           var x = <?php echo $grand;?>;
           var string_harga = x.toString();
           var cek = parseInt(string_harga.substr(-3));

@@ -1,10 +1,10 @@
 <?php
-    $ENABLE_ADD     = has_permission('Receiving.Add');
-    $ENABLE_MANAGE  = has_permission('Receiving.Manage');
-    $ENABLE_VIEW    = has_permission('Receiving.View');
-    $ENABLE_DELETE  = has_permission('Receiving.Delete');
+    $ENABLE_ADD = has_permission('Receiving.Add');
+    $ENABLE_MANAGE = has_permission('Receiving.Manage');
+    $ENABLE_VIEW = has_permission('Receiving.View');
+    $ENABLE_DELETE = has_permission('Receiving.Delete');
 ?>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 <div class="box">
 	 <div class="box-header">
         <?php if ($ENABLE_ADD) : ?>
@@ -12,52 +12,44 @@
         <?php endif; ?>
 
         <span class="pull-right">
-                <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+                <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"');?>
         </span>
     </div>
     <div class="box-body">
         <table id="example1" class="table table-bordered table-striped">
         <thead>
 	        <tr>
-	            <th width="2%">#</th>
+	          <th width="2%">#</th>
               <th width="15%">NO. Receiving</th>
-              <th>Nama Supplier</th>
+              <th>Supplier</th>
               <th>Tanggal</th>
               <th width="7%">Aksi</th>
 	        </tr>
         </thead>
         <tbody>
         <?php
-        if(@$results){
-          $n=1;
-        foreach(@$results as $kr=>$vr){
-          $no=$n++;
-        ?>
+        if (@$results) {
+            $n = 1;
+            foreach (@$results as $kr => $vr) {
+                $no = $n++; ?>
         <tr>
-          <td width="1%"><center><?php echo $no?></center></td>
-          <td width="10%"><center><?php echo $vr->no_receiving?></center></td>
-          <td><?php echo $vr->id_supplier.' / '.$vr->nm_supplier?></td>
-          <td><center><?php echo date('d/m/Y',strtotime($vr->tglreceive))?></center></td>
+          <td width="1%"><center><?php echo $no; ?></center></td>
+          <td width="10%"><center><?php echo $vr->no_receiving; ?></center></td>
+          <td><?php echo $vr->id_supplier; ?></td>
+          <td><center><?php echo date('d/m/Y', strtotime($vr->tglreceive)); ?></center></td>
           <td>
             <center>
-               <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vr->no_receiving?>')">
+               <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vr->po_no; ?>')">
                     <span class="glyphicon glyphicon-print"></span>
                     </a>
             </center>
           </td>
         </tr>
-        <?php } ?>
-        <?php } ?>
+        <?php
+            } ?>
+        <?php
+        } ?>
         </tbody>
-        <tfoot>
-          <tr>
-              <th width="2%">#</th>
-              <th width="15%">NO. Receiving</th>
-              <th>Nama Supplier</th>
-              <th>Tanggal</th>
-              <th>Aksi</th>
-          </tr>
-        </tfoot>
         </table>
     </div>
 </div>
@@ -81,8 +73,8 @@
 </div>
 
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">
@@ -92,10 +84,9 @@
     function add_data(){
         window.location.href = siteurl+"receiving/create";
     }
-    function PreviewPdfs(norec)
+    function PreviewPdf(norec)
     {
       tujuan = 'receiving/print_request/'+norec;
-
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }
     

@@ -1,10 +1,55 @@
 <?php
-date_default_timezone_set("Asia/Bangkok");
+date_default_timezone_set('Asia/Bangkok');
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title></title>
+    <style>
+            table.dataGrid
+            {
+               border-collapse:collapse;
+               border:1px solid black;
+               width:100%;
+               font-size: 11px;
+            }
+            table.dataGrid td
+            {
+               border:1px solid black;
+               padding:3px 3px 3px 3px;
+            }
+            
+            table.dataGrid td.tot
+            {
+              border:1px solid black;
+              padding:3px 3px 3px 3px;
+              background:lightgrey;
+            }
+            
+            table.dataGrid tr.ganjil:hover,
+            table.dataGrid tr.genap:hover
+            {
+              background:lightblue;
+            }
+            table.dataGrid tr.genap
+            {
+            background:dimegray;
+            }
+            table.dataGrid tr.ganjil
+            {
+            background:lightgrey;
+            }
+            
+            table.dataGrid th
+            {
+                text-align:center;
+             border:1px solid black;
+            
+             color:black;
+            }
+
+
+</style>
     <style>
 
         {
@@ -85,41 +130,53 @@ date_default_timezone_set("Asia/Bangkok");
     </style>
 </head>
 <body>
+    <?php
+    $query = $this->db->query("SELECT * FROM `supplier` WHERE id_supplier='$pr_data->id_supplier'");
+    $row = $query->row();
+    if ($tipe == '1') {
+        $sup = get_supplier($pr_data->id_supplier);
+    } else {
+        $sup = $pr_data->nm_supplier;
+    }
+    ?>
 <div id="wrapper">
     <table width="100%" border="0" id="header-tabel">
         <tr>
             <th colspan="3" width="20%" style="text-align: left;">PT IMPORTA JAYA ABADI<br>YOGYAKARTA</th>
-            <th style="border-right: none;">PURCHASE ORDER (PR)<br><?php echo 'NO. : '.@$pr_data->no_pr?></th>
+            <th style="border-right: none;">PURCHASE ORDER (PR)<br><?php echo 'NO. : '.@$pr_data->no_pr; ?></th>
             <th colspan="3" style="border-left: none;"></th>
         </tr>
          <tr>
             <td width="10%">NO.REFF</td>
             <td width="1%">:</td>
             <td colspan="2"></td>
-            <td width="15%">PLAN DELIVERY</td>
+            <td width="15%">Masa Produksi</td>
             <td width="1%">:</td>
-            <td><?php echo date('d-M-Y',strtotime(@$pr_data->plan_delivery_date))?></td>
+            <td><?= $row->produksi_awal.' - '.$row->produksi_akhir.' hari'; ?></td>
         </tr>
         <tr>
             <td width="10%">SUPPLIER</td>
             <td width="1%">:</td>
-            <td colspan="2"><?php echo @$pr_data->id_supplier.' / '.@$pr_data->nm_supplier?></td>
-            <td width="15%">REAL DELIVERY</td>
+            <td colspan="2"><?php echo @$pr_data->id_supplier.' / '.@$sup; ?></td>
+            <td width="15%">Masa Pengapalan Container</td>
             <td width="1%">:</td>
-            <td><?php echo date('d-M-Y',strtotime(@$pr_data->real_delivery_date))?></td>
+            <td><?= $row->pengapalan_awal.' - '.$row->pengapalan_akhir.' hari'; ?></td>
         </tr>
         <tr>
             <td width="10%">TGL PR</td>
             <td width="1%">:</td>
-            <td colspan="2"><?php echo date('d-M-Y',strtotime(@$pr_data->tgl_pr))?></td>
-            <td width="15%"></td>
-            <td width="1%"></td>
-            <td></td>
+            <td colspan="2"><?php echo date('d-M-Y', strtotime(@$pr_data->tgl_pr)); ?></td>
+            <td width="15%">Masa Pengiriman</td>
+            <td width="1%">:</td>
+            <td><?= $row->pengiriman_awal.' - '.$row->pengiriman_akhir.' hari'; ?></td>
         </tr>
         <tr>
            <td width="10%">CABANG</td>
            <td width="1%">:</td>
-           <td colspan="2"><?php echo @$pr_data->kdcab.' / '.@$pr_data->namacabang?></td>
+           <td colspan="2"><?php echo @$pr_data->kdcab.' / '.@$pr_data->namacabang; ?></td>
+           <td width="15%">Masa Proses Cukai</td>
+           <td width="1%">:</td>
+           <td><?= $row->cukai_awal.' - '.$row->cukai_akhir.' hari'; ?></td>
        </tr>
     </table>
 
@@ -152,81 +209,100 @@ date_default_timezone_set("Asia/Bangkok");
             <th width="%">G.W. TOTAL(KGS)</th>
         </tr>
         <?php
-        $n=1;
+        $n = 1;
         $total = 0;
-        foreach(@$detail as $ks=>$vs){
-        $no = $n++;
-        $total += $vs->sub_total_pr;
-        $colly = $this->Purchaserequest_model->get_data(array('id_barang' => $vs->id_barang),'barang_koli');
-        ?>
+        foreach (@$detail as $ks => $vs) {
+            $no = $n++;
+            $total += $vs->sub_total_pr;
+            $colly = $this->Purchaserequest_model->get_data(array('id_barang' => $vs->id_barang), 'barang_koli'); ?>
         <tr>
-            <td style="vertical-align: top;"><center><?php echo $no.'.'?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->id_barang ?></center></td>
-            <td style="vertical-align: top;"><?php echo $vs->nm_barang?></td>
+            <td style="vertical-align: top;"><center><?php echo $no.'.'; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->id_barang; ?></center></td>
+            <td style="vertical-align: top;"><?php echo $vs->nm_barang; ?></td>
             <!--td>
                  <?php
                 $sn = 1;
-                foreach($colly as $kc=>$vc){
-                    echo $no.'.'.$sn++.' -'.$vc->nm_koli.'<br>';
-                }
-                ?>
+            foreach ($colly as $kc => $vc) {
+                echo $no.'.'.$sn++.' -'.$vc->nm_koli.'<br>';
+            } ?>
             </td>
             <td style="vertical-align: top;">
                 <center>
                 <?php
                 $sn = 1;
-                foreach($colly as $kc=>$vc){
-                    echo $vc->qty.'<br>';
-                }
-                ?>
+            foreach ($colly as $kc => $vc) {
+                echo $vc->qty.'<br>';
+            } ?>
                 </center>
             </td>
             <td style="vertical-align: top;">
                 <center>
                 <?php
                 $tc = 0;
-                foreach($colly as $kc){
-                    $tc = count($colly);
-                    echo $tc.'<br>';
-                }
-                ?>
+            foreach ($colly as $kc) {
+                $tc = count($colly);
+                echo $tc.'<br>';
+            } ?>
                 </center>
             </td-->
-            <td style="vertical-align: top;"><center><?php echo $vs->varian?></center></td>
-            <td style="vertical-align: top;"><center><?php echo "0"?></center></td>
-            <td style="vertical-align: top;"><center><?php echo "0"?></center></td>
-            <td style="vertical-align: top;"><center><?php echo "0"?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->qty_pr?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->qty_pr?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->cbm_each?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->cbm_each*$vs->qty_pr?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->gross_weight?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->gross_weight*$vs->qty_pr?></center></td>
-            <!--td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga_satuan)?></td>
-            <td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->sub_total_pr)?></td-->
+            <td style="vertical-align: top;"><center><?php echo $vs->varian; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->qty_pr; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->qty_pr; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->cbm_each; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->cbm_each * $vs->qty_pr; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->gross_weight; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $vs->gross_weight * $vs->qty_pr; ?></center></td>
+            <!--td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga_satuan); ?></td>
+            <td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->sub_total_pr); ?></td-->
 
         </tr>
-        <?php } ?>
+        <?php
+        } ?>
     </table>
+    
+    <br />
+    <br />
+    <br />
+    <br />
+    <div style="width: 30%; float: right">
+        <table width="100%" class="dataGrid">
+            <tr>
+                <td style="text-align: center">
+                    Tanggal Approval
+                </td>
+                <td style="width: 70%; text-align: center">
+                   
+                </td>
+            </tr>
+            <tr>
+                <td rowspan="2" style="text-align: center">
+                    Approval
+                </td>
+                <td>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center">Nizar Bawazier</td>
+            </tr>
+        </table>
+    </div>
 </div>
-<?php $tglprint = date("d-m-Y H:i:s");?>
+
+<?php $tglprint = date('d-m-Y H:i:s'); ?>
 <htmlpagefooter name="footer">
-    <hr>
-    <table width="100%" border="0">
-        <tr>
-            <td colspan="3">
-                <i><?php echo "TERBILANG : ".ucwords(ynz_terbilang_format($total))?></i>
-            </td>
-            <td width="15%"><b>GRAND TOTAL</b></td>
-            <td width="1%">:</td>
-            <td width="15%" style="text-align: right;"><b><?php echo formatnomor($total)?></b></td>
-            <td width="10%"></td>
-        </tr>
-    </table>
+    
     <hr/>
     <div id="footer">
     <table>
-        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
+        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap).' On '.$tglprint; ?></td></tr>
     </table>
     </div>
 </htmlpagefooter>

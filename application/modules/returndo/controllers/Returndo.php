@@ -10,12 +10,12 @@
 class Returndo extends Admin_Controller {
 
     //Permission
-    /*
-    protected $viewPermission   = "Deliveryorder.View";
-    protected $addPermission    = "Deliveryorder.Add";
-    protected $managePermission = "Deliveryorder.Manage";
-    protected $deletePermission = "Deliveryorder.Delete";
-    */
+
+    protected $viewPermission   = "Returndo.View";
+    protected $addPermission    = "Returndo.Add";
+    protected $managePermission = "Returndo.Manage";
+    protected $deletePermission = "Returndo.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -38,7 +38,7 @@ class Returndo extends Admin_Controller {
     public function index(){
         //$this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Deliveryorder_model->order_by('no_do','ASC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab']));
+        $data = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status !=' =>'CCL'));
         $tipe = $this->Deliveryorder_model->group_by('konfirm_do')->find_all();
 
         $this->template->set('results', $data);

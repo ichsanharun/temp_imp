@@ -37,23 +37,28 @@ class Reportso extends Admin_Controller {
     public function index()
     {
         $this->auth->restrict($this->viewPermission);
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
         $type = array(
           ['kdtype' => 'OPEN', 'nmtype' => 'OPEN'],
           ['kdtype' => 'CANCEL', 'nmtype' => 'CANCEL'],
-          ['kdtype' => 'CLOSE', 'nmtype' => 'CLOSE']
+          ['kdtype' => 'CLOSE', 'nmtype' => 'CLOSE'],
+          ['kdtype' => 'ALL', 'nmtype' => 'ALL']
                     );
 
-        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all();
+        //$data = $this->Salesorder_model->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab,'total !='=>0))->order_by('no_so','DESC')->find_all();
         if($this->uri->segment(3) == ""){
 
-            $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all();
+            $data = $this->Salesorder_model->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))->order_by('no_so','DESC')->find_all();
             $detail = $this->Salesorder_model
             ->join("trans_so_detail","trans_so_detail.no_so = trans_so_header.no_so","left")
+            ->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))
             ->order_by('trans_so_header.no_so','ASC')->find_all();
         }else{
-            $data = $this->Salesorder_model->get_data("stsorder ='".$this->uri->segment(3)."' ","trans_so_header");
+            $data = $this->Salesorder_model->get_data("stsorders ='".$this->uri->segment(3)."' AND LEFT(trans_so_header.no_so,3)='".$kdcab."' ","trans_so_header");
             $detail = $this->Salesorder_model
             ->join("trans_so_detail","trans_so_detail.no_so = trans_so_header.no_so","left")
+            ->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))
             ->order_by('trans_so_header.no_so','ASC')->get_data("stsorder ='".$this->uri->segment(3)."' ","trans_so_header");
         }
         $this->template->set('results', $data);
@@ -66,25 +71,38 @@ class Reportso extends Admin_Controller {
     public function filter()
     {
         //$this->auth->restrict($this->viewPermission);
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
         $type = array(
                       ['kdtype' => 'OPEN', 'nmtype' => 'OPEN'],
                       ['kdtype' => 'CANCEL', 'nmtype' => 'CANCEL'],
-                      ['kdtype' => 'CLOSE', 'nmtype' => 'CLOSE']
+                      ['kdtype' => 'CLOSE', 'nmtype' => 'CLOSE'],
+                      ['kdtype' => 'ALL', 'nmtype' => 'ALL']
                     );
 
-        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all();
+        //$data = $this->Salesorder_model->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))->order_by('no_so','DESC')->find_all();
         if($this->uri->segment(3) == ""){
 
-            $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all();
+            $data = $this->Salesorder_model->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab,'total !='=>0))->order_by('no_so','DESC')->find_all();
             $detail = $this->Salesorder_model
             ->join("trans_so_detail","trans_so_detail.no_so = trans_so_header.no_so","left")
+            ->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))
             ->order_by('trans_so_header.no_so','ASC')->find_all();
             //$data = $this->Purchaserequest_model->order_by('no_pr','ASC')->find_all_by(array('proses_po'=>0));
         }else{
-            $data = $this->Salesorder_model->get_data("stsorder ='".$this->uri->segment(3)."' ","trans_so_header");
+          if ($this->uri->segment(3) == "ALL") {
+            $data = $this->Salesorder_model->find_all_by(array('LEFT(trans_so_header.no_so,3)'=>$kdcab));
             $detail = $this->Salesorder_model
             ->join("trans_so_detail","trans_so_detail.no_so = trans_so_header.no_so","left")
+            ->order_by('trans_so_header.no_so','ASC')
+            ->find_all_by(array('LEFT(trans_so_header.no_so,3)'=>$kdcab));
+          }else {
+            $data = $this->Salesorder_model->get_data("stsorder ='".$this->uri->segment(3)."' AND LEFT(trans_so_header.no_so,3)='".$kdcab."'  AND total != 0 ","trans_so_header");
+            $detail = $this->Salesorder_model
+            ->join("trans_so_detail","trans_so_detail.no_so = trans_so_header.no_so","left")
+            ->where(array('LEFT(trans_so_header.no_so,3)'=>$kdcab))
             ->order_by('trans_so_header.no_so','ASC')->get_data("stsorder ='".$this->uri->segment(3)."' ","trans_so_header");
+          }
         }
         $this->template->set('results', $data);
         $this->template->set('type', $type);
@@ -115,12 +133,17 @@ class Reportso extends Admin_Controller {
 
     function downloadExcel()
     {
-      $data_so = $this->Salesorder_model
-      ->where(array(
+      if ($this->uri->segment(4) == "All") {
+        $data_so = $this->Salesorder_model->find_all();
+      }else {
+
+        $data_so = $this->Salesorder_model
+        ->where(array(
           'stsorder' => $this->uri->segment(3)
-          ))
-      ->get_data("tanggal like '%".$this->uri->segment(4)."%'","trans_so_header");
-      if ($this->uri->segment(3) == "CLS") {
+        ))
+        ->get_data("tanggal like '%".$this->uri->segment(4)."%'","trans_so_header");
+      }
+      if ($this->uri->segment(3) == "CLOSE") {
         $sts = " CLOSE PERIODE ".date("M Y", strtotime($this->uri->segment(4)));
       }
       else {
@@ -158,14 +181,14 @@ class Reportso extends Admin_Controller {
 
         $header = array(
             'alignment' => array(
-            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
-            'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
-            ),
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+              ),
             'font' => array(
-            'bold' => true,
-            'color' => array('rgb' => '25500'),
-            'name' => 'Verdana'
-            )
+              'bold' => true,
+              'color' => array('rgb' => '25500'),
+              'name' => 'Verdana'
+              )
         );
         $det = array(
             'alignment' => array(
@@ -231,13 +254,11 @@ class Reportso extends Admin_Controller {
 
             $counter = $counter+1;
 
-            $data_so_detail = $this->Detailsalesorder_model
-                              ->where(array(
-                                  'no_so' => $row->no_so
-                                  ))
-                              ->find_all();
+            $data_so_detail = $this->Salesorder_model
+            ->get_data("no_so = '".$row->no_so."'","trans_so_detail");
+            //$this->Detailsalesorder_model->find_all_by(array('no_so' => $row->no_so));
 
-            foreach ($data_so_detail as $row_detail):
+            foreach (@$data_so_detail as $row_detail){
               $ex->setCellValue('B'.$counter, $row_detail->nm_barang);
               $ex->setCellValue('C'.$counter, $row_detail->satuan);
               $ex->setCellValue('D'.$counter, $row_detail->qty_order);
@@ -246,7 +267,7 @@ class Reportso extends Admin_Controller {
               $ex->setCellValue('G'.$counter, $row_detail->qty_cancel);
               $ex->setCellValue('H'.$counter, $row_detail->qty_supply);
               $counter = $counter+1;
-            endforeach;
+            }
         endforeach;
 
         $objPHPExcel->getActiveSheet()->getStyle('A1:H'.$counter)->applyFromArray(
@@ -276,6 +297,213 @@ class Reportso extends Admin_Controller {
         header('Content-Disposition: attachment;filename="ExportReportSO'. date('Ymd') .'.xls"');
 
         $objWriter->save('php://output');
+
+    }
+
+    function downloadExcel_new()
+    {
+      $session = $this->session->userdata('app_session');
+      if ($this->uri->segment(4) == "All") {
+        $data_so = $this->Salesorder_model
+        ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
+        ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+        ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
+        ->find_all_by(array('LEFT(trans_so_header.no_so,3)'=>$session['kdcab']));
+      }else {
+
+        $data_so = $this->Salesorder_model
+        ->where(array(
+          'trans_so_header.stsorder' => $this->uri->segment(3)
+        ))
+        ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
+        ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+        ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
+        ->get_data("LEFT(trans_so_header.no_so,3) = '".$session['kdcab']."' AND trans_so_header.tanggal like '%".$this->uri->segment(4)."%'","trans_so_header");
+      }
+      if ($this->uri->segment(3) == "CLOSE") {
+        $sts = " CLOSE PERIODE ".date("M Y", strtotime($this->uri->segment(4)));
+      }
+      else {
+        $sts = " OPEN PERIODE ".date("M Y", strtotime($this->uri->segment(4)));
+      }
+
+        $objPHPExcel    = new PHPExcel();
+        $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(5);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('B')->setWidth(27);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('C')->setWidth(28);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('D')->setWidth(12);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('E')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('F')->setWidth(13);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('G')->setWidth(13);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('H')->setWidth(11);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('I')->setWidth(20);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('J')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('K')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('L')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('M')->setWidth(25);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('N')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('O')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('P')->setWidth(17);
+        $objPHPExcel->getActiveSheet()->getColumnDimension('Q')->setWidth(17);
+       /* $objPHPExcel->getActiveSheet()->getColumnDimension('R')->setWidth(17);
+       */
+        $objPHPExcel->getActiveSheet()->getStyle(1)->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle(2)->getFont()->setBold(true);
+        $objPHPExcel->getActiveSheet()->getStyle(3)->getFont()->setBold(true);
+
+        $header = array(
+            'alignment' => array(
+              'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+              'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+              ),
+            'font' => array(
+              'bold' => true,
+              'color' => array('rgb' => '25500'),
+              'name' => 'Verdana'
+              )
+        );
+        $det = array(
+            'alignment' => array(
+            'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+            'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ),
+            'font' => array(
+            'bold' => true
+            )
+        );
+        $objPHPExcel->getActiveSheet()->getStyle("A1:Q2")
+                    ->applyFromArray($header)
+                    ->getFont()->setSize(14);
+        $objPHPExcel->getActiveSheet()->mergeCells('A1:Q2');
+        $objPHPExcel->setActiveSheetIndex(0)
+            ->setCellValue('A1', 'REPORT DATA SALES ORDER STATUS'.$sts);
+
+
+        //$objPHPExcel->getActiveSheet()->mergeCells('H4:I4');
+        $ex = $objPHPExcel->setActiveSheetIndex(0);
+        $no = 1;
+        $counter = 3;
+        $objPHPExcel->getActiveSheet()->getStyle($counter)->getFont()->setBold(true);
+        $objPHPExcel->setActiveSheetIndex(0)
+        ->setCellValue('A'.$counter, 'No.')
+        ->setCellValue('B'.$counter, 'NO. SO')
+        ->setCellValue('C'.$counter, 'NAMA CUSTOMER')
+        ->setCellValue('D'.$counter, 'TANGGAL SO')
+        ->setCellValue('E'.$counter, 'NAMA SALESMAN')
+        ->setCellValue('F'.$counter, 'DPP')
+        ->setCellValue('G'.$counter, 'PPN')
+        ->setCellValue('H'.$counter, 'TOTAL')
+        ->setCellValue('I'.$counter, 'NAMA PRODUK')
+        ->setCellValue('J'.$counter, 'JENIS PRODUK')
+        ->setCellValue('K'.$counter, 'GRUP PRODUK')
+        ->setCellValue('L'.$counter, 'SATUAN PRODUK')
+        ->setCellValue('M'.$counter, 'QTY ORDER')
+        ->setCellValue('N'.$counter, 'QTY BOOKED')
+        ->setCellValue('O'.$counter, 'QTY PENDING')
+        ->setCellValue('P'.$counter, 'QTY CANCEL')
+        ->setCellValue('Q'.$counter, 'QTY SUPPLY');
+        $counter = $counter+1;
+        $nos = '';
+        foreach ($data_so as $row):
+          if ($nos != $row->no_so) {
+            $ex->setCellValue('A'.$counter, $no++);
+            $ex->setCellValue('B'.$counter, $row->no_so);
+            $ex->setCellValue('C'.$counter, $row->nm_customer);
+            $ex->setCellValue('D'.$counter, PHPExcel_Shared_Date::PHPToExcel($row->tanggal));
+            $ex->setCellValue('E'.$counter, $row->nm_salesman);
+            $ex->setCellValue('F'.$counter, $row->dpp);
+            $ex->setCellValue('G'.$counter, $row->ppn);
+            $ex->setCellValue('H'.$counter, $row->total);
+          }else {
+            $ex->setCellValue('A'.$counter, $no++);
+            $ex->setCellValue('B'.$counter, '');
+            $ex->setCellValue('C'.$counter, '');
+            $ex->setCellValue('D'.$counter, '');
+            $ex->setCellValue('E'.$counter, '');
+            $ex->setCellValue('F'.$counter, '');
+            $ex->setCellValue('G'.$counter, '');
+            $ex->setCellValue('H'.$counter, '');
+          }
+
+            $ex->setCellValue('I'.$counter, $row->nm_barang);
+            $ex->setCellValue('J'.$counter, $row->nm_jenis);
+            $ex->setCellValue('K'.$counter, $row->nm_group);
+            $ex->setCellValue('L'.$counter, $row->satuan);
+            $ex->setCellValue('M'.$counter, $row->qty_order);
+            $ex->setCellValue('N'.$counter, $row->qty_booked);
+            $ex->setCellValue('O'.$counter, $row->qty_pending);
+            $ex->setCellValue('P'.$counter, $row->qty_cancel);
+            $ex->setCellValue('Q'.$counter, $row->qty_supply);
+            $nos = $row->no_so;
+
+            $counter++;
+        endforeach;
+
+        $objPHPExcel->getActiveSheet()->getStyle('A1:Q'.$counter)->applyFromArray(
+      	 array(
+      	     'borders' => array(
+      	          'allborders' => array(
+      	             'style' => PHPExcel_Style_Border::BORDER_THIN
+      	             )
+      	        )
+      	 )
+      	);
+        $objPHPExcel->getProperties()->setCreator("Mohammad Ichsan")
+            ->setLastModifiedBy("Mohammad Ichsan")
+            ->setTitle("Export Report Data Sales Order")
+            ->setSubject("Export Report Data Sales Order")
+            ->setDescription("Report Data Sales Order for Office 2007 XLSX, generated by PHPExcel.")
+            ->setKeywords("office 2007 openxml php")
+            ->setCategory("PHPExcel");
+        $objPHPExcel->getActiveSheet()->setTitle('Report Data Sales Order');
+        ob_end_clean();
+        $objWriter  = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+        header('Last-Modified:'. gmdate("D, d M Y H:i:s").'GMT');
+        header('Chace-Control: no-store, no-cache, must-revalation');
+        header('Chace-Control: post-check=0, pre-check=0', FALSE);
+        header('Pragma: no-cache');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="ExportReportSO'. date('Ymd') .'.xls"');
+
+        $objWriter->save('php://output');
+
+    }
+
+    function downloadExcel_old()
+    {
+      $session = $this->session->userdata('app_session');
+      if ($this->uri->segment(4) == "All") {
+        $data_so = $this->Salesorder_model
+        ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
+        ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+        ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
+        ->find_all_by(array('LEFT(trans_so_header.no_so,3)'=>$session['kdcab']));
+      }else {
+
+        $data_so = $this->Salesorder_model
+        ->where(array(
+          'trans_so_header.stsorder' => $this->uri->segment(3)
+        ))
+        ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
+        ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+        ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
+        ->get_data("LEFT(trans_so_header.no_so,3) = '".$session['kdcab']."' AND trans_so_header.tanggal like '%".$this->uri->segment(4)."%'","trans_so_header");
+      }
+      if ($this->uri->segment(3) == "CLOSE") {
+        $sts = " CLOSE PERIODE ".date("M Y", strtotime($this->uri->segment(4)));
+      }
+      else {
+        $sts = " OPEN PERIODE ".date("M Y", strtotime($this->uri->segment(4)));
+      }
+      $data = array(
+  			'title2'		=> 'Report',
+  			'results'	=> $data_so
+  		);
+      /*$this->template->set('results', $data_so);
+      $this->template->set('head', $sts);
+      $this->template->title('Report SO');*/
+      $this->load->view('view_report',$data);
+
 
     }
 

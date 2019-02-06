@@ -15,8 +15,8 @@ class Reportpiutang extends Admin_Controller {
      *
      */
     //Permission
+    protected $viewPermission   = "Reportpiutang.View";
     /*
-    protected $viewPermission   = "Reportstok.View";
     protected $addPermission    = "Reportstok.Add";
     protected $managePermission = "Reportstok.Manage";
     protected $deletePermission = "Reportstok.Delete";
@@ -54,7 +54,7 @@ class Reportpiutang extends Admin_Controller {
         */
         $session = $this->session->userdata('app_session');
         $kdcab = $session['kdcab'];
-        $data = $this->Invoice_model->where(array('piutang >'=>0))->order_by('no_invoice','DESC')->find_all();
+        $data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0));
         $marketing = $this->Salesorder_model->pilih_marketing($kdcab)->result();

@@ -16,7 +16,7 @@ thead input {
 		<?php if ($ENABLE_ADD) : ?>
 			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
 
-      <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_coba()"><i class="fa fa-plus">&nbsp;</i>New Coba</a>
+      <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_coba()"><i class="fa fa-plus">&nbsp;</i>New Coba</a-->
 
 			<span class="pull-right">
 				<?php //echo anchor(site_url('barang/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
@@ -32,13 +32,15 @@ thead input {
 		<tr>
 			<th width="5">#</th>
 			<th>ID Transaksi</th>
-			<th width="15">Kode Produk</th>
+			<!--th width="15">Kode Produk</th>
 			<th>Nama Set</th>
 			<th width="5">Jenis Produk</th>
 			<th width="5">Satuan</th>
 			<th width="5">Qty</th>
 			<th width="5">@harga</th>
-			<th width="5">Total</th>
+			<th width="5">Total</th-->
+      <th>Tanggal</th>
+			<th>Waktu</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="20">Action</th>
 			<?php endif; ?>
@@ -61,13 +63,9 @@ thead input {
 			?>
 		    <td><?= $numb; ?></td>
 	        <td><?= $record->id_adjusment ?></td>
-	        <td><?= $record->id_barang ?></td>
-			<td><?= $record->nm_barang ?></td>
-			<td><?= strtoupper($record->jenis) ?></td>
-			<td><?= $satuan ?></td>
-			<td><?= number_format($record->qty) ?></td>
-			<td><?= @number_format($record->nilai_barang/$record->qty) ?></td>
-			<td><?= number_format($record->nilai_barang) ?></td>
+          <td><?= $record->date ?></td>
+          <td><?= $record->created_on ?></td>
+
 			<td style="padding-left:20px">
 			<?php if($ENABLE_VIEW) : ?>
 				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_adjusment?>')">
@@ -86,15 +84,17 @@ thead input {
 
 		<tfoot>
 		<tr>
-			<th width="5">#</th>
+      <th width="5">#</th>
 			<th>ID Transaksi</th>
-			<th width="15">Kode Produk</th>
+			<!--th width="15">Kode Produk</th>
 			<th>Nama Set</th>
 			<th width="5">Jenis Produk</th>
 			<th width="5">Satuan</th>
 			<th width="5">Qty</th>
 			<th width="5">@harga</th>
-			<th width="5">Total</th>
+			<th width="5">Total</th-->
+      <th>Tanggal</th>
+			<th>Waktu</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="20">Action</th>
 			<?php endif; ?>
@@ -130,7 +130,7 @@ thead input {
 </div>
 
 <div class="modal modal-primary" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
@@ -188,7 +188,7 @@ thead input {
     	$("#form-area").hide();
   	});
 
-  	function add_data(){
+  	function add_data_coba(){
 
 			var url = 'adjusment/create/';
 			$(".box").hide();
@@ -200,10 +200,10 @@ thead input {
 
 	  }
 
-    function add_data_coba(){
+    function add_data(){
 
 			window.location.href = 'adjusment/create_coba/';
-			
+
 	  }
 
   	function edit_data(id){
@@ -278,9 +278,9 @@ thead input {
 	function PreviewPdf(id)
 	{
 		param=id;
-		tujuan = 'adjusment_stock/print_request/'+param;
+		tujuan = 'adjusment/print_request/'+param;
 
-	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="570" height="400"></iframe>');
+	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 
 	function PreviewRekap()

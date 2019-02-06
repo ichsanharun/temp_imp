@@ -15,6 +15,7 @@ class Reportpembelian extends Admin_Controller {
      *
      */
     //Permission
+    protected $viewPermission   = "Reportpembelian.View";
     /*
     protected $viewPermission   = "Reportstok.View";
     protected $addPermission    = "Reportstok.Add";

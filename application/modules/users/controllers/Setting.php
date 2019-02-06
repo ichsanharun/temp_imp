@@ -29,7 +29,8 @@ class Setting extends Admin_Controller {
                                 'users/groups_model',
                                 'users/user_groups_model',
                                 'users/permissions_model',
-                                'users/user_permissions_model'
+                                'users/user_permissions_model',
+                                'Cabang/Cabang_model',
                                 ));
 
         $this->template->page_icon('fa fa-users');
@@ -160,6 +161,8 @@ class Setting extends Admin_Controller {
             }
         }
 
+        $cabang = $this->Cabang_model->find_all();
+        $this->template->set('cabang', $cabang);
         $this->template->title(lang('users_new_title'));
         $this->template->page_icon('fa fa-user');
         $this->template->render('users_form');
@@ -195,6 +198,8 @@ class Setting extends Admin_Controller {
             }
         }
 
+        $cabang = $this->Cabang_model->find_all();
+        $this->template->set('cabang', $cabang);
         $this->template->set('data', $data);
         $this->template->title(lang('users_edit_title'));
         $this->template->page_icon('fa fa-user');
@@ -407,6 +412,7 @@ class Setting extends Admin_Controller {
         $kota       = $this->input->post('kota');
         $hp         = $this->input->post('hp');
         $st_aktif   = $this->input->post('st_aktif');
+        $kdcab      = $this->input->post('kdcab');
 
         /**
          * This code will benchmark your server to determine how high of a cost you can
@@ -444,7 +450,8 @@ class Setting extends Admin_Controller {
                         'kota'     => $kota,
                         'hp'       => $hp,
                         'ip'        => $this->input->ip_address(),
-                        'st_aktif' => $st_aktif
+                        'st_aktif' => $st_aktif,
+                        'kdcab'     => $kdcab
                         );
 
             $result = $this->users_model->insert($data_insert);
@@ -481,7 +488,8 @@ class Setting extends Admin_Controller {
                         'kota'     => $kota,
                         'hp'       => $hp,
                         'ip'        => $this->input->ip_address(),
-                        'st_aktif' => $st_aktif
+                        'st_aktif' => $st_aktif,
+                        'kdcab'     => $kdcab
                         );
             if(isset($_POST['password']))
             {

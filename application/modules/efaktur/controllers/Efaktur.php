@@ -8,14 +8,14 @@
  */
 
 class Efaktur extends Admin_Controller {
-    
+
     //Permission
-    /*
-    protected $viewPermission   = "Deliveryorder.View";
-    protected $addPermission    = "Deliveryorder.Add";
-    protected $managePermission = "Deliveryorder.Manage";
-    protected $deletePermission = "Deliveryorder.Delete";
-    */
+
+    protected $viewPermission   = "Efaktur.View";
+    protected $addPermission    = "Efaktur.Add";
+    protected $managePermission = "Efaktur.Manage";
+    protected $deletePermission = "Efaktur.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -29,7 +29,7 @@ class Efaktur extends Admin_Controller {
 
     public function index(){
         //$this->auth->restrict($this->viewPermission);
-		
+
 		if($this->input->post()){
 			$tgl_awal		= $this->input->post('tgl_awal');
 			$tgl_akhir		= $this->input->post('tgl_akhir');
@@ -45,18 +45,18 @@ class Efaktur extends Admin_Controller {
         $this->template->title('Efaktur');
         $this->template->render('list');
     }
-	
+
 	 public function list_outstanding(){
-        
+
         $data 				= $this->Efaktur_model->getArray('view_outstanding_export_efaktur');
         $this->template->set('results', $data);
         $this->template->title('E-faktur');
         $this->template->render('list_out');
     }
-	
-	
+
+
 	public function proses(){
-		if($this->input->post()){					
+		if($this->input->post()){
 			$getparam 		= $this->input->post('set_choose_invoice');
 			$Arr_Data		= array();
 			$this->db->where_in('no_invoice',$getparam);
@@ -67,9 +67,9 @@ class Efaktur extends Admin_Controller {
 		}else{
 			 $this->template->render('list_out');
 		}
-       
+
     }
-	
+
     public function add(){
        if($this->input->post()){
 			//echo"<pre>";print_r($this->input->post());exit;
@@ -94,13 +94,13 @@ class Efaktur extends Admin_Controller {
 				}
 				unset($detail_do);
 			}
-			
+
 			$Qry_Update_Inv			= "UPDATE trans_invoice_header SET sts_faktur='Y' WHERE no_invoice IN ('".$Kode_Proses."')";
-			
+
 			$this->db->trans_begin();
 			$this->db->query($Qry_Update_Inv);
 			$this->db->insert_batch('faktur_e_logs',$Arr_Detail);
-			
+
 			if($this->db->trans_status() === FALSE){
 				 $this->db->trans_rollback();
 				 $Arr_Return		= array(
@@ -114,7 +114,7 @@ class Efaktur extends Admin_Controller {
 					'pesan'			=> 'Save Process Success. Thank You & Have A Nice Day...'
 			   );
 			}
-			
+
 	   }else{
 		   $Arr_Return		= array(
 				'status'		=> 3,
@@ -123,7 +123,7 @@ class Efaktur extends Admin_Controller {
 	   }
 	   echo json_encode($Arr_Return);
     }
-	
+
 	function export_csv($kode=''){
 		$output = 'FK;KD_JENIS_TRANSAKSI;FG_PENGGANTI;NOMOR_FAKTUR;MASA_PAJAK;TAHUN_PAJAK;TANGGAL_FAKTUR;NPWP;NAMA;ALAMAT_LENGKAP;JUMLAH_DPP;JUMLAH_PPN;JUMLAH_PPNBM;ID_KETERANGAN_TAMBAHAN;FG_UANG_MUKA;UANG_MUKA_DPP;UANG_MUKA_PPN;UANG_MUKA_PPNBM;REFERENSI';
 		$output .="\n";
@@ -156,27 +156,27 @@ class Efaktur extends Admin_Controller {
 				$nonpwp		= '000000000000000';
 			}
 			$cust		= trim($Data_Customer[0]['nm_customer']);
-		
+
 			$addr 		= (isset($Data_Customer[0]['alamat_npwp']) &&$Data_Customer[0]['alamat_npwp'])?$Data_Customer[0]['alamat_npwp']:$values['alamatcustomer'];
 			$noinv 		= $values['no_invoice'];
-			
+
 			$jmldpp 	= $values['dpp'];
-			$jmlppn 	= $values['ppn'];			
-			
+			$jmlppn 	= $values['ppn'];
+
 			if ($kd_trans=="07") {
 				$output .= 'FK;'.$kd_trans.';0;'.$nofaktur.';'.$mp.';'.$tp.';'.$tglv.';'.$nonpwp.';'.$cust.';'.$addr.';'.$jmldpp.';'.$jmlppn.';0;1;0;0;0;0;'.$noinv;
 			} else {
-				$output .= 'FK;'.$kd_trans.';0;'.$nofaktur.';'.$mp.';'.$tp.';'.$tglv.';'.$nonpwp.';'.$cust.';'.$addr.';'.$jmldpp.';'.$jmlppn.';0;0;0;0;0;0;'.$noinv;			
+				$output .= 'FK;'.$kd_trans.';0;'.$nofaktur.';'.$mp.';'.$tp.';'.$tglv.';'.$nonpwp.';'.$cust.';'.$addr.';'.$jmldpp.';'.$jmlppn.';0;0;0;0;0;0;'.$noinv;
 			}
-			
-			$output .="\n";	
-			
+
+			$output .="\n";
+
 			$Data_Detail		= $this->Efaktur_model->getArray('trans_invoice_detail',array('no_invoice'=>$values['no_invoice']));
 			foreach($Data_Detail as $keyD=>$valD){
 				$disc 			= $valD['diskon'];
 				$total_diskon	= $valD['jumlah'] * $disc;
 				$Total_Harga	= $valD['jumlah'] * $valD['hargajual'];
-				
+
 				if ($kd_trans=="04") {
 					$dtotal = 0;
 					$dpp 	= 0;
@@ -184,12 +184,12 @@ class Efaktur extends Admin_Controller {
 				} else {
 					$dtotal = $Total_Harga - $total_diskon;
 					$dpp 	= $valD['hargajual'];
-					
+
 					$dppn 	= $valD['ppn'];
-					
-					
+
+
 				}
-				
+
 				$output .='OF;;'.$valD['nm_barang'].';'.$valD['hargajual'].';'.$valD['jumlah'].';'.$Total_Harga.';'.$total_diskon.';'.$dtotal.';'.$dppn.';0;0;0;;;;;;;';
 				$output .="\n";
 			}
@@ -202,7 +202,7 @@ class Efaktur extends Admin_Controller {
 
 		exit;
 	}
-    
+
     public function view($kode){
 		$header				= $this->Efaktur_model->getArray('view_export_efaktur',array('id_export'=>$kode));
 		$details			= $this->Efaktur_model->getArray('view_export_efaktur_detail',array('id_export'=>$kode));
@@ -210,10 +210,10 @@ class Efaktur extends Admin_Controller {
 		$this->template->set('row_header', $header);
         //$this->template->set('customer', $customer);
         $this->template->set('row_detail', $details);
-        
+
         $this->template->render('view');
-		
-	  
+
+
     }
 
 

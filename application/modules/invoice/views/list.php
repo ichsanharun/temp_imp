@@ -180,10 +180,6 @@
 		window.location.href = base_url + active_controller+'/cancel_invoice/'+kode;
 	}
 
-	function CustomePrint_old(inv){
-		$('#dialog-print-invoice').modal('show');
-		$('#no_invoice').val(inv);
-	}
 
   function CustomePrint(inv){
     var noinv = $('#no_invoice').val();

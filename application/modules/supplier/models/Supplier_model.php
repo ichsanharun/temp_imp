@@ -194,5 +194,42 @@ class Supplier_model extends BF_Model
         $data = $this->db->query($query);
         return $data->row(); 
     }
+    
+    public function insert_supplier_cbm($data)
+    {
+        return $this->db->insert('supplier_cbm', $data);
+    }
+    
+    public function update_supplier_cbm($id, $data)
+    {
+        $this->db->where('id_supplier_cbm', $id);
+        return $this->db->update('supplier_cbm', $data);
+    }
+    
+    public function delete_supplier_cbm($id)
+    {
+        $this->db->where('id_supplier_cbm', $id);
+        return $this->db->delete('supplier_cbm');
+    }
+    
+    public function insert_supplier_barang($data)
+    {
+        return $this->db->insert('supplier_barang', $data);
+    }
+    
+    public function list_supplier_barang($id_supplier)
+    {
+        $this->db->select('supplier_barang.id_supplier_barang,barang_master.nm_barang ');
+        $this->db->from('supplier_barang');
+        $this->db->join('barang_master', 'barang_master.id_barang = supplier_barang.id_barang', 'left');
+        $this->db->where('supplier_barang.id_supplier', $id_supplier);
+        return $this->db->get();
+    }
+    
+    public function delete_supplier_barang($id)
+    {
+        $this->db->where('id_supplier_barang', $id);
+        return $this->db->delete('supplier_barang');
+    }
 
 }

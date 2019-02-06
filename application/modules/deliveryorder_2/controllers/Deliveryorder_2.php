@@ -1,8 +1,8 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
 /*
- * @author Ichsan
- * @copyright Copyright (c) 2018, Ichsan
+ * @author Yunaz
+ * @copyright Copyright (c) 2018, Yunaz
  *
  * This is controller for Salesorder
  */
@@ -10,12 +10,12 @@
 class Deliveryorder_2 extends Admin_Controller {
 
     //Permission
-    /*
+
     protected $viewPermission   = "Deliveryorder.View";
     protected $addPermission    = "Deliveryorder.Add";
     protected $managePermission = "Deliveryorder.Manage";
     protected $deletePermission = "Deliveryorder.Delete";
-    */
+
     public function __construct(){
         parent::__construct();
         $this->load->library(array('Mpdf','upload','Image_lib'));
@@ -27,7 +27,8 @@ class Deliveryorder_2 extends Admin_Controller {
                                  'Pendingso/Pendingso_model',
                                  'Pendingso/Detailpendingso_model',
                                  'Customer/Customer_model',
-                                 'Aktifitas/aktifitas_model'
+                                 'Aktifitas/aktifitas_model',
+                                 'Trans_stock/Trans_stock_model'
                                 ));
 
         $this->template->title('Delivery Order');
@@ -48,13 +49,22 @@ class Deliveryorder_2 extends Admin_Controller {
     //Create New Delivery Order
     public function create(){
       $session = $this->session->userdata('app_session');
+        //$this->auth->restrict($this->addPermission);
+        /*
+        $nodo = $this->Deliveryorder_model->generate_nodo($session['kdcab']);
 
+        $marketing = $this->Deliveryorder_model->pilih_marketing()->result();
+        $getitemdo = $this->Detaildeliveryorder_model->find_all_by(array('no_do'=>$nodo));
+
+        $this->template->set('marketing',$marketing);
+        $this->template->set('detaildo',$getitemdo);
+        */
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$session['kdcab']));
         $this->template->set('customer',$customer);
 
         if($this->uri->segment(3) == ""){
 
-            $data = $this->Salesorder_model->get_salesorder_open("AND LEFT(h.no_so,3)='".$session['kdcab']."'");
+            $data = $this->Salesorder_model->get_salesorder_open("AND LEFT(h.no_so,3)='".$session['kdcab']."' AND do_supplied IS NULL");
             //$data = $this->Salesorder_model->order_by('no_so','ASC')->find_all_by(array('total !='=>0));
         }else{
             $data = $this->Salesorder_model->get_salesorder_open("AND id_customer ='".$this->uri->segment(3)."' ");
@@ -66,12 +76,13 @@ class Deliveryorder_2 extends Admin_Controller {
     }
 
     public function createpending(){
+        $session = $this->session->userdata('app_session');
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0));
         $this->template->set('customer',$customer);
         if($this->uri->segment(3) == ""){
-            $data = $this->Pendingso_model->order_by('no_so','ASC')->find_all();
+            $data = $this->Pendingso_model->where("LEFT(trans_so_pending_header.no_so,3)='".$session['kdcab']."' ")->order_by('no_so','ASC')->find_all();
         }else{
-            $data = $this->Pendingso_model->order_by('no_so','ASC')->find_all_by(array('id_customer'=>$this->uri->segment(3)));
+            $data = $this->Pendingso_model->where("LEFT(trans_so_pending_header.no_so,3)='".$session['kdcab']."' ")->order_by('no_so','ASC')->find_all_by(array('id_customer'=>$this->uri->segment(3)));
         }
         $this->template->set('results', $data);
         $this->template->title('Input Delivery Order From Pending');
@@ -86,6 +97,7 @@ class Deliveryorder_2 extends Admin_Controller {
 
           $and = " proses_do IS NULL ";
           $getitemso = $this->Detailsalesorder_model->get_where_in_and('no_so',$getparam,$and,'trans_so_detail');
+		  
           $driver    = $this->Deliveryorder_model->pilih_driver($session['kdcab'])->result();
   		$Arr_Driver	= array();
   		if($driver){
@@ -131,7 +143,7 @@ class Deliveryorder_2 extends Admin_Controller {
   			}
   			unset($driver);
   		}
-          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan()->result();
+          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan($session['kdcab'])->result();
           $Arr_Kendaraan = array();
           if($kendaraan){
               foreach($kendaraan as $keyK=>$valK){
@@ -332,6 +344,7 @@ class Deliveryorder_2 extends Admin_Controller {
                   }else{
                       $this->db->where($keyclose_so);
                       $this->db->update('trans_so_detail',array('proses_do'=>'PENDING','qty_supply'=>$newqty));//Jika masih ada sisa qty
+                      //$this->db->update('trans_so_header',array('proses_do'=>'PENDING','qty_supply'=>$newqty));//Jika masih ada sisa qty
                   }
               }else{
                   $newqtypending = $getitemsopending->qty_supply+$this->input->post('qty_supply')[$i];
@@ -347,14 +360,19 @@ class Deliveryorder_2 extends Admin_Controller {
 
               //Update STOK REAL
               $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']),'barang_stock');
+              $qty_stock_awal = $count->qty_stock;
+              $qty_avl_awal = $count->qty_avl;
               $this->db->where(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']));
               $this->db->update('barang_stock',array('qty_stock'=>$count->qty_stock-$_POST['qty_supply'][$i]));
+              $qty_stock_akhir = $count->qty_stock-$_POST['qty_supply'][$i];
+              $qty_avl_akhir = $count->qty_avl;
+
               $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$x;
               $data_adj_trans = array(
                           'id_st'=>$id_st,
                           'tipe'=>'OUT',
                           'jenis_trans'=>'OUT_Pembelian',
-                          'noreff'=>$no_do,
+                          'noreff'=>$this->Deliveryorder_model->generate_nodo($session['kdcab']),
                           'id_barang'=>$getitemso->id_barang,
                           'nm_barang'=>$getitemso->nm_barang,
                           'kdcab'=>$this->auth->user_cab(),
@@ -362,6 +380,10 @@ class Deliveryorder_2 extends Admin_Controller {
                           'qty'=>$_POST['qty_supply'][$i],
                           'nilai_barang'=>$getitemso->harga_normal,
                           'notes'=>'DO',
+                          'qty_stock_awal' => $qty_stock_awal,
+                          'qty_avl_awal' => $qty_avl_awal,
+                          'qty_stock_akhir' => $qty_stock_akhir,
+                          'qty_avl_akhir' => $qty_avl_akhir
                           );
                           $this->Trans_stock_model->insert($data_adj_trans);
               //Update STOK REAL
@@ -427,7 +449,9 @@ class Deliveryorder_2 extends Admin_Controller {
                 //Update QTY SUPPLY SO
                 $qtysuppso = $this->Salesorder_model->cek_data(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so),'trans_so_detail');
                 $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
-                $this->db->update('trans_so_detail',array('proses_do'=>NULL,'qty_supply'=>$qtysuppso->qty_supply+$v->qty_supply));
+                $this->db->update('trans_so_detail',array('proses_do'=>NULL,'qty_supply'=>$qtysuppso->qty_supply - $v->qty_supply - $v->return_do - $v->return_do_rusak - $v->return_do_hilang));
+                $this->db->where(array('no_so'=>$v->no_so));
+                $this->db->update('trans_so_header',array('do_supplied'=>NULL));
                 //Update QTY SUPPLY SO
 
                 $this->db->where(array('no_so'=>$v->no_so));
@@ -697,10 +721,11 @@ class Deliveryorder_2 extends Admin_Controller {
     }
 
     function getdatado(){
+        $session = $this->session->userdata('app_session');
         $nodo = $this->input->post('NODO');
         $do_data = $this->Deliveryorder_model->find_data('trans_do_header',$nodo,'no_do');
-        $driver = $this->Deliveryorder_model->pilih_driver()->result();
-        $kendaraan = $this->Deliveryorder_model->pilih_kendaraan()->result();
+        $driver = $this->Deliveryorder_model->pilih_driver($session['kdcab'])->result();
+        $kendaraan = $this->Deliveryorder_model->pilih_kendaraan($session['kdcab'])->result();
         $this->template->set('do_data', $do_data);
         $this->template->set('kendaraan', $kendaraan);
         $this->template->set('driver', $driver);
@@ -760,9 +785,78 @@ class Deliveryorder_2 extends Admin_Controller {
         $do_data = $this->Deliveryorder_model->find_data('trans_do_header',$nodo,'no_do');
         $customer = $this->Deliveryorder_model->cek_data(array('id_customer'=>$do_data->id_customer),'customer');
         $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $nodo,'qty_supply >'=>0));
-        $det_do = $this->Deliveryorder_model->find_data('trans_do_detail',$nodo,'no_do');
+        $det_do = $this->Detaildeliveryorder_model->find_by(array('no_do'=>$nodo));
         $header_so = $this->Deliveryorder_model->find_data('trans_so_header',$det_do->no_so,'no_so');
         $det_so = $this->Deliveryorder_model->find_data('trans_so_detail',$det_do->no_so,'no_so');
+
+        foreach($detail as $k=>$v){
+          $qty_supply			= $v->qty_supply;
+          $kunci 		= array('no_so'=>$v->no_so,'id_barang'=>$v->id_barang);
+          $detailso	= $this->Deliveryorder_model->cek_data($kunci,'trans_so_detail');
+          $headerso	= $this->Deliveryorder_model->cek_data(array('no_so'=>$v->no_so),'trans_so_header');
+
+            $no=$n++;
+
+            $harga_normal       = $detailso->harga_normal;
+
+            if ($headerso->ppn > 0) {
+              //$harga  = $detailso->harga_normal/110*100;
+              $ppn    = $harga_normal - $harga;
+              $ppn_all = $ppn*$qty_supply;
+            }else {
+              $harga = $harga_normal;
+            }
+            $harga              = $harga_normal;
+            $diskon_std_persen  = $detailso->diskon_persen;
+            $diskon_std_rp      = $diskon_std_persen/100*$harga_normal;
+            $harga_setelah_diskon_std = $harga_normal - $diskon_std_rp;
+
+            $diskon_promo_persen= $detailso->diskon_promo_persen;
+            $diskon_promo_rp    = $detailso->diskon_promo_persen/100*$harga_setelah_diskon_std;
+            $harga_setelah_diskon_promo = $harga_setelah_diskon_std - $diskon_promo_rp;
+
+            $diskon_so = $detailso->diskon_so;
+            $tipe_diskon_so = $detailso->tipe_diskon_so;
+            if ($tipe_diskon_so == "rupiah_tambah") {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo + $diskon_so;
+              $tampil_diskon_so = "+Rp ".number_format($diskon_so);
+            }elseif ($tipe_diskon_so == "rupiah_kurang") {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo - $diskon_so;
+              $tampil_diskon_so = "-Rp ".number_format($diskon_so);
+            }else {
+              $harga_setelah_diskon_so = $harga_setelah_diskon_promo*(100-$diskon_so)/100;
+              $tampil_diskon_so = $diskon_so." %";
+            }
+            //-------------------------END OF HARGA------------------------//
+            $diskon_toko        = $headerso->persen_diskon_toko;
+            $diskon_toko_rp     = $diskon_toko/100*$harga_setelah_diskon_so;
+            $diskon_toko_rp_all = $diskon_toko_rp*$qty_supply;
+            $harga_setelah_diskon_toko = $harga_setelah_diskon_so - $diskon_toko_rp;
+
+            $diskon_cash        = $headerso->persen_diskon_cash;
+            $diskon_cash_rp     = $diskon_cash/100*$harga_setelah_diskon_toko;
+            $diskon_cash_rp_all = $diskon_cash_rp*$qty_supply;
+            $harga_setelah_diskon_cash = $harga_setelah_diskon_toko - $diskon_cash_rp;
+
+            $hargajualbefdis += $harga*$qty_supply;
+            $hargajualafterdistoko += $harga_setelah_diskon_toko*$qty_supply;
+            $dpp_sebelum += $harga_setelah_diskon_so*$qty_supply;
+
+            $dpp_barang			= $qty_supply * $harga_setelah_diskon_cash;
+            $diskon_barang		= $diskon_so;
+            //$diskon_barang		= $qty_supply * $discount_satuan;
+            $harga_bersih		= $dpp_barang - $diskon_barang;
+            //$grand 				+= $harga_bersih;
+            $grand_diskon_toko +=$diskon_toko_rp_all;
+            $grand_diskon_cash +=$diskon_cash_rp_all;
+            $grand_ppn += $ppn_all;
+            $grand_setelah_toko += $harga_setelah_diskon_toko*$qty_supply;
+            $grand 				+= $dpp_barang;
+            $grand = ceil($grand);
+        }
+        //$qty_supply = $det_do->qty_supply;
+
+
 
         $this->template->set('do_data', $do_data);
         //$this->template->set('header_so', $header_so);
@@ -791,41 +885,41 @@ class Deliveryorder_2 extends Admin_Controller {
         	</table>
           <table width="100%" border="0" id="header-tabel">
 
-          <tr>
-              <td width="5%">NO. SJ</td>
+            <tr>
+                <td width="5%">NO. SJ</td>
 
-              <td colspan="3" width="50%">: '. @$do_data->no_do.'</td>
-              <td>'. @$cabang->namacabang.',</td>
-              <td width="1%"> </td>
-              <td>'.date('d M Y',strtotime(@$do_data->tgl_do)).'</td>
-          </tr>
-          <tr>
-              <td width="5%">SALES</td>
+                <td colspan="3" width="50%">: '. @$do_data->no_do.'</td>
+                <td>'. @$cabang->namacabang.',</td>
+                <td width="1%"> </td>
+                <td>'.date('d M Y',strtotime(@$do_data->tgl_do)).'</td>
+            </tr>
+            <tr>
+                <td width="5%">SALES</td>
 
-              <td colspan="3">: '. @$do_data->nm_salesman.'</td>
-              <td width="15%">Kepada Yth,</td>
-              <td width="1%"></td>
-              <td></td>
-          </tr>
-          <tr>
-              <td width="5%">TOP</td>
+                <td colspan="3">: '. @$do_data->nm_salesman.'</td>
+                <td width="15%">Kepada Yth,</td>
+                <td width="1%"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td width="5%">TOP</td>
 
-              <td colspan="3">:
-                  '.@$header_so->top.' HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime('+'.@$header_so->top.' days', strtotime(date('Y-m-d')))).'
-              </td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$do_data->nm_customer.'
-              </td>
-          </tr>
-          <tr>
-              <td width="5%">KETERANGAN</td>
+                <td colspan="3">:
+                    '.@$header_so->top.' HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime('+'.@$header_so->top.' days', strtotime(date('Y-m-d')))).'
+                </td>
+                <td width="15%" colspan="3" style="font-size:9pt !important;">
+                    '.@$do_data->nm_customer.'
+                </td>
+            </tr>
+            <tr>
+                <td width="5%">KETERANGAN</td>
 
-              <td colspan="3">:</td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$do_data->alamatcustomer.'
-              </td>
-          </tr>
-      </table>';
+                <td colspan="3">:</td>
+                <td width="15%" colspan="3" style="font-size:9pt !important;">
+                    '.@$do_data->alamatcustomer.'
+                </td>
+            </tr>
+          </table>';
 
         $this->mpdf->SetHTMLHeader($header,'0',true);
 
@@ -837,38 +931,29 @@ class Deliveryorder_2 extends Admin_Controller {
 
             <tr>
                 <td colspan="3">
-                  <i>TERBILANG : '.ucwords(ynz_terbilang_format($header_so->dpp)).'</i>
+                  <i>TERBILANG : '.ucwords(ynz_terbilang_format($grand)).'</i>
                 </td>
                 <td width="15%">JUMLAH NOMINAL</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($header_so->dpp).'</td>
+                <td width="15%" style="text-align: right;">'.formatnomor($dpp_sebelum).'</td>
                 <!--<td width="10%"></td>-->
 
             </tr>
-        <tr>
-                <td colspan="3">
-                  <center>Hormat Kami,</center>
-                </td>
-                <td width="15%">DISKON &nbsp;&nbsp;&nbsp;'.$diskon_stdr_persen.' %</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($diskon_stdr_rp).'</td>
-                <!--<td width="10%"></td>-->
 
-            </tr>
             <tr>
                 <td colspan="3">
 
                 </td>
                 <td width="15%">DISKON TOKO &nbsp;&nbsp;&nbsp;'.$header_so->persen_diskon_toko.' %</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;"> '.formatnomor($header_so->diskon_toko).'</td>
+                <td width="15%" style="text-align: right;"> '.formatnomor($grand_diskon_toko).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
             <tr>
                 <td colspan="3"></td>
                 <td width="15%">DISKON CASH &nbsp;&nbsp;&nbsp;'.$header_so->persen_diskon_cash.' %</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($header_so->diskon_cash).'</td>
+                <td width="15%" style="text-align: right;">'.formatnomor($grand_diskon_cash).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
             <tr>
@@ -878,7 +963,7 @@ class Deliveryorder_2 extends Admin_Controller {
 
                 <td width="15%"><b>GRAND TOTAL</b></td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor(round($header_so->total, -3)).'</td>
+                <td width="15%" style="text-align: right;">'.formatnomor($grand).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
 

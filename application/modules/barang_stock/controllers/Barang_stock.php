@@ -38,7 +38,7 @@ class Barang_stock extends Admin_Controller {
     public function index(){
         $this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Barang_stock_model->find_all_by(array('kdcab'=>$session['kdcab'], 'deleted'=>0) );
+        $data = $this->Barang_stock_model->find_all_by(array('kdcab'=>$session['kdcab'], 'deleted'=>0));
         $this->template->set('results', $data);
         $this->template->render('list');
     }
@@ -79,6 +79,7 @@ class Barang_stock extends Admin_Controller {
                'diskon_qty_gratis'     => $this->input->post('diskon_qty_gratis'),
                'diskon_standar_persen' => $this->input->post('diskon_persen'),
                'sts_aktif'             => $this->input->post('sts_aktif'),
+               'harga'                 => $this->input->post('harga')
                );
          //}else {
 

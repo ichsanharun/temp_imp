@@ -113,9 +113,8 @@ date_default_timezone_set("Asia/Bangkok");
             <th width="5%">QTY</th>
             <th width="10%">SATUAN<br>(SET/PCS)</th>
             <th width="10%">HARGA</th>
-            <th width="1%">DISKON STD(%)</th>
-            <th width="1%">DISKON PROMO(%)</th>
-            <th width="1%">DISKON PROMO(Rp)</th>
+            <th width="1%">DISKON(%)</th>
+            <th>HARGA NETT</th>
             <th width="10%">JUMLAH</th>
             <!--<th width="20%">KETERANGAN</th>-->
         </tr>
@@ -179,14 +178,14 @@ date_default_timezone_set("Asia/Bangkok");
             <td style=""><?php echo $v->id_barang.' / '.$v->nm_barang?></td>
             <td style="" width="1%"><center><?php echo $v->jumlah?></center></td>
             <td style="" width="1%"><center><?php echo $v->satuan?></center></td>
-            <td style="text-align: right;"><?php echo formatnomor($hrg_view)?></td>
+            <td style="text-align: right;"><?php echo formatnomor($v->hargajual)?></td>
             <?php
-              echo '<td style="text-align: center;">'.$v->persen_diskon_stdr.'</td>';
+              echo '<td style="text-align: center;">'.$v->persen_diskon_stdr.'+'.$v->diskon_promo_persen.'+'.$v->diskon_so.'</td>';
             ?>
 
-            <td style="text-align: center;"><center><?php echo $v->diskon_promo_persen?></center></td>
-            <td style="text-align: center;"><center><?php echo $v->diskon_promo_rp?></center></td>
-            <td style="text-align: right;"><?php echo formatnomor($sub_total_view)?></td>
+            <!--td style="text-align: center;"><center><?php echo $v->diskon_promo_persen?></center></td-->
+            <td style="text-align: center;"><center><?php echo formatnomor($v->harga_nett)?></center></td>
+            <td style="text-align: right;"><?php echo formatnomor($v->subtot_after_diskon)?></td>
         </tr>
 
       <?php } ?>

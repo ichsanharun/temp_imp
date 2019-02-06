@@ -4,7 +4,7 @@ date_default_timezone_set("Asia/Bangkok");
 <!DOCTYPE html>
 <html>
 <head>
-    <title><?=$brg_data->nm_barang."-".$brg_data->id_barang;?></title>
+    <title>Data Giro</title>
     <style>
                 
         {
@@ -162,39 +162,56 @@ date_default_timezone_set("Asia/Bangkok");
 </head>
 <body>
 <div id="wrapper">
-    <p style="text-align:center; font-weight:bold; padding-top:5mm;">DATA KOLI</p>
-    <table class="heading" style="width:100%;">
+    <p style="text-align:center; font-weight:bold; padding-top:5mm;">RINCIAN GIRO OPNAME<br>Per Tgl. : <?php echo date('d-m-Y')?></p>
+    <table style="width:100%;" border="1" width="100%">
         <tr>
-            <td style="width:80mm;">
-                <table style="tr:hover {border-right: 0px #f5f5f5;}">
-                <tr>
-                  <td style="width:50mm;">Kode Koli</td>
-                  <td style="width:60mm;"><b><?=$brg_data->id_koli;?></b></td>                  
-                </tr>
-
-                <tr>
-                  <td style="width:50mm;">Nama Barang</td>
-                  <td style="width:60mm;"><?=$brg_data->nm_koli;?></td>                  
-                </tr>
-
-                <tr>
-                  <td style="width:50mm;">Kode Barang</td>
-                  <td style="width:60mm;"><b><?=$brg_data->id_barang;?></b></td>                  
-                </tr>
-
-                <tr>
-                  <td style="width:50mm;">Nama Barang</td>
-                  <td style="width:60mm;"><?=$brg_data->nm_barang;?></td>                  
-                </tr>                    
-              </table>              
-            </td>            
+            <th width="1%" rowspan="2">NO</th>
+            <th colspan="2">DITERIMA</th>
+            <th colspan="4">CHEQUE / GIRO</th>
+            <th width="5%" rowspan="2">STATUS</th>
         </tr>
         <tr>
-            <td>                
-            Keterangan<br/>
-            <i><?=$brg_data->keterangan?></i><br>
-            </td>
+            <th><center>TANGGAL</center></th>
+            <th><center>CUSTOMER</center></th>
+            <th><center>BANK</center></th>
+            <th><center>NOMOR</center></th>
+            <th><center>J. TEMPO</center></th>
+            <th><center>NOMINAL</center></th>
         </tr>
+        <?php
+        $n=1;
+        $tot_nom =0;
+        if(@$giro){
+        foreach(@$giro as $kg=>$vg){
+            $no=$n++;
+            $tot_nom += $vg->nilai_fisik;
+        ?>
+        <tr>
+            <td><center><?php echo $no?></center></td>
+            <td><center><?php echo date('d-m-Y',strtotime($vg->tgl_giro))?></center></td>
+            <td><?php echo $vg->nm_customer?></td>
+            <td><?php echo $vg->nm_bank?></td>
+            <td><?php echo $vg->no_giro?></td>
+            <td><center><?php echo date('d-m-Y',strtotime($vg->tgl_jth_tempo))?></center></td>
+            <td style="text-align: right;"><?php echo formatnomor($vg->nilai_fisik)?></td>
+            <td><center><?php echo $vg->status?></center></td>
+        </tr>
+        <?php } ?>
+        <tr>
+            <td style="text-align: right;" colspan="5">SALDO ADM PEMBUKUAN : </td>
+            <td colspan="2" style="text-align: right;"><?php echo formatnomor($tot_nom)?></td>
+        </tr>
+        <tr>
+            <td style="text-align: right;" colspan="5">SALDO CHECK FISIK : </td>
+            <td colspan="2"></td>
+        </tr>
+        <tr>
+            <td style="text-align: right;" colspan="5">SELISIH : </td>
+            <td colspan="2"></td>
+        </tr>
+        <?php }else{ ?>
+        <tr><td colspan="8"><center>Tidak ada data yang ditampilkan</center></td></tr>
+        <?php } ?>
     </table>
      
     <?php $tglprint = date("d-m-Y H:i:s");?>     

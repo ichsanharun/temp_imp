@@ -8,6 +8,13 @@
  */
 
 class Diskon extends Admin_Controller {
+  //Permission
+
+  protected $viewPermission   = "Diskon.View";
+  protected $addPermission    = "Diskon.Add";
+  protected $managePermission = "Diskon.Manage";
+  protected $deletePermission = "Diskon.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -72,7 +79,7 @@ class Diskon extends Admin_Controller {
     	          );
     	    }
         }
-    	
+
         echo json_encode($param);
     }
 
@@ -88,7 +95,7 @@ class Diskon extends Admin_Controller {
     $id = $this->input->post('ID');
         if(!empty($id)){
            $result = $this->Diskon_model->delete($id);
-           $param['delete'] = 1; 
+           $param['delete'] = 1;
         }else{
             $param['delete'] = 0;
         }

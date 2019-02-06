@@ -10,10 +10,10 @@
                         <div class="form-group">
                             <label for="cabang_asal" class="col-sm-4 control-label">Cabang Asal </font></label>
                             <div class="col-sm-8" style="padding-top: 8px;">
-                                <select class="form-control input-sm" name="cabang_asal" id="cabang_asal"> 
+                                <select class="form-control input-sm" name="cabang_asal" id="cabang_asal">
                                 <option value="">Pilih</option>
                                 <?php
-                                foreach(@$cabang as $kc=>$vc){ 
+                                foreach(@$cabang as $kc=>$vc){
                                     $selected='';
                                     if($kdcab->kdcab.'|'.$kdcab->namacabang == $vc->kdcab.'|'.$vc->namacabang){
                                         $selected='selected="selected"';
@@ -21,7 +21,7 @@
                                     ?>
                                     <option value="<?php echo $vc->kdcab.'|'.$vc->namacabang?>" <?php echo $selected?>><?php echo $vc->kdcab.', '.$vc->namacabang?></option>
                                     <?php } ?>
-                                </select> 
+                                </select>
                             </div>
                         </div>
                         <div class="form-group ">
@@ -30,16 +30,79 @@
                                 <select class="form-control input-sm" name="cabang_tujuan" id="cabang_tujuan">
                                 <option value="">Pilih</option>
                                 <?php
-                                foreach(@$cabang as $kc=>$vc){ 
+                                foreach(@$cabang as $kc=>$vc){
                                     ?>
                                     <option value="<?php echo $vc->kdcab.'|'.$vc->namacabang?>"><?php echo $vc->kdcab.', '.$vc->namacabang?></option>
                                     <?php } ?>
-                                </select> 
+                                </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="col-sm-6">
+                         <div class="form-group ">
+                            <label for="tipekirim" class="col-sm-4 control-label">Tipe Pengiriman <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <select name="tipekirim" id="tipekirim" class="form-control input-sm">
+                                        <option value="">Pilih</option>
+                                        <!--<option value="EKSPEDISI">EKSPEDISI</option>
+                                        <option value="SELF">SELF</option>-->
+                                        <?php
+                                        foreach(tipe_pengiriman() as $k=>$v){
+                                        ?>
+                                        <option value="<?php echo $k?>"><?php echo $v?></option>
+                                        <?php } ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="supir_do" class="col-sm-4 control-label">Nama Supir <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group" id="list_supir">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="kendaraan_do" class="col-sm-4 control-label">Kendaraan <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <!--
+                                <div class="input-group" id="select-kendaraan">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <select class="form-control input-sm select2" name="kendaraan_do" id="kendaraan_do">
+                                        <option value="">Pilih</option>
+                                        <?php
+                                        //foreach(@$kendaraan as $kk=>$vk){
+                                        ?>
+                                        <option value="<?php //echo $vk->id_kendaraan?>"><?php //echo $vk->nm_kendaraan?></option>
+                                        <?php //} ?>
+                                    </select>
+                                </div>-->
+                                <!--
+                                 <div class="input-group" id="input-kendaraan">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <input type="text" name="kendaraan_do_sewa" class="form-control input-sm">
+                                </div>
+                                -->
+                                <div class="input-group" id="list_kendaraan">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="supir_do" class="col-sm-4 control-label">Nama Helper</label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <input type="text" name="helper_do" id="helper_do" class="form-control input-sm">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-sm-6">
                         <div class="form-group ">
                             <label for="supir_mutasi" class="col-sm-4 control-label">Nama Supir <font size="4" color="red"><B>*</B></font></label>
                             <div class="col-sm-8">
@@ -48,7 +111,7 @@
                                     <select class="form-control input-sm select2" name="supir_mutasi" id="supir_mutasi">
                                         <option value="">Pilih</option>
                                         <?php
-                                        foreach(@$driver as $kd=>$vd){ 
+                                        foreach(@$driver as $kd=>$vd){
                                         ?>
                                         <option value="<?php echo $vd->id_karyawan.'|'.$vd->nama_karyawan?>"><?php echo $vd->nama_karyawan?></option>
                                         <?php } ?>
@@ -64,7 +127,7 @@
                                     <select class="form-control input-sm select2" name="kendaraan_mutasi" id="kendaraan_mutasi">
                                         <option value="">Pilih</option>
                                         <?php
-                                        foreach(@$kendaraan as $kk=>$vk){ 
+                                        foreach(@$kendaraan as $kk=>$vk){
                                         ?>
                                         <option value="<?php echo $vk->id_kendaraan.'|'.$vk->nm_kendaraan?>"><?php echo $vk->nm_kendaraan?></option>
                                         <?php } ?>
@@ -72,7 +135,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
                 </div>
                 </form>
@@ -180,17 +243,62 @@
 
 <script type="text/javascript">
 	//$('#input-kendaraan').hide();
-    $(document).ready(function(){
-        $("#supir_mutasi,#kendaraan_mutasi").select2({
-            placeholder: "Pilih",
-            allowClear: true
-        });
-        $(".datepicker").datepicker({
-            format : "yyyy-mm-dd",
-            showInputs: true,
-            autoclose:true
-        });
-    });
+  var kode_driver       =<?php echo json_encode($arr_driver);?>;
+  var kendaraan		      =<?php echo json_encode($kendaraan);?>;
+  $(document).ready(function(){
+  $('#tipekirim').change(function(){
+     var kirim	= $('#tipekirim').val();
+     if(kirim=='' || kirim==null){
+               $('#list_supir').empty();
+       $('#list_kendaraan').empty();
+     }else{
+               var Template   ='<span class="input-group-addon"><i class="fa fa-user"></i></span>';
+       var Kendaraan	='<span class="input-group-addon"><i class="fa fa-car"></i></span>';
+       if(kirim=='SENDIRI'){
+         Template	+='<select class="form-control input-sm select2" name="supir_do" id="supir_do">';
+          Template	+='<option value="">Pilih</option>';
+          if(!$.isEmptyObject(kode_driver)){
+            $.each(kode_driver,function(key,value){
+              Template	+='<option value="'+key+'^_^'+value+'">'+value+'</option>';
+            });
+          }
+         Template	+='</select>';
+         $('#list_supir').html(Template);
+         $("#supir_do").select2({
+          placeholder: "Pilih",
+          allowClear: true
+         });
+
+                   Kendaraan   +='<select class="form-control input-sm select2" name="kendaraan_do" id="kendaraan_do">';
+                      Kendaraan    +='<option value="">Pilih</option>';
+                      if(!$.isEmptyObject(kendaraan)){
+                          $.each(kendaraan,function(key,value){
+                              Kendaraan    +='<option value="'+key+'^_^'+value+'">'+value+'</option>';
+                          });
+                      }
+                   Kendaraan   +='</select>';
+                   $('#list_kendaraan').html(Kendaraan);
+                   $("#kendaraan_do").select2({
+                      placeholder: "Pilih",
+                      allowClear: true
+                   });
+       }else{
+         Template	+='<input type="text" name="supir_do" id="supir_do" class="form-control input-sm">';
+         $('#list_supir').html(Template);
+
+                   Kendaraan   +='<input type="text" name="kendaraan_do" id="kendaraan_do" class="form-control input-sm">';
+                   $('#list_kendaraan').html(Kendaraan);
+       }
+
+     }
+  });
+      $("#kendaraan_do").select2({
+          placeholder: "Pilih",
+          allowClear: true
+      });
+
+
+  });
     $(function() {
       var dataTable = $("#tabel-stok").DataTable({lengthMenu:[5,10,15,20]}).draw();
     });

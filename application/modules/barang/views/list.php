@@ -1,24 +1,24 @@
-<?php 
-    $ENABLE_ADD     = has_permission('Barang.Add');
-    $ENABLE_MANAGE  = has_permission('Barang.Manage');
-    $ENABLE_VIEW    = has_permission('Barang.View');
-    $ENABLE_DELETE  = has_permission('Barang.Delete');
+<?php
+    $ENABLE_ADD = has_permission('Barang.Add');
+    $ENABLE_MANAGE = has_permission('Barang.Manage');
+    $ENABLE_VIEW = has_permission('Barang.View');
+    $ENABLE_DELETE = has_permission('Barang.Delete');
 ?>
 <style type="text/css">
 thead input {
 	width: 100%;
-}	
+}
 </style>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 
 <div class="box">
 	<div class="box-header">
-		<?php if ($ENABLE_ADD) : ?>		
-			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>			
+		<?php if ($ENABLE_ADD) : ?>
+			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
 
 			<span class="pull-right">
 				<?php echo anchor(site_url('barang/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-				<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>	
+				<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>
 			</span>
 
 		<?php endif; ?>
@@ -33,65 +33,70 @@ thead input {
 			<th>Jenis Produk</th>
 			<th>Group Produk</th>
 			<th>Nama Set</th>
-			<th>Supplier</th>
-			<th>Satuan</th>			
-			<th>Qty</th>			
+			<th>Satuan</th>
+			<th>Qty</th>
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if ($ENABLE_MANAGE) : ?>
 			<th width="50">Action</th>
 			<?php endif; ?>
 		</tr>
 		</thead>
-        
+
 		<tbody>
-		<?php if(empty($results)){
-		}else{
-			$numb=0; foreach($results AS $record){ $numb++; ?>
+		<?php if (empty($results)) {
+} else {
+    $numb = 0;
+    foreach ($results as $record) {
+        ++$numb; ?>
 		<tr>
 			<?php
-				if($record->satuan==''){
-					$satuan = $record->setpcs;
-				}else{
-					$satuan = $record->satuan;
-				}
-			?>
+                if ($record->satuan == '') {
+                    $satuan = $record->setpcs;
+                } else {
+                    $satuan = $record->satuan;
+                } ?>
 		    <td><?= $numb; ?></td>
-	        <td><?= $record->id_barang ?></td>
-		
-			<td><?= strtoupper($record->nm_jenis) ?></td>
-			<td><?= strtoupper($record->nm_group) ?></td>			
-			<td><?= $record->nm_barang ?></td>	
-			<td><?= $record->nm_supplier ?></td>	
-			<td><?= $satuan ?></td>		
-			<td><?= $record->qty ?></td>			
+	        <td><?= $record->id_barang; ?></td>
+
+			<td><?= strtoupper($record->nm_jenis); ?></td>
+			<td><?= strtoupper($record->nm_group); ?></td>
+			<td><?= $record->nm_barang; ?></td>
+			<td><?= $satuan; ?></td>
+			<td><?= $record->qty; ?></td>
 			<td>
-				<?php if($record->sts_aktif == 'aktif'){ ?>
+				<?php if ($record->sts_aktif == 'aktif') {
+                    ?>
 					<label class="label label-success">Aktif</label>
-				<?php }else{ ?>
+				<?php
+                } else {
+                    ?>
 					<label class="label label-danger">Non Aktif</label>
-				<?php } ?>
+				<?php
+                } ?>
 			</td>
 			<td style="padding-left:20px">
-			<?php if($ENABLE_VIEW) : ?>
-				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_barang?>')">
+			<?php if ($ENABLE_VIEW) : ?>
+				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_barang; ?>')">
 				<span class="glyphicon glyphicon-print"></span>
 				</a>
 			<?php endif; ?>
 
-			<?php if($ENABLE_MANAGE) : ?>
-				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="edit_data('<?=$record->id_barang?>')"><i class="fa fa-pencil"></i>
+			<?php if ($ENABLE_MANAGE) : ?>
+				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="edit_data('<?=$record->id_barang; ?>')"><i class="fa fa-pencil"></i>
 				</a>
 			<?php endif; ?>
 
-			<?php if($ENABLE_DELETE) : ?>
-				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_barang?>')"><i class="fa fa-trash"></i>
+			<?php if ($ENABLE_DELETE) : ?>
+				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_barang; ?>')"><i class="fa fa-trash"></i>
 				</a>
 			<?php endif; ?>
 			</td>
 		</tr>
-		<?php } }  ?>
+		<?php
+    }
+}  ?>
 		</tbody>
-		
+
 		<tfoot>
 		<tr>
 			<th width="5">#</th>
@@ -99,11 +104,10 @@ thead input {
 			<th>Jenis Produk</th>
 			<th>Group Produk</th>
 			<th>Nama Set</th>
-			<th>Supplier</th>
-			<th>Satuan</th>			
-			<th>Qty</th>			
+			<th>Satuan</th>
+			<th>Qty</th>
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if ($ENABLE_MANAGE) : ?>
 			<th width="50">Action</th>
 			<?php endif; ?>
 		</tr>
@@ -114,7 +118,7 @@ thead input {
 </div>
 
 <div id="form-area">
-<?= $this->load->view('barang/barang_form') ?>
+<?= $this->load->view('barang/barang_form'); ?>
 </div>
 
 <!-- awal untuk modal dialog -->
@@ -157,13 +161,13 @@ thead input {
 
 
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">
 
-  	$(function() {  	
+  	$(function() {
     	$('#example1 thead tr').clone(true).appendTo( '#example1 thead' );
 	    $('#example1 thead tr:eq(1) th').each( function (i) {
 	        var title = $(this).text();
@@ -171,9 +175,9 @@ thead input {
 	        if (title == "#" || title =="Action" ) {
 	        	$(this).html( '' );
 	        }else{
-	        	$(this).html( '<input type="text" />' );        
+	        	$(this).html( '<input type="text" />' );
 	        }
-	        
+
 	        $( 'input', this ).on( 'keyup change', function () {
 	            if ( table.column(i).search() !== this.value ) {
 	                table
@@ -188,31 +192,31 @@ thead input {
 	            }
 	        } );
 	    } );
-	 
+
 	    var table = $('#example1').DataTable( {
 	        orderCellsTop: true,
 	        fixedHeader: true
 	    } );
-    	$("#form-area").hide();   
+    	$("#form-area").hide();
   	});
 
   	function add_data(){
-		
-			var url = 'barang/create/';	
-			$(".box").hide(); 
-			$("#form-area").show();	
+
+			var url = 'barang/create/';
+			$(".box").hide();
+			$("#form-area").show();
 
 			$("#form-area").load(siteurl+url);
 
 		    $("#title").focus();
-		
+
 	}
 
   	function edit_data(kodebarang){
 		if(kodebarang!=""){
-			var url = 'barang/edit/'+kodebarang;	
-			$(".box").hide(); 
-			$("#form-area").show();	
+			var url = 'barang/edit/'+kodebarang;
+			$(".box").hide();
+			$("#form-area").show();
 
 			$("#form-area").load(siteurl+url);
 
@@ -287,7 +291,7 @@ thead input {
 
 	function PreviewRekap()
 	{
-		tujuan = 'barang/print_rekap';	   	
+		tujuan = 'barang/print_rekap';
 	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 

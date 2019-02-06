@@ -65,180 +65,12 @@ class Reportstok_trans extends Admin_Controller {
    	}
 
    	//Edit barang
-   	public function edit()
-   	{
 
-  		$this->auth->restrict($this->managePermission);
-        $id = $this->uri->segment(3);
-        $jenis_barang = $this->Barang_jenis_model->pilih_jb()->result();
-        $group_barang = $this->Barang_group_model->pilih_gb()->result();
-        $suppl_barang = $this->Supplier_model->pilih_supplier()->result();
-        $cp_barang = $this->Barang_cp_model->pilih_cp()->result();
-
-        $this->template->set('cp_barang',$cp_barang);
-        $this->template->set('jenis_barang',$jenis_barang);
-        $this->template->set('group_barang',$group_barang);
-        $this->template->set('suppl_barang',$suppl_barang);
-        $this->template->set('data', $this->Barang_model->find($id));
-        $this->template->title('Produk Group');
-        $this->template->render('barang_form');
-   	}
 
     //Save using ajax
-    public function save_data_ajax(){
 
-        $id_barang      = $this->input->post("id_barang");
-        $type           = $this->input->post("type");
-        $jenis          = $this->input->post("jenis");
-        $nm_barang      = strtoupper($this->input->post("nm_barang"));
-        $brand          = strtoupper($this->input->post("brand"));
-        $kategori         = $this->input->post("kategori");
-        $satuan         = $this->input->post("satuan");
-        $sts_aktif      = $this->input->post("sts_aktif");
 
-        if($type=="edit")
-        {
-            $this->auth->restrict($this->managePermission);
 
-            if($id_barang!="")
-            {
-                $data = array(
-                            array(
-                                'id_barang'=>$id_barang,
-                                'nm_barang'=>$nm_barang,
-                                'brand'=>$brand,
-                                'jenis'=>$jenis,
-                                'kategori'=>$kategori,
-                                'satuan'=>$satuan,
-                                'kdcab'=>$this->auth->user_cab(),
-                                'sts_aktif'=>$sts_aktif,
-                            )
-                        );
-
-                //Update data
-                $result = $this->Barang_model->update_batch($data,'id_barang');
-
-                $keterangan     = "SUKSES, Edit data Barang ".$id_barang.", atas Nama : ".$nm_barang;
-                $status         = 1;
-                $nm_hak_akses   = $this->addPermission;
-                $kode_universal = $id_barang;
-                $jumlah         = 1;
-                $sql            = $this->db->last_query();
-
-                $barang       = $id_barang;
-            }
-            else
-            {
-                $result = FALSE;
-
-                $keterangan     = "GAGAL, Edit data Barang ".$id_barang.", atas Nama : ".$nm_barang;
-                $status         = 1;
-                $nm_hak_akses   = $this->addPermission;
-                $kode_universal = $id_barang;
-                $jumlah         = 1;
-                $sql            = $this->db->last_query();
-            }
-
-            simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
-
-        }
-        else //Add New
-        {
-            $this->auth->restrict($this->addPermission);
-
-            $data = array(
-                        'id_barang'=>$id_barang,
-                        'nm_barang'=>$nm_barang,
-                        'brand'=>$brand,
-                        'jenis'=>$jenis,
-                        'kategori'=>$kategori,
-                        'satuan'=>$satuan,
-                        'kdcab'=>$this->auth->user_cab(),
-                        'sts_aktif'=>$sts_aktif,
-                        );
-
-            //Add Data
-            $id = $this->Reportstok_model->insert($data);
-
-            if(is_numeric($id))
-            {
-                $keterangan     = "SUKSES, tambah Setup Stok Barang ".$id_barang.", atas Nama : ".$nm_barang;
-                $status         = 1;
-                $nm_hak_akses   = $this->addPermission;
-                $kode_universal = 'NewData';
-                $jumlah         = 1;
-                $sql            = $this->db->last_query();
-
-                $result         = TRUE;
-                $barang       = $id_barang;
-            }
-            else
-            {
-                $keterangan     = "GAGAL, tambah data Setup Stok Barang ".$id_barang.", atas Nama : ".$nm_barang;
-                $status         = 0;
-                $nm_hak_akses   = $this->addPermission;
-                $kode_universal = 'NewData';
-                $jumlah         = 1;
-                $sql            = $this->db->last_query();
-                $result = FALSE;
-            }
-            //Save Log
-            simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
-
-        }
-
-        $param = array(
-                'barang'=> $barang,
-                'series'=> $series,
-                'save' => $result
-                );
-
-        echo json_encode($param);
-    }
-
-    function hapus_barang()
-    {
-        $this->auth->restrict($this->deletePermission);
-        $id = $this->uri->segment(3);
-        $wheres = array(
-            'id_barang'    => $id,
-            'kdcab' => $this->auth->user_cab()
-        );
-
-        if($id!=''){
-
-            $result = $this->Reportstok_model->delete_where($wheres);
-
-            $keterangan     = "SUKSES, Delete data Setup Stok Barang ".$id;
-            $status         = 1;
-            $nm_hak_akses   = $this->addPermission;
-            $kode_universal = $id;
-            $jumlah         = 1;
-            $sql            = $this->db->last_query();
-
-        }
-        else
-        {
-            $result = 0;
-            $keterangan     = "GAGAL, Delete data Setup stok Barang ".$id;
-            $status         = 0;
-            $nm_hak_akses   = $this->addPermission;
-            $kode_universal = $id;
-            $jumlah         = 1;
-            $sql            = $this->db->last_query();
-
-        }
-
-        //Save Log
-            simpan_aktifitas($nm_hak_akses, $kode_universal, $keterangan, $jumlah, $sql, $status);
-
-        $param = array(
-                'delete' => $result,
-                'idx'=>$id
-                );
-
-        echo json_encode($param);
-    }
 
     function get_data(){
         $id_barang = $this->input->post('id_barang');
@@ -401,8 +233,8 @@ class Reportstok_trans extends Admin_Controller {
         $mpdf=new mPDF('utf-8', array(210,145), 10 ,'Arial', 5, 5, 16, 16, 1, 4, 'P');
         $mpdf->SetImportUse();
         //$mpdf->RestartDocTemplate();
-
-        $trans = $this->Trans_stock_model->find_all_by('id_barang',$id,'id_barang');
+        $session = $this->session->userdata('app_session');
+        $trans = $this->Trans_stock_model->order_by('date_stock','DESC')->find_all_by(array('id_barang'=>$id,'kdcab'=>$session['kdcab']));
         //$customer = $this->Salesorder_model->cek_data(array('id_customer'=>$so_data->id_customer),'customer');
         //$detail = $this->Detailsalesorder_model->find_all_by(array('no_so' => $no_so, 'qty_booked >'=>0));
 
@@ -416,7 +248,7 @@ class Reportstok_trans extends Admin_Controller {
                       <th width="30%" style="text-align: left;">
                         <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
                       </th>
-                          <th colspan="3" width="20%" style="text-align: center;font-size: 16px;">KARTU STOK BARANG<br>No. :'.$id.'</th>
+                          <th colspan="3" width="20%" style="text-align: center;font-size: 16px;">KARTU STOK BARANG<br>No. :'.$id.'<br>'.$trans[0]->nm_barang.'</th>
                           <th colspan="4" style="border-left: none;"></th>
                       </tr>
                       </table>

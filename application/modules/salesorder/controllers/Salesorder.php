@@ -35,13 +35,43 @@ class Salesorder extends Admin_Controller {
     public function index(){
         $this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab']));
+        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab'],'LEFT(waktu,7)'=>date("Y-m")));
         $disc_cash = $this->Salesorder_model->get_data(array('diskon'=>'CASH'),'diskon');
         //$this->Salesorder_model->find_data('trans_so_header',$no_so,'no_so');
         $this->template->set('results', $data);
         $this->template->set('disc_cash', $disc_cash);
         $this->template->title('Sales Order');
         $this->template->render('list');
+    }
+
+    function get_list(){
+      $session = $this->session->userdata('app_session');
+      if ($this->input->post('per')) {
+        $per = $this->input->post('per');
+      }else {
+        $per = date("Y-m");
+      }
+      $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab'],'LEFT(tanggal,7)'=>$per));
+      echo json_encode($data);
+    }
+    function get_filter(){
+      $session = $this->session->userdata('app_session');
+
+      $data = $this->Salesorder_model
+      ->where("tanggal between '".$this->input->post('pawal')."' AND '".$this->input->post('pakhir')."'")
+      ->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab']));
+      echo json_encode($data);
+    }
+    function get_bulan(){
+      $th = $this->input->post('tahun');
+      $session = $this->session->userdata('app_session');
+      $data = $this->Salesorder_model->select('LEFT(tanggal,7) as per,MID(tanggal,6,2) as bln')->group_by('MID(tanggal,6,2)')->find_all_by(array('LEFT(tanggal,4)'=>$th));
+      //echo json_encode($data);
+      $html = '<option value=""></option>';
+      foreach ($data as $key => $v) {
+        $html .= '<option value="'.$v->per.'">'.$v->bln.'</option>';
+      }
+      echo $html;
     }
 
     public function getitemsotemp(){
@@ -58,9 +88,9 @@ class Salesorder extends Admin_Controller {
         $itembarang_bonus    = $itembarang;
         //$diskontoko = $this->Salesorder_model->get_data(array('deleted'=>'0'),'customer');
         $listitembarang = $this->Detailsalesordertmp_model->find_all_by(array('createdby'=>$session['id_user']));
-        if(!@$listitembarang){
-            $this->session->unset_userdata('header_so');
-        }
+        //if(!@$listitembarang){
+            //$this->session->unset_userdata('header_so');
+        //}
         //$customer = $this->Salesorder_model->get_data(array('deleted'=>'0'),'customer');
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$session['kdcab']));
         $marketing = $this->Salesorder_model->pilih_marketing($session['kdcab'])->result();
@@ -234,8 +264,8 @@ class Salesorder extends Admin_Controller {
 
         $itembarang    = $this->Salesorder_model->pilih_item($session['kdcab'])->result();
         $listitembarang = $this->Detailsalesorder_model->find_all_by(array('no_so' => $noso));
-        $customer = $this->Customer_model->find_all();
-        $marketing = $this->Salesorder_model->pilih_marketing()->result();
+        $customer = $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$session['kdcab']));
+        $marketing = $this->Salesorder_model->pilih_marketing($session['kdcab'])->result();
         $pic = $this->Salesorder_model->get_pic_customer($header->id_customer)->result();
 
         $this->template->set('itembarang',$itembarang);
@@ -254,7 +284,7 @@ class Salesorder extends Admin_Controller {
         $session = $this->session->userdata('app_session');
         $getparam = explode(";",$_GET['param']);
 
-        $and = " no_so = '".$noso."' ";
+        $and = " no_so = '".$noso."' AND kdcab = '".$session['kdcab']."'";
         $itembarang    = $this->Salesorder_model->pilih_item($session['kdcab'])->result();
         $getitempr = $this->Detailsalesorder_model
         ->select( '*,
@@ -411,7 +441,7 @@ class Salesorder extends Admin_Controller {
     function saveitemso(){
         $dataheader = array(
             'idcustomer' => $this->input->post('idcustomer'),
-            //'ns' => $this->input->post('ns'),
+            'bidang_usaha' => $this->input->post('bidang_usaha'),
             'nmcustomer' => $this->input->post('nmcustomer'),
             'pic' => $this->input->post('pic'),
             'idsalesman' => $this->input->post('idsalesman'),
@@ -426,10 +456,11 @@ class Salesorder extends Admin_Controller {
             'diskon_toko' => $this->input->post('diskon_toko'),
             'diskoncash' => $this->input->post('diskoncash'),
             'top' => $this->input->post('top'),
-            'keterangan' => $this->input->post('keterangan')
+            'keterangan' => $this->input->post('keterangan'),
+            //'bidang_usaha' => $this->input->post('bidang_usaha')
             );
         $this->session->set_userdata('header_so',$dataheader);
-
+        $detbar = $this->Salesorder_model->find_data("barang_stock",$this->input->post('item_brg_so'),'id_barang');
         $session              = $this->session->userdata('app_session');
         $noso                 = $this->Salesorder_model->generate_noso($session['kdcab']);
         //$ns = $this->input->post('ns');
@@ -447,11 +478,26 @@ class Salesorder extends Admin_Controller {
         $diskon_standar       = $this->input->post('diskon_standar_persen') * $this->input->post('qty_supply') * $this->input->post('harga_normal') / 100;
         $diskon_promo_rp      = $this->input->post('diskon_promo_rp');
         $diskon_promo_persen  = $this->input->post('diskon_promo_persen');
+        /*if ($this->input->post('bidang_usaha') == "DISTRIBUTOR") {
+          $diskon_promo_rp      = $this->input->post('diskon_promo_rp');
+          $diskon_promo_persen  = $this->input->post('diskon_promo_persen');
+        }else {
+          $diskon_promo_rp      = $detbar->diskon_promo_rp;
+          $diskon_promo_persen  = $detbar->diskon_promo_persen;
+        }*/
         $qty_bonus            = $this->input->post('qty_bonus');
         $harga                = $this->input->post('harga');
         $harga_normal         = $this->input->post('harga_normal');
         $harga_sebelum_ppn    = $this->input->post('harga_sebelum_ppn');
         $diskon               = $diskon_standar + $diskon_promo_rp + ($diskon_promo_persen * $harga_normal * $qtysupply / 100);
+        $diskon_so            = $this->input->post('disso');
+
+        if (!empty($this->input->post('radio_disso_rp'))) {
+          $tipe_diskon_so     = "rupiah_".$this->input->post('radio_disso_rp');
+        }else {
+          $tipe_diskon_so     = "persen";
+        }
+
 
         $total = $this->input->post('total');
         $this->db->trans_begin();
@@ -513,6 +559,8 @@ class Salesorder extends Admin_Controller {
             'diskon_promo_rp'     => $diskon_promo_rp,
             'diskon_promo_persen' => $diskon_promo_persen,
             'qty_bonus'           => $qty_bonus,
+            'diskon_so'           => $diskon_so,
+            'tipe_diskon_so'      => $tipe_diskon_so,
             'subtotal'            => $total,
             'createdby'           => $session['id_user']
             );
@@ -1025,6 +1073,7 @@ class Salesorder extends Admin_Controller {
     }
 
     function saveheaderso(){
+      //MAKE VARIABLE OF HEADER SO
         $session            = $this->session->userdata('app_session');
         $noso               = $this->Salesorder_model->generate_noso($session['kdcab']);
         $poin_arr           = $this->Detailsalesordertmp_model->find_all_by(array('no_so'=>$noso));
@@ -1054,6 +1103,7 @@ class Salesorder extends Admin_Controller {
         $keterangan         = $this->input->post('keterangan');
         $top                = $this->input->post('top');
 
+      //MAKE ARRAY FOR HEADER SO
         $dataheaderso = array(
             'no_so'               => $noso,
             //'ns' => $ns,
@@ -1079,14 +1129,22 @@ class Salesorder extends Admin_Controller {
             'created_on'          => date("Y-m-d H:i:s"),
             'created_by'          => $session['id_user']
             );
+
+      //TRANSACTION STARTS HERE
         $this->db->trans_begin();
+        //INSERT TO HEADER
         $this->db->insert('trans_so_header',$dataheaderso);
+        //GET DATA IN DETAIL TMP
         $data_tmp = $this->Detailsalesordertmp_model->find_all_by(array('createdby'=>$session['id_user']));
         $dataitem_pending = array();
+        //FOR EACH DATA IN DETAIL TMP
         foreach($data_tmp as $key=>$val){
+          //IF QTY BOOKED(CONFIRM) IS LOWER THAN QTY ORDER(IT MUST BE PENDING)
           if ($val->qty_booked < $val->qty_order) {
-            $qty_supply_pending = '1';
+            $qty_supply_pending = '1'; //THIS IS FOR ATTENTION THAT PENDING IS EXIST!!!
+            //THAN QTY BOOKED SO = ORDER - PENDING - CANCEL!!!
             $qty_booked = $val->qty_order-$val->qty_pending-$val->qty_cancel;
+            //COUNTING QTY PENDING!!!
             $qty_pending = $val->qty_order-$val->qty_booked-$val->qty_cancel;
           }
           else {
@@ -1117,6 +1175,8 @@ class Salesorder extends Admin_Controller {
                 'diskon_promo_rp'     => $val->diskon_promo_rp,
                 'diskon_promo_persen' => $val->diskon_promo_persen,
                 'qty_bonus'           => $val->qty_bonus,
+                'diskon_so'           => $val->diskon_so,
+                'tipe_diskon_so'      => $val->tipe_diskon_so,
                 'subtotal'            => $val->subtotal,
                 'tgl_order'           =>date("Y-m-d"),
                 'created_by'          =>$session['id_user']
@@ -1244,53 +1304,64 @@ class Salesorder extends Admin_Controller {
     }
 
     function saveheaderpso(){
-        $session = $this->session->userdata('app_session');
-        $noso = $this->Salesorder_model->generate_noso($session['kdcab']);
-        $noso_pending = $this->Salesorder_model->generate_no_pending($noso);
-        $noso_pending_lama = $this->input->post('no_so_pending');
-        $no_pickinglist = $this->Salesorder_model->generate_no_pl($session['kdcab']);
-        $idcustomer = $this->input->post('idcustomer');
-        $nmcustomer = $this->input->post('nmcustomer');
-        $tglso = $this->input->post('tglso');
-        $idsalesman = $this->input->post('idsalesman');
-        $nmsalesman = $this->input->post('nmsalesman');
-        $picso = $this->input->post('pic');
-        $waktu = date('Y-m-d H:i:s');
-        $statusso = '';
-        $dppso = $this->input->post('dppso');
-        $ppnso = $this->input->post('ppnso');
-        $flagppn = $this->input->post('nilaippn');
-        $totalso = $this->input->post('totalso');
+      //MAKE VARIABLE OF HEADER SO
+        $session            = $this->session->userdata('app_session');
+        $noso               = $this->Salesorder_model->generate_noso($session['kdcab']);
+        $noso_pending_lama  = $this->input->post('no_so_pending');
+        $poin_arr           = $this->Detailsoptmp_model->find_all_by(array('no_so'=>$noso_pending_lama));
+        $poin_total = 0;
+        foreach ($poin_arr as $key => $value) {
+          $poin_total += $value->poin_per_item;
+        }
+        $noso_pending       = $this->Salesorder_model->generate_no_pending($noso);
+        $no_pickinglist     = $this->Salesorder_model->generate_no_pl($session['kdcab']);
+        $ns                 = $this->input->post('ns');
+        $idcustomer         = $this->input->post('idcustomer');
+        $nmcustomer         = $this->input->post('nmcustomer');
+        $tglso              = $this->input->post('tglso');
+        $idsalesman         = $this->input->post('idsalesman');
+        $nmsalesman         = $this->input->post('nmsalesman');
+        $picso              = $this->input->post('pic');
+        $waktu              = date('Y-m-d H:i:s');
+        $statusso           = '';
+        $dppso              = $this->input->post('dppso');
+        $ppnso              = $this->input->post('ppnso');
+        $flagppn            = $this->input->post('nilaippn');
+        $totalso            = $this->input->post('totalso');
         $persen_diskon_toko = $this->input->post('persen_diskon_toko');
         $persen_diskon_cash = $this->input->post('persen_diskon_cash');
-        $diskon_toko = $this->input->post('diskon_toko');
-        $diskon_cash = $this->input->post('diskon_cash');
-        $keterangan = $this->input->post('keterangan');
-        $top = $this->input->post('top');
+        $diskon_toko        = $this->input->post('diskon_toko');
+        $diskon_cash        = $this->input->post('diskon_cash');
+        $keterangan         = $this->input->post('keterangan');
+        $top                = $this->input->post('top');
 
+      //MAKE ARRAY FOR HEADER SO
         $dataheaderso = array(
-            'no_so' => $noso,
-            'no_picking_list' => $no_pickinglist,
-            'id_customer' => $idcustomer,
-            'nm_customer' => $nmcustomer,
-            'tanggal' => $tglso,
-            'top' => $top,
-            'id_salesman' => $idsalesman,
-            'nm_salesman' => $nmsalesman,
-            'pic' => $picso,
-            'waktu' => $waktu,
-            'dpp' => $dppso,
-            'ppn' => $ppnso,
-            'flag_ppn' => $flagppn,
-            'total' => $totalso,
-            'diskon_toko' => $diskon_toko,
-            'persen_diskon_toko' => $persen_diskon_toko,
-            'persen_diskon_cash' => $persen_diskon_cash,
-            'diskon_cash' => $diskon_cash,
-            'keterangan' => $keterangan,
-            'created_on'=>date("Y-m-d H:i:s"),
-            'created_by'=>$session['id_user']
+            'no_so'               => $noso,
+            //'ns' => $ns,
+            'no_picking_list'     => $no_pickinglist,
+            'id_customer'         => $idcustomer,
+            'nm_customer'         => $nmcustomer,
+            'tanggal'             => $tglso,
+            'top'                 => $top,
+            'id_salesman'         => $idsalesman,
+            'nm_salesman'         => $nmsalesman,
+            'pic'                 => $picso,
+            'waktu'               => $waktu,
+            'dpp'                 => $dppso,
+            'ppn'                 => $ppnso,
+            'flag_ppn'            => $flagppn,
+            'total'               => $totalso,
+            'diskon_toko'         => $diskon_toko,
+            'total_poin'          => $poin_total,
+            'persen_diskon_toko'  => $persen_diskon_toko,
+            'persen_diskon_cash'  => $persen_diskon_cash,
+            'diskon_cash'         => $diskon_cash,
+            'keterangan'          => $keterangan,
+            'created_on'          => date("Y-m-d H:i:s"),
+            'created_by'          => $session['id_user']
             );
+
         $this->db->trans_begin();
         $this->db->insert('trans_so_header',$dataheaderso);
         $data_tmp = $this->Detailsoptmp_model->find_all_by(array('created_by'=>$session['id_user'],'no_so'=>$noso_pending_lama));
@@ -1506,11 +1577,16 @@ class Salesorder extends Admin_Controller {
             'modified_on'=>date("Y-m-d H:i:s"),
             'modified_by'=>$session['id_user']
             );
+
         $this->db->trans_begin();
+
         $this->db->where(array('no_so' => $noso))
         ->update('trans_so_header',$dataheaderso);
+
         $data_tmp = $this->Detailsoedittmp_model->find_all_by(array('createdby'=>$session['id_user'],'no_so'=>$noso));
+
         $data_so = $this->Detailsalesorder_model->find_all_by(array('created_by'=>$session['id_user'],'no_so'=>$noso));
+
         $dataitem_pending = array();
         foreach($data_tmp as $key=>$val){
 
@@ -1550,82 +1626,75 @@ class Salesorder extends Admin_Controller {
                                    ->from('trans_so_detail')
                                    ->count_all_results();
             if ($count_data == 0) {
-              $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
-              $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
-              if ($val->qty_booked>$val->qty_booked_awal) {
-                $qty_confirm_add = $val->qty_booked - $val->qty_booked_awal;
-                if ($stok_avl->qty_avl < $qty_confirm_add){
-                  $param_data = array(
-                    'save' => 0,
-                    'msg' => "GAGAL Simpan data".$val->nm_barang.", Qty Available telah berkurang dari transaksi lain dan tidak mencukupi untuk transaksi ini..!!!"
-                  );
+              if ($val->tipe_tmp != "deleted") {
+                $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
+                $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
+                if ($val->qty_booked > $val->qty_booked_awal) {
+                  $qty_confirm_add = $val->qty_booked - $val->qty_booked_awal;
+                  if ($stok_avl->qty_avl < $qty_confirm_add){
+                    $param_data = array(
+                      'save' => 0,
+                      'msg' => "GAGAL Simpan data".$val->nm_barang.", Qty Available telah berkurang dari transaksi lain dan tidak mencukupi untuk transaksi ini..!!!"
+                    );
+                  }else {
+                    $this->db->insert('trans_so_detail',$dataitem);
+                    //Update QTY_AVL
+                    $this->db->where($keycek);
+                    $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_confirm_add));
+                    //Update QTY_AVL
+                  }
                 }else {
                   $this->db->insert('trans_so_detail',$dataitem);
                   //Update QTY_AVL
                   $this->db->where($keycek);
-                  $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_confirm_add));
+                  $this->db->update('barang_stock',array('qty_avl' => $stok_avl->qty_avl - $qty_confirm_add));
                   //Update QTY_AVL
                 }
-              }else {
-                $this->db->insert('trans_so_detail',$dataitem);
-                //Update QTY_AVL
-                $this->db->where($keycek);
-                $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_confirm_add));
-                //Update QTY_AVL
               }
             }
             else {
-              //$data = $this->Salesorder_model->cek_data($key_so,'trans_so_detail');
-              $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
-              $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
+              if ($val->tipe_tmp != "deleted") {
+                $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
+                $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
 
-              if ($val->qty_booked > $val->qty_booked_awal) {
-                $qty_confirm_add = $val->qty_booked - $val->qty_booked_awal;
-                //$test_avl = $stok_avl->qty_avl-$qty_confirm_add;
-                if ($stok_avl->qty_avl < $qty_confirm_add){
-                  $param_data = array(
-                    'save' => 0,
-                    'msg' => "GAGAL Simpan data".$val->nm_barang.", Qty Available telah berkurang dari transaksi lain dan tidak mencukupi untuk transaksi ini..!!!"
-                  );
+                if ($val->qty_booked > $val->qty_booked_awal) {
+                  $qty_confirm_add = $val->qty_booked - $val->qty_booked_awal;
+                  //$test_avl = $stok_avl->qty_avl-$qty_confirm_add;
+                  if ($stok_avl->qty_avl < $qty_confirm_add){
+                    $param_data = array(
+                      'save' => 0,
+                      'msg' => "GAGAL Simpan data".$val->nm_barang.", Qty Available telah berkurang dari transaksi lain dan tidak mencukupi untuk transaksi ini..!!!"
+                    );
+                  }else {
+                    $this->db->where($key_so)
+                    ->update('trans_so_detail',$dataitem);
+
+                    //Update QTY_AVL
+                    $this->db->where($keycek);
+                    $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_confirm_add));
+                    //Update QTY_AVL
+                  }
                 }else {
-                  $this->db->where($key_so)
-                  ->update('trans_so_detail',$dataitem);
-                  $this->db->query("DELETE FROM trans_so_detail WHERE trans_so_detail.id_barang NOT IN (SELECT trans_so_edit_detail_tmp.id_barang FROM trans_so_edit_detail_tmp WHERE trans_so_edit_detail_tmp.no_so = '".$noso."') AND trans_so_detail.no_so = '".$noso."'");
-                  //Update QTY_AVL
-                  $this->db->where($keycek);
-                  $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_confirm_add));
-                  //Update QTY_AVL
-                }
-              }else {
-                $qty_confirm_add = $val->qty_booked_awal - $val->qty_booked;
-                //$test_avl = $stok_avl->qty_avl-$qty_confirm_add;
+                  $qty_confirm_add = $val->qty_booked_awal - $val->qty_booked;
+                  //$test_avl = $stok_avl->qty_avl-$qty_confirm_add;
 
                   $this->db->where($key_so)
                   ->update('trans_so_detail',$dataitem);
-                  $this->db->query("DELETE FROM trans_so_detail WHERE trans_so_detail.id_barang NOT IN (SELECT trans_so_edit_detail_tmp.id_barang FROM trans_so_edit_detail_tmp WHERE trans_so_edit_detail_tmp.no_so = '".$noso."') AND trans_so_detail.no_so = '".$noso."'");
+
 
                   //Update QTY_AVL
                   $this->db->where($keycek);
                   $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl+$qty_confirm_add));
                   //Update QTY_AVL
 
-              }
-              /*
-              if ($val->qty_booked > $data->qty_booked) {
-                $qty_conf = $val->qty_booked - $data->qty_booked;
-
-                $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
-                $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
-                $this->db->where($keycek);
-                $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl-$qty_conf));
+                }
               }else {
-                $qty_conf = $data->qty_booked - $val->qty_booked;
-
                 $keycek = array('kdcab'=>$session['kdcab'],'id_barang'=>$val->id_barang);
                 $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
                 $this->db->where($keycek);
-                $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl+$qty_conf));
-              }*/
+                $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl+$val->qty_booked_awal));
+              }
+
 
 
 
@@ -1634,6 +1703,7 @@ class Salesorder extends Admin_Controller {
 
 
         }
+        $this->db->query("DELETE FROM trans_so_detail WHERE trans_so_detail.id_barang NOT IN (SELECT trans_so_edit_detail_tmp.id_barang FROM trans_so_edit_detail_tmp WHERE trans_so_edit_detail_tmp.no_so = '".$noso."' AND trans_so_edit_detail_tmp.tipe_tmp = 'edit') AND trans_so_detail.no_so = '".$noso."'");
         $this->db->delete('trans_so_edit_detail_tmp', array('createdby' => $session['id_user'],'no_so'=>$noso));
 
 
@@ -1773,6 +1843,20 @@ class Salesorder extends Admin_Controller {
         }else{
             $param['delete'] = 0;
         }
+        echo json_encode($param);
+    }
+
+    function hapus_item_so_all(){
+        $session = $this->session->userdata('app_session');
+        //$noso = $this->input->post('NO_SO');
+        //$id = $this->input->post('ID');
+        $key = array('createdby'=>$session['id_user']);
+        //if(!empty($noso) && !empty($id)){
+           $result = $this->Detailsalesordertmp_model->delete_where($key);
+           $param['delete'] = 1;
+        //}else{
+            //$param['delete'] = 0;
+        //}
         echo json_encode($param);
     }
 

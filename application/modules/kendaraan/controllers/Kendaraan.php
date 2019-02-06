@@ -8,6 +8,13 @@
  */
 
 class Kendaraan extends Admin_Controller {
+
+  //Permission
+  protected $viewPermission   = "Kendaraan.View";
+  protected $addPermission    = "Kendaraan.Add";
+  protected $managePermission = "Kendaraan.Manage";
+  protected $deletePermission = "Kendaraan.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -24,7 +31,8 @@ class Kendaraan extends Admin_Controller {
 
     public function index()
     {
-        $data = $this->Kendaraan_model->order_by('id_kendaraan','ASC')->find_all();
+      $session = $this->session->userdata('app_session');
+        $data = $this->Kendaraan_model->order_by('id_kendaraan','ASC')->find_all_by(array('kdcab'=>$session['kdcab']));
 
         $this->template->set('results', $data);
         $this->template->title('Kendaraan');

@@ -24,12 +24,14 @@ img:hover {
             </div>
             <!-- form start-->
             <div class="box box-primary">
-            <?= form_open_multipart($this->uri->uri_string(),array('id'=>'frm_barang','name'=>'frm_barang','role'=>'form','class'=>'form-horizontal')) ?>
+            <?= form_open_multipart($this->uri->uri_string(), array('id' => 'frm_barang', 'name' => 'frm_barang', 'role' => 'form', 'class' => 'form-horizontal')); ?>
                 <div class="box-body">
 
-                <input type="hidden" id="id_barang" name="id_barang" value="<?php echo set_value('id_barang', isset($data->id_barang) ? $data->id_barang :''); ?>">
-                <?php  if(isset($data->id_barang)){$type='edit';}?>
-                <input type="hidden" id="type" name="type" value="<?= isset($type) ? $type : 'add' ?>">
+                <input type="hidden" id="id_barang" name="id_barang" value="<?php echo set_value('id_barang', isset($data->id_barang) ? $data->id_barang : ''); ?>">
+                <?php  if (isset($data->id_barang)) {
+    $type = 'edit';
+}?>
+                <input type="hidden" id="type" name="type" value="<?= isset($type) ? $type : 'add'; ?>">
                 <input type="hidden" id="nm_group" name="nm_group">
 
                 <div class="form-group ">
@@ -39,8 +41,8 @@ img:hover {
                             <select id="id_jenis" name="id_jenis" class="form-control pil_jb" style="width: 100%;" tabindex="-1" required>
                                 <option value=""></option>
                                 <?php foreach ($jenis_barang as $key => $st) : ?>
-                                <option value="<?= $st->id_jenis; ?>" <?= set_select('id_jenis', $st->id_jenis, isset($data->jenis) && $data->jenis == $st->id_jenis) ?>>
-                                <?= $st->nm_jenis ?>
+                                <option value="<?= $st->id_jenis; ?>" <?= set_select('id_jenis', $st->id_jenis, isset($data->jenis) && $data->jenis == $st->id_jenis); ?>>
+                                <?= $st->nm_jenis; ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -58,8 +60,8 @@ img:hover {
                             <select id="id_group" name="id_group" class="form-control pil_gb" style="width: 100%;" tabindex="-1" required onchange="get_nmgroup()">
                                 <option value=""></option>
                                 <?php foreach ($group_barang as $key => $st) : ?>
-                                <option value="<?= $st->id_group; ?>" <?= set_select('id_group', $st->id_group, isset($data->id_group) && $data->id_group == $st->id_group) ?>>
-                                <?= $st->nm_group ?>
+                                <option value="<?= $st->id_group; ?>" <?= set_select('id_group', $st->id_group, isset($data->id_group) && $data->id_group == $st->id_group); ?>>
+                                <?= $st->nm_group; ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -109,8 +111,8 @@ img:hover {
                         <!--onkeyup="setNapro()"-->
                     </div>
                 </div>
-
                 <div class="form-group">
+                  <!--
                     <label for="id_supplier" class="col-sm-2 control-label">Supplier <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
@@ -122,14 +124,14 @@ img:hover {
                             <select id="id_supplier" name="id_supplier" class="form-control pil_sup" style="width: 100%;" tabindex="-1" required>
                                 <option value=""></option>
                                 <?php foreach ($suppl_barang as $key => $st) : ?>
-                                <option value="<?= $st->id_supplier; ?>" <?= set_select('id_supplier', $st->id_supplier, isset($data->id_supplier) && $data->id_supplier == $st->id_supplier) ?>>
-                                <?= $st->nm_supplier ?>
+                                <option value="<?= $st->id_supplier; ?>" <?= set_select('id_supplier', $st->id_supplier, isset($data->id_supplier) && $data->id_supplier == $st->id_supplier); ?>>
+                                <?= $st->nm_supplier; ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
                     </div>
-
+-->
                     <label for="qty" class="col-sm-2 control-label">Qty / Satuan <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-2">
                         <div class="input-group">
@@ -290,7 +292,7 @@ img:hover {
                 </div>
 
                 </div>
-            <?= form_close() ?>
+            <?= form_close(); ?>
             </div>
         <!-- Data Produk -->
         </div>
@@ -301,13 +303,15 @@ img:hover {
             </div>
             <!-- form start-->
             <div class="box box-primary">
-            <?= form_open($this->uri->uri_string(),array('id'=>'frm_koli','name'=>'frm_koli','role'=>'form','class'=>'form-horizontal')) ?>
+            <?= form_open($this->uri->uri_string(), array('id' => 'frm_koli', 'name' => 'frm_koli', 'role' => 'form', 'class' => 'form-horizontal')); ?>
                 <div class="box-body">
 
                 <input type="hidden" id="barang" name="barang" value="<?php echo set_value('barang', isset($data->id_barang) ? $data->id_barang : ''); ?>">
                 <input type="hidden" id="series_nm" name="series_nm" value="<?php echo set_value('series_nm', isset($data->series) ? $data->series : ''); ?>">
-                <?php  if(isset($data->nm_koli)){$type1='edit';}?>
-                <input type="hidden" id="type1" name="type1" value="<?= isset($type1) ? $type1 : 'add' ?>">
+                <?php  if (isset($data->nm_koli)) {
+    $type1 = 'edit';
+}?>
+                <input type="hidden" id="type1" name="type1" value="<?= isset($type1) ? $type1 : 'add'; ?>">
                 <input type="hidden" id="id_koli" name="id_koli" value="">
                 <input type="hidden" id="nm_cp" name="nm_cp" value="">
                 <input type="hidden" id="barang_nm" name="barang_nm" value="<?php echo set_value('barang_nm', isset($data->nm_barang) ? $data->nm_barang : ''); ?>">
@@ -327,8 +331,8 @@ img:hover {
                             <select id="id_colly_produk" name="id_colly_produk" class="form-control pil_cp" style="width: 100%;" tabindex="-1" required onchange="get_nmcp()">
                                 <option value=""></option>
                                 <?php foreach ($cp_barang as $key => $st) : ?>
-                                <option value="<?= $st->id_colly_produk; ?>" <?= set_select('id_colly_produk', $st->id_colly_produk, isset($data->id_colly_produk) && $data->id_colly_produk == $st->id_colly_produk) ?>>
-                                <?= $st->colly_produk ?>
+                                <option value="<?= $st->id_colly_produk; ?>" <?= set_select('id_colly_produk', $st->id_colly_produk, isset($data->id_colly_produk) && $data->id_colly_produk == $st->id_colly_produk); ?>>
+                                <?= $st->colly_produk; ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -419,7 +423,7 @@ img:hover {
                 </div>
 
                 </div>
-            <?= form_close() ?>
+            <?= form_close(); ?>
             </div>
             <div id="list_koli"></div>
         <!-- Data Koli -->
@@ -431,11 +435,13 @@ img:hover {
             </div>
             <!-- form start-->
             <div class="box box-primary">
-            <?= form_open_multipart($this->uri->uri_string(),array('id'=>'frm_komponen','name'=>'frm_komponen','role'=>'form','class'=>'form-horizontal')) ?>
+            <?= form_open_multipart($this->uri->uri_string(), array('id' => 'frm_komponen', 'name' => 'frm_komponen', 'role' => 'form', 'class' => 'form-horizontal')); ?>
                 <div class="box-body">
 
-                <?php  if(isset($data->id_komponen)){$type2='edit';}?>
-                <input type="hidden" id="type2" name="type2" value="<?= isset($type2) ? $type2 : 'add' ?>">
+                <?php  if (isset($data->id_komponen)) {
+    $type2 = 'edit';
+}?>
+                <input type="hidden" id="type2" name="type2" value="<?= isset($type2) ? $type2 : 'add'; ?>">
                 <input type="hidden" id="barangc" name="barangc" value="<?php echo set_value('barangc', isset($data->id_barang) ? $data->id_barang : ''); ?>">
                 <input type="hidden" id="id_komponen" name="id_komponen" value="<?php echo set_value('id_komponen', isset($data->id_komponen) ? $data->id_komponen : ''); ?>">
 
@@ -451,8 +457,8 @@ img:hover {
                             <select id="id_koli_c" name="id_koli_c" class="form-control pil_koli" style="width: 100%;" tabindex="-1" required>
                                 <option value=""></option>
                                 <?php foreach ($koli as $key => $st) : ?>
-                                <option value="<?= $st->id_koli; ?>" <?= set_select('id_koli_c', $st->id_koli, isset($data->id_koli) && $data->id_koli == $st->id_koli) ?>>
-                                <?= $st->nm_koli ?>
+                                <option value="<?= $st->id_koli; ?>" <?= set_select('id_koli_c', $st->id_koli, isset($data->id_koli) && $data->id_koli == $st->id_koli); ?>>
+                                <?= $st->nm_koli; ?>
                                 </option>
                                 <?php endforeach; ?>
                             </select>
@@ -521,7 +527,7 @@ img:hover {
                 </div>
 
                 </div>
-            <?= form_close() ?>
+            <?= form_close(); ?>
             </div>
             <div id="list_komponen"></div>
             </div>

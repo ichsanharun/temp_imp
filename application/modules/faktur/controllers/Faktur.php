@@ -8,14 +8,14 @@
  */
 
 class Faktur extends Admin_Controller {
-    
+
     //Permission
-    /*
-    protected $viewPermission   = "Deliveryorder.View";
-    protected $addPermission    = "Deliveryorder.Add";
-    protected $managePermission = "Deliveryorder.Manage";
-    protected $deletePermission = "Deliveryorder.Delete";
-    */
+
+    protected $viewPermission   = "Faktur.View";
+    protected $addPermission    = "Faktur.Add";
+    protected $managePermission = "Faktur.Manage";
+    protected $deletePermission = "Faktur.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -30,14 +30,14 @@ class Faktur extends Admin_Controller {
     public function index()
     {
         //$this->auth->restrict($this->viewPermission);
-		
+
         $data = $this->Faktur_model->order_by('kode_req','ASC')->find_all();
         $this->template->set('results', $data);
         $this->template->title('Faktur');
         $this->template->render('list');
     }
 
-   
+
     public function add(){
        if($this->input->post()){
 			//echo"<pre>";print_r($this->input->post());exit;
@@ -62,7 +62,7 @@ class Faktur extends Admin_Controller {
 					$loop++;
 					$no_faktur		= str_pad($x,8,"0",STR_PAD_LEFT);
 					$faktur_id		= $Kode_Faktur.'-'.substr($Tahun_Faktur,-2).'.'.$no_faktur;
-					
+
 					$Arr_Detail[$loop]['fakturid']		= $faktur_id;
 					$Arr_Detail[$loop]['kode']			= $Kode_Faktur;
 					$Arr_Detail[$loop]['idgen']			= $Kode_Generate;
@@ -70,7 +70,7 @@ class Faktur extends Admin_Controller {
 					$Arr_Detail[$loop]['sts']			= "0";
 					$Arr_Detail[$loop]['tahun']			= $Tahun_Faktur;
 				}
-				
+
 				$Arr_Insert	= array(
 					'kode_req'		=> $this->Faktur_model->generate_kode(),
 					'idgen'			=> $Kode_Generate,
@@ -83,7 +83,7 @@ class Faktur extends Admin_Controller {
 					'created_on'	=> date('Y-m-d H:i:s'),
 					'created_by'	=> $this->session->userdata['app_session']['username']
 				);
-				
+
 				$this->db->trans_begin();
 				$this->db->insert('faktur_header',$Arr_Insert);
 				$this->db->insert_batch('faktur_detail',$Arr_Detail);
@@ -101,7 +101,7 @@ class Faktur extends Admin_Controller {
 					   );
 				}
 			}
-		   
+
 	   }else{
 		   $Arr_Return		= array(
 				'status'		=> 3,
@@ -110,7 +110,7 @@ class Faktur extends Admin_Controller {
 	   }
 	   echo json_encode($Arr_Return);
     }
-	
+
 	public function edit(){
        if($this->input->post()){
 			//echo"<pre>";print_r($this->input->post());exit;
@@ -118,7 +118,7 @@ class Faktur extends Admin_Controller {
 			$Status				= $this->input->post('approval_all');
 			$Arr_Update			= array();
 			$WHERE				= array(
-				'idgen'		=> $Kode_Generate				
+				'idgen'		=> $Kode_Generate
 			);
 			$Data_Insert	= array(
 				'status'	=> ($Status=='Y')?'1':'0'
@@ -128,15 +128,15 @@ class Faktur extends Admin_Controller {
 					'status'		=> '1'
 				);
 			}
-			
+
 			$this->db->trans_begin();
 			if($Arr_Update){
 				$Count_Cek			= $this->Faktur_model->getCount('faktur_header',array('status'=>'1'));
 				if($Count_Cek > 0){
 					$this->db->update('faktur_header',$Arr_Update,array('status'=>'1'));
-				}				
+				}
 			}
-			$this->db->update('faktur_header',$Data_Insert,$WHERE);			
+			$this->db->update('faktur_header',$Data_Insert,$WHERE);
 			if($this->db->trans_status() === FALSE){
 				$this->db->trans_rollback();
 				$Arr_Return		= array(
@@ -159,7 +159,7 @@ class Faktur extends Admin_Controller {
 	   echo json_encode($Arr_Return);
     }
 
-    
+
     public function view($kode){
 		$header				= $this->Faktur_model->getArray('faktur_header',array('kode_req'=>$kode));
 		$details			= $this->Faktur_model->getArray('faktur_detail',array('idgen'=>$header[0]['idgen']));
@@ -167,10 +167,10 @@ class Faktur extends Admin_Controller {
 		$this->template->set('row_header', $header);
         //$this->template->set('customer', $customer);
         $this->template->set('row_detail', $details);
-        
+
         $this->template->render('view_detail');
-		
-	  
+
+
     }
 
 

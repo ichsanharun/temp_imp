@@ -48,7 +48,7 @@ class Invoice extends Admin_Controller {
         $kode_customer		= '';
 
   		$Arr_Where			= array(
-  			'status !='		=> 'INV',
+  			'status'		=> 'DO',
         'konfirm_do'  => 'SUDAH',
         'LEFT(no_do,3)'=>$session['kdcab']
   		);
@@ -78,7 +78,7 @@ class Invoice extends Admin_Controller {
   			$Arr_Data		      = array();
   			                    $this->db->where_in('no_do',$getparamdo);
   			$headerdo         = $this->db->get('trans_do_header')->result_array();
-        $customer         = $this->Customer_model->find_all_by(array('deleted'=>0));
+        $customer_all     = $this->Customer_model->find_all_by(array('deleted'=>0));
         $Faktur_header	  = $this->Invoice_model->getFakturMaster();
 
   			foreach($headerdo as $key=>$vals){
@@ -90,18 +90,18 @@ class Invoice extends Admin_Controller {
   			}
 
   			$this->template->set('data_cust', $data_customer);
-        $this->template->set('customer', $customer);
+        $this->template->set('customer', $customer_all);
   			$this->template->set('faktur', $Faktur_header);
   			$this->template->set('records', $Arr_Data);
         //$this->template->set('header', $header);
   			$this->template->title('Input Invoice');
   			$this->template->render('invoice_form');
-  		}
-      else{
+  		}else{
   			 $this->template->render('list_do');
 		  }
 
     }
+
     function get_customer(){
         $idcus = $_GET['idcus'];
         $customer = $this->Invoice_model->get_customer($idcus)->row();
@@ -195,8 +195,8 @@ class Invoice extends Admin_Controller {
   					$Arr_detail[$Awal]['tgljual']				    	       = $this->input->post('tgljual')[$i];
   					$Arr_detail[$Awal]['ppn']						             = $this->input->post('ppn')[$i];
   					$Arr_detail[$Awal]['no_do']					             = $this->input->post('no_do')[$i];
-            //$Arr_detail[$Awal]['diskon_promo_rp']			       = $this->input->post('diskon_promo_rp')[$i];
-            //$Arr_detail[$Awal]['total_diskon_item']			     = $this->input->post('total_diskon_item')[$i];
+            $Arr_detail[$Awal]['diskon_so']			             = $this->input->post('diskon_so')[$i];
+            $Arr_detail[$Awal]['tipe_diskon_so']       			 = $this->input->post('tipe_diskon_so')[$i];
             //$Arr_detail[$Awal]['hargalanded']				         = $this->input->post('hargalanded')[$i];
             //$Arr_detail[$Awal]['diskon']					= $discount_satuan;
   					//$Arr_detail[$Awal]['bonus']				               = $this->input->post('bonus')[$key];
@@ -233,9 +233,7 @@ class Invoice extends Admin_Controller {
   					'hargalandedtotal'     	=> $Total_landed,
   				);
 
-  				//echo"<pre> ono bro : ";print_r($Arr_detail);echo "<br>HEADER =><br>";print_r($headerinv);exit;
-
-  				$dataAR = array(
+          $dataAR = array(
   					'no_invoice' 		=> $no_invoice,
   					'tgl_invoice'		=> $this->input->post('tanggal_invoice'),
   					'customer_code'	=>  $this->input->post('id_customer'),
@@ -248,13 +246,74 @@ class Invoice extends Admin_Controller {
   					'saldo_akhir'		=> $this->input->post('hargajualtotal'), //nilai invoice
   					'kdcab'				  => $session['kdcab']
   					);
+          $dataJVhead = array(
+  					'nomor' 	    	=> $this->Invoice_model->generate_nojv($session['kdcab']),
+  					'tgl'	         	=> $this->input->post('tanggal_invoice'),
+  					'jml'	          =>  $this->input->post('hargajualtotal'),
+  					'koreksi_no'		=>  '',
+  					'kdcab'				  => $session['kdcab'],
+  					'jenis'			    => 'V',
+  					'keterangan' 		=> 'Piutang Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+            'bulan'				    => date('m'),
+  					'tahun'				    => date('Y'),
+  					'user_id'			  => $session['id_user'],
+  					'memo'			    => '',
+  					'tgl_jvkoreksi'	=> date('Y-m-d'),
+  					'ho_valid'			=> ''
+  				);
 
-  				//echo"<pre> DETAIL INV :<br> ";print_r($Arr_detail);echo "<br>HEADER INV :<br>";print_r($headerinv);echo "<br>DATA AR :<br>";print_r($dataAR);exit;
+          $datajurnal_1 = array(
+              'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+              'tanggal'       => $this->input->post('tanggal_invoice'),
+              'tipe'          => 'JV',
+              'no_perkiraan'  => '1104-01-01',
+              'keterangan'    => 'Piutang Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+              'no_reff'       => $no_invoice,
+              'debet'         => $this->input->post('hargajualtotal'),
+              'kredit'        => 0
+          );
+          if($this->input->post('n_ppn') == 0){
+            $datajurnal_2 = array(
+              'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+              'tanggal'       => $this->input->post('tanggal_invoice'),
+              'tipe'          => 'JV',
+              'no_perkiraan'  => '4201-01-01',
+              'keterangan'    => 'Penjualan Kotor Non PPN #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+              'no_reff'       => $no_invoice,
+              'debet'         => 0,
+              'kredit'        => $this->input->post('hargajualtotal')
+            );
+  				}else {
+            $datajurnal_2 = array(
+              'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+              'tanggal'       => $this->input->post('tanggal_invoice'),
+              'tipe'          => 'JV',
+              'no_perkiraan'  => '4201-01-01',
+              'keterangan'    => 'Penjualan Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+              'no_reff'       => $no_invoice,
+              'debet'         => 0,
+              'kredit'        => $this->input->post('dpp')
+            );
+            $datajurnal_3 = array(
+              'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+              'tanggal'       => $this->input->post('tanggal_invoice'),
+              'tipe'          => 'JV',
+              'no_perkiraan'  => '2107-04-01',
+              'keterangan'    => 'PPN K Penjualan Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+              'no_reff'       => $no_invoice,
+              'debet'         => 0,
+              'kredit'        => $this->input->post('n_ppn')
+            );
+
+          }
+
+
 
   				$Kode_Proses			   = implode("','",$detail_do);
 
   				$Qry_Update_DO			 = "UPDATE trans_do_header SET status='INV',no_invoice='$no_invoice' WHERE no_do IN ('".$Kode_Proses."')";
   				$Qry_Update_Cabang	 = "UPDATE cabang SET no_invoice=no_invoice + 1 WHERE kdcab='".$session['kdcab']."'";
+
   				$this->db->trans_begin();
   				$this->db->query($Qry_Update_Cabang);
   				$this->db->query($Qry_Update_DO);
@@ -264,6 +323,16 @@ class Invoice extends Admin_Controller {
   				$this->db->insert_batch('trans_invoice_detail',$Arr_detail);
   				$this->db->insert('trans_invoice_header',$headerinv);
   				$this->db->insert('ar',$dataAR);
+
+          //INSERT JURNAL
+          $this->db->insert('javh',$dataJVhead);
+          $this->db->insert('jurnal',$datajurnal_1);
+          $this->db->insert('jurnal',$datajurnal_2);
+          if ($this->input->post('n_ppn') > 0) {
+            $this->db->insert('jurnal',$datajurnal_3);
+          }
+          $Qry_Update_Cabang_acc	 = "UPDATE pastibisa_tb_cabang SET noJS=noJS + 1 WHERE nocab='".$session['kdcab']."'";
+          $this->db->query($Qry_Update_Cabang_acc);
 
   				if($this->db->trans_status() === FALSE){
   					 $this->db->trans_rollback();
@@ -332,7 +401,7 @@ class Invoice extends Admin_Controller {
           <tr>
               <td width="5%">NO. SO</td>
 
-              <td colspan="3" width="50%">:</td>
+              <td colspan="3" width="50%">: '.@$detail->no_do.'</td>
               <td width="15%">Yogyakarta</td>
               <td width="1%">,</td>
               <td>'.date('d/m/Y',strtotime(@$inv_data->tanggal_invoice)).'</td>
@@ -391,7 +460,7 @@ class Invoice extends Admin_Controller {
 
             <tr>
                 <td colspan="3">
-                  <i>TERBILANG : '.ucwords(ynz_terbilang_format(@$inv_data->hargajualtotal)).'</i>
+                    <i>TERBILANG : '.ucwords(ynz_terbilang_format(@$inv_data->hargajualtotal)).'</i>
                 </td>
                 <td width="19%"></td>
                 <td width="1%"></td>
@@ -406,7 +475,7 @@ class Invoice extends Admin_Controller {
                 </td>
                 <td width="19%">JUMLAH NOMINAL</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor(@$inv_data->hargajualbefdis).'</td>
+                <td width="15%" style="text-align: right;">'.formatnomor(@$inv_data->hargajualafterdis).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
             <tr>
@@ -460,220 +529,7 @@ class Invoice extends Admin_Controller {
         $this->mpdf->Output();
     }
 
-    function print_request_old($noinv){
-        $mpdf=new mPDF('','','','','','','','','','');
-        $mpdf->SetImportUse();
-        $mpdf->RestartDocTemplate();
 
-        $inv_data = $this->Invoice_model->find_data('trans_invoice_header',$noinv,'no_invoice');
-        //$customer = $this->Invoice_model->cek_data(array('id_customer'=>$inv_data->id_customer),'customer');
-        $detail = $this->Detailinvoice_model->find_all_by(array('no_invoice' => $noinv));
-
-        $this->template->set('header', $inv_data);
-        //$this->template->set('customer', $customer);
-        $this->template->set('detail', $detail);
-
-        $show = $this->template->load_view('print_data',$data);
-
-        $this->mpdf->AddPage('L');
-        $this->mpdf->WriteHTML($show);
-        $this->mpdf->Output();
-    }
-
-    function print_custom_invoice(){
-      $mpdf=new mPDF('utf-8', array(210,145), 10 ,'Arial', 5, 5, 16, 16, 1, 4, 'P');
-      $mpdf->SetImportUse();
-
-        $noinv = $this->input->get('noinv');
-        $cusdiskon = $this->input->get('diskon');
-
-        $inv_data = $this->Invoice_model->find_data('trans_invoice_header',$noinv,'no_invoice');
-        //$customer = $this->Invoice_model->cek_data(array('id_customer'=>$inv_data->id_customer),'customer');
-        $detail = $this->Detailinvoice_model->find_all_by(array('no_invoice' => $noinv));
-
-        $this->template->set('inv_data', $inv_data);
-        //$this->template->set('customer', $customer);
-        $this->template->set('detail', $detail);
-        $this->template->set('set_custom', $cusdiskon);
-
-        $show = $this->template->load_view('print_data_custom',$data);
-
-        $tglprint = date("d-m-Y H:i:s");
-        $header = '
-        <div style="display: inline-block; position:relative;width:100%;display: none;">
-          <div style="width:25%">
-            <img src="assets/img/logo.JPG">
-          </div>
-          <div style="position: absolute;text-align: center;margin-left:15% !important" width="75%">INVOICE (FAKTUR)<br>NO. : '.$inv_data->no_invoice.'</div>
-        </div>
-        	<table width="100%" border="0" id="header-tabel">
-  	      	<tr>
-  	      		<th width="30%" style="text-align: left;">
-  	      			<img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
-  	      		</th>
-  	      		<th colspan="4" style="border-right: none;text-align: center;padding:0 !important;margin:0px !important" width="75%">INVOICE (FAKTUR)<br>NO. : '.@$inv_data->no_invoice.'</th>
-              	<th colspan="3" style="border-left: none;"></th>
-  	      	</tr>
-        	</table>
-          <table width="100%" border="0" id="header-tabel">
-          <!--tr>
-              <th colspan="1">
-                <img src="assets/img/logo.JPG" width="25%">
-              </th>
-
-              <th colspan="2" style="border-right: none;text-align: center;padding:0 !important;margin:0px !important" width="75%">INVOICE (FAKTUR)<br>NO. : '.@$inv_data->no_invoice.'</th>
-              <th colspan="3" style="border-left: none;"></th>
-          </tr-->
-          <tr>
-              <td width="5%">NO. SO</td>
-
-              <td colspan="3" width="50%">:</td>
-              <td width="15%">Yogyakarta</td>
-              <td width="1%">,</td>
-              <td>'.date('d/m/Y',strtotime(@$inv_data->tanggal_invoice)).'</td>
-          </tr>
-          <tr>
-              <td width="5%">SALES</td>
-
-              <td colspan="3">: '. @$inv_data->nm_salesman.'</td>
-              <td width="15%">Kepada Yth,</td>
-              <td width="1%"></td>
-              <td></td>
-          </tr>
-          <tr>
-              <td width="5%">TOP</td>
-
-              <td colspan="3">:
-                  45 HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime(@$inv_data->tgljatuhtempo)).'
-              </td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$inv_data->nm_customer.'
-              </td>
-          </tr>
-          <tr>
-              <td width="5%">KETERANGAN</td>
-
-              <td colspan="3">:</td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$inv_data->alamatcustomer.'
-              </td>
-          </tr>
-      </table>';
-
-        $this->mpdf->SetHTMLHeader($header,'0',true);
-        $session = $this->session->userdata('app_session');
-        $total_nominal = @$inv_data->hargajualafterdis;
-        $diskon_stdr_persen = '-';
-        $diskon_stdr_rp = 0;
-        $diskon_toko_persen = '-';
-        $diskon_toko_rp = 0;
-        $diskon_cash_persen = '-';
-        $grand_total_view = @$inv_data->hargajualafterdis;
-        //$diskon_stdr   = @$inv_data->
-        if(@$set_custom != ""){
-            $total_nominal = @$inv_data->hargajualbefdis;
-            $diskon_stdr_persen = 30;
-            $diskon_toko_persen = @$inv_data->diskon_toko_persen;
-            $diskon_cash_persen = @$inv_data->diskon_cash_persen;
-            $diskon_stdr_rp = @$inv_data->diskon_stdr_rp;
-            $diskon_toko_rp = @$inv_data->diskon_toko_rp;
-            $grand_total_view = @$inv_data->hargajualbefdis-$diskon_stdr_rp-$diskon_toko_rp;
-        }
-
-        $this->mpdf->SetHTMLFooter('
-        <hr>
-        <table width="100%" border="0" style="font-size:9pt">
-
-            <tr>
-                <td colspan="3">
-                  <i>TERBILANG : '.ucwords(ynz_terbilang_format($grand_total_view)).'</i>
-                </td>
-                <td width="15%">JUMLAH NOMINAL</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($total_nominal).'</td>
-                <!--<td width="10%"></td>-->
-
-            </tr>
-        <tr>
-                <td colspan="3"></td>
-                <td width="15%">DISKON &nbsp;&nbsp;&nbsp;'.$diskon_stdr_persen.' %</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($diskon_stdr_rp).'</td>
-                <!--<td width="10%"></td>-->
-
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <center>Hormat Kami,</center>
-                </td>
-                <td width="15%">DISKON TOKO &nbsp;&nbsp;&nbsp;'.$diskon_toko_persen.' %</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;"> '.formatnomor($diskon_toko_rp).'</td>
-                <!--<td width="10%"></td>-->
-            </tr>
-            <tr>
-                <td colspan="3"></td>
-                <td width="15%">DISKON CASH &nbsp;&nbsp;&nbsp;'.$diskon_cash_persen.' %</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($ongkir).'</td>
-                <!--<td width="10%"></td>-->
-            </tr>
-            <tr>
-                <td colspan="3" style="height: 40px;"></td>
-
-                <td width="15%">GRAND TOTAL</td>
-                <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor($grand_total_view).'</td>
-                <!--<td width="10%"></td>-->
-            </tr>
-            <tr>
-                <td colspan="3">
-                    <center>(BM/SPV)</center>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="6">
-                    Catatan : Pembayaran dengan cek/giro dianggap lunas apabila sudah dicairkan.
-                </td>
-            </tr>
-        </table>
-        <hr />
-        <div id="footer">
-        <table>
-            <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($userData->nm_lengkap).' On '.$tglprint.'</td></tr>
-        </table>
-        </div>');
-        $this->mpdf->AddPageByArray([
-                'orientation' => 'P',
-                'sheet-size'=> [210,148],
-                'margin-top' => 45,
-                'margin-bottom' => 40,
-                'margin-left' => 5,
-                'margin-right' => 10,
-                'margin-header' => 1,
-                'margin-footer' => 0,
-            ]);
-        $this->mpdf->WriteHTML($show);
-        $this->mpdf->Output();
-    }
-    function print_custom_invoice_1(){
-
-        $noinv = $this->input->get('noinv');
-        $cusdiskon = $this->input->get('diskon');
-
-        $inv_data = $this->Invoice_model->find_data('trans_invoice_header',$noinv,'no_invoice');
-        //$customer = $this->Invoice_model->cek_data(array('id_customer'=>$inv_data->id_customer),'customer');
-        $detail = $this->Detailinvoice_model->find_all_by(array('no_invoice' => $noinv));
-
-        $this->template->set('header', $inv_data);
-        //$this->template->set('customer', $customer);
-        $this->template->set('detail', $detail);
-        $this->template->set('set_custom', $cusdiskon);
-
-        $this->template->load_view('print_data_custom');
-
-
-    }
 
 	 function cancel_invoice($noinv=''){
 		 if($this->input->post()){

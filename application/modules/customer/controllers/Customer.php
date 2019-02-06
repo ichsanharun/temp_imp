@@ -50,10 +50,12 @@ class Customer extends Admin_Controller {
     public function create()
     {
         $this->auth->restrict($this->addPermission);
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
         $datbidus   = $this->Bidus_model->pilih_bidus()->result();
         $datprov    = $this->Customer_model->pilih_provinsi()->result();
         $datreff    = $this->Reff_model->pilih_reff()->result();
-        $datmark    = $this->Customer_model->pilih_marketing()->result();
+        $datmark    = $this->Customer_model->pilih_marketing($kdcab)->result();
         $datdok     = $this->Syarat_tagih_model->pilih_syarat()->result();
         $datpic     = $this->Pic_model->pilih_pic($id)->result();
 
@@ -360,7 +362,8 @@ class Customer extends Admin_Controller {
     public function edit()
     {
         $this->auth->restrict($this->managePermission);
-
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
         $id = $this->uri->segment(3);
         $data  = $this->Customer_model->find_by(array('id_customer' => $id));
         if(!$data)
@@ -374,7 +377,7 @@ class Customer extends Admin_Controller {
         $prov       = $this->Customer_model->get_prov($id);
         $datkota    = $this->Customer_model->pilih_kota($prov)->result();
         $datreff    = $this->Reff_model->pilih_reff()->result();
-        $datmark    = $this->Customer_model->pilih_marketing()->result();
+        $datmark    = $this->Customer_model->pilih_marketing($kdcab)->result();
         $datpic     = $this->Pic_model->pilih_pic($id)->result();
         $datdok     = $this->Syarat_tagih_model->pilih_syarat()->result();
 
@@ -392,7 +395,8 @@ class Customer extends Admin_Controller {
 
     //Save customer ajax
     public function save_customer_ajax(){
-
+        $session = $this->session->userdata('app_session');
+        $kdcab          = $session['kdcab'];
         $type           = $this->input->post("type");
         $id_customer    = $this->input->post("id_customer");
         $nm_customer    = strtoupper($this->input->post("nm_customer"));
@@ -498,6 +502,7 @@ class Customer extends Admin_Controller {
                             'referensi'=>$referensi,
                             'website'=>$website,
                             'diskon_toko'=>$diskontoko,
+                            'kdcab' => $kdcab,
                             //'foto'=>$foto,
                             //'notes'=>$notes,
                             'sts_aktif'=>$sts_aktif,
@@ -1624,8 +1629,9 @@ class Customer extends Admin_Controller {
         $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
-
-        $data_cus = $this->Customer_model->rekap_data()->result_array();
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
+        $data_cus = $this->Customer_model->rekap_data($kdcab)->result_array();
         $this->template->set('data_cus', $data_cus);
 
         $show = $this->template->load_view('print_rekap',$data);
@@ -1637,7 +1643,10 @@ class Customer extends Admin_Controller {
 
     function downloadExcel()
     {
-        $data_cus = $this->Customer_model->rekap_data()->result_array();
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
+        $data_cus = $this->Customer_model->rekap_data($kdcab)->result_array();
+        //print_r($data_cus);die();
 
         $objPHPExcel    = new PHPExcel();
         $objPHPExcel->getActiveSheet()->getColumnDimension('A')->setWidth(5);

@@ -115,9 +115,12 @@ date_default_timezone_set("Asia/Bangkok");
       <th>Dokumen</th>
 			<th>Tanggal</th>
 			<th>Keterangan</th>
-			<th>Masuk</th>
-			<th>Keluar</th>
-			<th>Saldo</th>
+      <th>Qty Stok Awal</th>
+      <th>Qty Avl Awal</th>
+      <th>Qty Masuk/Keluar</th>
+			<th>Qty Stok Akhir</th>
+			<th>Qty Avl Akhir</th>
+      <th>Customer</th>
 	  </tr>
         <?php
 			$numb=0; foreach($trans AS $record){ $numb++; ?>
@@ -125,13 +128,14 @@ date_default_timezone_set("Asia/Bangkok");
 	    <td><?= $record->noreff ?></td>
 			<td><?= $record->date_stock ?></td>
 			<td><?= strtoupper($record->jenis_trans) ?></td>
-			<td><?php if ($record->tipe == "IN") {
-        echo $record->qty;
-      } ?></td>
-			<td><?php if ($record->tipe == "OUT") {
-        echo $record->qty;
-      } ?></td>
-			<td><?= $record->qty_stock_akhir ?></td>
+      <td><?= $record->qty_stock_awal ?></td>
+      <td><?= $record->qty_avl_awal ?></td>
+      <td><?= $record->qty ?></td>
+      <td><?= $record->qty_stock_akhir ?></td>
+      <td><?= $record->qty_avl_akhir ?></td>
+      <?php $cek_cus = $this->db->get_where('trans_do_header', array('no_do'=>$record->noreff))->result(); ?>
+      <td><?= $cek_cus[0]->nm_customer; ?></td>
+
 	  </tr>
     <?php
       }

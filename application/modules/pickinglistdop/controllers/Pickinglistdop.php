@@ -41,7 +41,7 @@ class Pickinglistdop extends Admin_Controller {
         $this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
 
-        //$data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('LEFT(no_so,3)'=>$session['kdcab']));
+        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('LEFT(no_so,3)'=>$session['kdcab']));
         if($this->uri->segment(3) == ""){
 
             $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all();
@@ -63,13 +63,14 @@ class Pickinglistdop extends Admin_Controller {
         $this->template->render('list');
     }
     public function proses_do(){
+      $session = $this->session->userdata('app_session');
       $noso = $this->uri->segment(3);
           //$getparam = explode(";",$_GET['param']);
           $getso = $this->Salesorder_model->get_data("no_so = '".$noso."'",'trans_so_header');
 
           $and = " proses_do IS NULL ";
-          $getitemso = $this->Salesorder_model->get_data("no_so = '".$noso."' AND qty_supply != qty_booked AND qty_supply > 0",'trans_so_detail');
-          $driver    = $this->Deliveryorder_model->pilih_driver()->result();
+          $getitemso = $this->Salesorder_model->get_data("no_so = '".$noso."' AND qty_supply != qty_booked AND proses_do = 'PENDING' OR no_so = '".$noso."' AND qty_supply != qty_booked AND proses_do IS NULL",'trans_so_detail');
+          $driver    = $this->Deliveryorder_model->pilih_driver($session['kdcab'])->result();
   		$Arr_Driver	= array();
   		if($driver){
   			foreach($driver as $keyD=>$valD){
@@ -79,7 +80,7 @@ class Pickinglistdop extends Admin_Controller {
   			}
   			unset($driver);
   		}
-          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan()->result();
+          $kendaraan = $this->Deliveryorder_model->pilih_kendaraan($session['kdcab'])->result();
           $Arr_Kendaraan = array();
           if($kendaraan){
               foreach($kendaraan as $keyK=>$valK){

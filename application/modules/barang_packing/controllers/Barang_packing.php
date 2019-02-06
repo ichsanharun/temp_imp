@@ -44,20 +44,23 @@ class Barang_packing extends Admin_Controller {
 
     public function index()
     {
+      $session = $this->session->userdata('app_session');
         $this->auth->restrict($this->viewPermission);
         $data = $this->Barang_stock_model
                 ->select("barang_stock.*,
                 barang_jenis.nm_jenis,
                 barang_group.nm_group,
                 barang_stock.satuan AS setpcs,
-                supplier.nm_supplier,
                 barang_master.qty as qty")
                 ->join("barang_master","barang_stock.id_barang = barang_master.id_barang","left")
                 ->join("barang_group","barang_group.id_group = barang_master.id_group","left")
                 ->join("barang_jenis","barang_stock.jenis = barang_jenis.id_jenis","left")
-                ->join("supplier","barang_master.id_supplier = supplier.id_supplier","left")
+                //->join("supplier","barang_master.id_supplier = supplier.id_supplier","left")
                 ->group_by('barang_stock.id_barang')
-                ->where(array('barang_stock.deleted'=>0,'barang_stock.kategori'=>'set'))
+                ->where(array(
+                  'barang_stock.deleted'=>0,
+                  'barang_stock.kategori'=>'set',
+                  'barang_stock.kdcab'=>$session['kdcab']))
                 ->order_by('barang_stock.nm_barang','ASC')->find_all();
         $colly = $this->Barang_stock_model
                   ->select("barang_stock.*")
@@ -82,11 +85,13 @@ class Barang_packing extends Admin_Controller {
         $id_barang = $this->input->post('id_barang');
         $qty_unpacking = $this->input->post('qty_unpacking');
         $koli = $this->Barang_model->get_data(array('id_barang'=>$id_barang),'barang_koli');
-        $barang = $this->Barang_model->cek_data(array('id_barang'=>$this->input->post('id_barang')),'barang_master');
+        $barang = $this->Barang_model->cek_data(array('id_barang'=>$this->input->post('id_barang')),'barang_stock');
         //echo count($koli);
         $this->db->trans_begin();
         foreach ($koli as $key => $val) :
-        $dataunpacking = array(
+        $cek_kol = $this->Barang_model->cek_data(array('id_barang'=>$val->id_koli,'kdcab'=>$session['kdcab']),'barang_stock');
+        if (count($cek_kol) == 0) {
+          $dataunpacking = array(
 
             'id_barang'=>$val->id_koli,
             'nm_barang'=>$val->nm_koli,
@@ -99,9 +104,29 @@ class Barang_packing extends Admin_Controller {
             'kdcab'=>$this->auth->user_cab(),
             'sts_aktif'=>'aktif',
 
-        );
-        $this->db->insert('barang_stock',$dataunpacking);
+          );
+          $this->db->insert('barang_stock',$dataunpacking);
+        }else {
+          $dataunpacking = array(
+
+            'id_barang'=>$val->id_koli,
+            'nm_barang'=>$val->nm_koli,
+            'brand'=>$barang->brand,
+            'jenis'=>$barang->jenis,
+            'kategori'=>'colly',
+            'satuan'=>$barang->satuan,
+            'qty_stock'=>$qty_unpacking+$cek_kol->qty_stock,
+            'qty_avl'=>$qty_unpacking+$cek_kol->qty_avl,
+            'kdcab'=>$this->auth->user_cab(),
+            'sts_aktif'=>'aktif',
+
+          );
+          $this->db->where(array('id_barang'=>$val->id_koli,'kdcab'=>$session['kdcab']))
+          ->update('barang_stock',$dataunpacking);
+        }
       endforeach;
+      $this->db->where(array('id_barang'=>$id_barang,'kdcab'=>$session['kdcab']))
+      ->update('barang_stock',array('qty_stock'=>$barang->qty_stock-$qty_unpacking,'qty_avl'=>$barang->qty_avl-$qty_unpacking));
 
           //Update counter NO_DO
         if ($this->db->trans_status() === FALSE)
@@ -126,7 +151,7 @@ class Barang_packing extends Admin_Controller {
    	//Edit barang
    	public function edit()
    	{
-
+      $session = $this->session->userdata('app_session');
   		$this->auth->restrict($this->managePermission);
         $id = $this->uri->segment(3);
         $data = $this->Barang_stock_model->select("barang_stock.*,
@@ -141,7 +166,10 @@ class Barang_packing extends Admin_Controller {
                                               ->join("barang_jenis","barang_stock.jenis = barang_jenis.id_jenis","left")
                                               ->join("supplier","barang_master.id_supplier = supplier.id_supplier","left")
                                               ->group_by('barang_stock.id_barang')
-                                              ->where(array('barang_stock.deleted'=>0,'barang_stock.id_barang'=>$id))
+                                              ->where(array(
+                                                'barang_stock.deleted'=>0,
+                                                'barang_stock.id_barang'=>$id,
+                                                'barang_stock.kdcab'=>$session['kdcab']))
                                               ->order_by('barang_stock.nm_barang','ASC')->find_all();
 
            $this->template->set('unpack', $data);

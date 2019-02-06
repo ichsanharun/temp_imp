@@ -1,4 +1,4 @@
-<?php 
+<?php
     $ENABLE_ADD     = has_permission('Setup_stock.Add');
     $ENABLE_MANAGE  = has_permission('Setup_stock.Manage');
     $ENABLE_VIEW    = has_permission('Setup_stock.View');
@@ -7,18 +7,18 @@
 <style type="text/css">
 thead input {
 	width: 100%;
-}	
+}
 </style>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 
 <div class="box">
 	<div class="box-header">
-		<?php if ($ENABLE_ADD) : ?>		
-			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>			
+		<?php if ($ENABLE_ADD) : ?>
+			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
 
 			<span class="pull-right">
 				<?php //echo anchor(site_url('barang/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-				<!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>	
+				<!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>
 			</span>-->
 
 		<?php endif; ?>
@@ -32,19 +32,20 @@ thead input {
 			<th>ID Transaksi</th>
 			<th width="15">Kode Produk</th>
 			<th>Nama Set</th>
-			<th width="5">Jenis Produk</th>					
-			<th width="5">Satuan</th>			
+      <th>Tipe</th>
+			<th width="5">Jenis Produk</th>
+			<th width="5">Satuan</th>
 			<th width="5">Qty</th>
 			<th width="5">@harga</th>
-			<th width="5">Total</th>			
+			<th width="5">Total</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="20">Action</th>
 			<?php endif; ?>
 		</tr>
 		</thead>
-        
+
 		<tbody>
-		<?php 
+		<?php
 		//print_r($results);
 		if(empty($results)){
 		}else{
@@ -60,12 +61,13 @@ thead input {
 		    <td><?= $numb; ?></td>
 	        <td><?= $record->id_adjusment ?></td>
 	        <td><?= $record->id_barang ?></td>
-			<td><?= $record->nm_barang ?></td>	
+			<td><?= $record->nm_barang ?></td>
+      <td><?= $record->tipe_adjusment ?></td>
 			<td><?= strtoupper($record->jenis) ?></td>
-			<td><?= $satuan ?></td>		
-			<td><?= number_format($record->qty) ?></td>	
-			<td><?= @number_format($record->nilai_barang/$record->qty) ?></td>	
-			<td><?= number_format($record->nilai_barang) ?></td>						
+			<td><?= $satuan ?></td>
+			<td><?= number_format($record->qty) ?></td>
+			<td><?= @number_format($record->nilai_barang/$record->qty) ?></td>
+			<td><?= number_format($record->nilai_barang) ?></td>
 			<td style="padding-left:20px">
 			<?php if($ENABLE_VIEW) : ?>
 				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_adjusment?>')">
@@ -81,18 +83,19 @@ thead input {
 		</tr>
 		<?php } }  ?>
 		</tbody>
-		
+
 		<tfoot>
 		<tr>
 			<th width="5">#</th>
 			<th>ID Transaksi</th>
 			<th width="15">Kode Produk</th>
 			<th>Nama Set</th>
-			<th width="5">Jenis Produk</th>					
-			<th width="5">Satuan</th>			
+      <th>Tipe</th>
+			<th width="5">Jenis Produk</th>
+			<th width="5">Satuan</th>
 			<th width="5">Qty</th>
 			<th width="5">@harga</th>
-			<th width="5">Total</th>			
+			<th width="5">Total</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="20">Action</th>
 			<?php endif; ?>
@@ -153,7 +156,7 @@ thead input {
 <!-- page script -->
 <script type="text/javascript">
 
-  	$(function() {  	
+  	$(function() {
     	$('#example1 thead tr').clone(true).appendTo( '#example1 thead' );
 	    $('#example1 thead tr:eq(1) th').each( function (i) {
 	        var title = $(this).text();
@@ -161,9 +164,9 @@ thead input {
 	        if (title == "#" || title =="Action" ) {
 	        	$(this).html( '' );
 	        }else{
-	        	$(this).html( '<input type="text" />' );        
+	        	$(this).html( '<input type="text" />' );
 	        }
-	        
+
 	        $( 'input', this ).on( 'keyup change', function () {
 	            if ( table.column(i).search() !== this.value ) {
 	                table
@@ -178,31 +181,31 @@ thead input {
 	            }
 	        } );
 	    } );
-	 
+
 	    var table = $('#example1').DataTable( {
 	        orderCellsTop: true,
 	        fixedHeader: true
 	    } );
-    	$("#form-area").hide();   
+    	$("#form-area").hide();
   	});
 
   	function add_data(){
-		
-			var url = 'adjusment_stock/create/';	
-			$(".box").hide(); 
-			$("#form-area").show();	
+
+			var url = 'adjusment_stock/create/';
+			$(".box").hide();
+			$("#form-area").show();
 
 			$("#form-area").load(siteurl+url);
 
 		    $("#title").focus();
-		
+
 	}
 
   	function edit_data(id){
 		if(kodebarang!=""){
-			var url = 'adjusment_stock/edit/'+kodebarang;	
-			$(".box").hide(); 
-			$("#form-area").show();	
+			var url = 'adjusment_stock/edit/'+kodebarang;
+			$(".box").hide();
+			$("#form-area").show();
 
 			$("#form-area").load(siteurl+url);
 
@@ -277,7 +280,7 @@ thead input {
 
 	function PreviewRekap()
 	{
-		tujuan = 'adjusment_stock/print_rekap';	   	
+		tujuan = 'adjusment_stock/print_rekap';
 	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 

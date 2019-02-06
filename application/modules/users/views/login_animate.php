@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en" >
 
 <head>
   <meta charset="UTF-8">
-  <title><?php echo $nama_program; ?></title>  
+  <title><?php// echo $idt->nm_perusahaan; ?></title>  -->
 <style>
       /* NOTE: The styles were added inline because Prefixfree needs access to your styles and they must be inlined if they are on local disk! */
   body {
@@ -166,9 +166,9 @@
     }
 
   </style>
-</head>
+<!--</head>
 
-<body>
+<body>-->
 
   <div class="wrapper">
   <?= form_open($this->uri->uri_string(), array('id' => 'frm_login', 'name' => 'frm_login', 'class' => 'login')) ?>

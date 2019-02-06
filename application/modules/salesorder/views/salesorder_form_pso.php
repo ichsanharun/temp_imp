@@ -188,30 +188,37 @@
 </div>
 <!-- END FORM HEADER SO-->
 <div class="box box-default ">
-    <div class="box-body">
-        <form id="form-detail-so" method="post">
+  <div class="box-body">
+      <form id="form-detail-so" method="post">
         <table class="table table-bordered" width="100%">
             <tr>
                 <th class="text-center" colspan="8">FORM ITEM DETAIL</th>
             </tr>
             <tr>
-                <td width="13%"><b>PRODUCT SEAT</b></td>
-                <td colspan="3" width="40%">
+                <td width="9%"><b>PRODUCT SET</b></td>
+                <td colspan="2" width="20%">
+                  <span id="ket_item" data-toggle="popover" data-placement="bottom" data-content="Silahkan pilih customer terlebih dahulu!">
                     <select onchange="setitembarang()" id="item_brg_so" name="item_brg_so" class="form-control input-xs" style="width: 100%;" tabindex="-1" required>
                             <option value=""></option>
                             <?php
                             foreach(@$itembarang as $k=>$v){
                             ?>
                             <option value="<?php echo $v->id_barang; ?>" <?php echo set_select('nm_barang', $v->id_barang, isset($data->nm_barang) && $data->id_barang == $v->id_barang) ?>>
-                                <?php echo $v->id_barang.' , '.$v->nm_barang ?>
+                                <?php echo $v->id_barang.' , '.$v->nm_barang.' , '.$v->kdcab ?>
                             </option>
                             <?php } ?>
                         </select>
+                  </span>
                 </td>
                 <td width="5%" class="text-right"><b>HARGA NORMAL</b></td>
-                <td width="10%"><input type="text" name="harga_normal" id="harga_normal" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga Normal sebelum diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly"></td>
+                  <td width="10%">
+                    <input type="text" name="harga_normal" id="harga_normal" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga Normal sebelum diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                  </td>
                 <td width="5%" class="text-right"><b>HARGA SETELAH DISKON</b></td>
-                <td width="10%"><input type="text" name="harga" id="harga" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly"></td>
+                  <td width="10%">
+                    <input type="hidden" name="harga_sebelum_ppn" id="harga_sebelum_ppn" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                    <input type="text" name="harga" id="harga" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                  </td>
             </tr>
             <tr>
                 <td width="5%" class="text-center"><b>QTY ORDER</b></td>
@@ -220,6 +227,9 @@
                 <td width="5%" class="text-center"><b>QTY CONFIRM</b></td>
                 <td width="5%" class="text-center"><b>QTY PENDING</b></td>
                 <td width="5%" class="text-center"><b>QTY CANCEL</b></td>
+                <td class="text-center" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
+                    Diskon SO
+                </td>
             </tr>
             <tr>
                 <td width="10%" class="text-center">
@@ -243,19 +253,49 @@
                     <input type="hidden" name="satuan" id="satuan" class="form-control input-sm">
                     <input type="hidden" name="jenis" id="jenis" class="form-control input-sm">
                     <input type="hidden" name="total" id="total" class="form-control input-sm">
+
                 </td>
-                <td class="text-center" colspan="2" rowspan="4" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
-                    <button class="btn btn-success btn-sm" type="submit" id="submit" name="save"><i class="fa fa-plus"></i> Tambah</button>
+                <td width="10%" class="text-center" rowspan="2">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso" name="tipe_disso" value="persen">%<span class="caret"></span></button>
+                      <ul class="dropdown-menu bg-dark">
+                        <li><a href="javascript:void(0)" onclick="getdisso('%')">Persen (%)</a></li>
+                        <li><a href="javascript:void(0)" onclick="getdisso('Rp')">Rupiah (Rp)</a></li>
+                      </ul>
+                    </div><!-- /btn-group -->
+                    <input type="text" class="form-control" aria-label="" name="disso" id="disso" class="input-sm" value="0">
+                  </div><!-- /input-group -->
+                  <div class="radio_disso_rp">
+                    <div class="radio-inline">
+                      <label>
+                        <input type="radio" value="tambah" name="radio_disso_rp">(+)
+                      </label>
+                    </div>
+                    <div class="radio-inline">
+                      <label>
+                        <input type="radio" value="kurang" name="radio_disso_rp">(-)
+                      </label>
+                    </div>
+                  </div>
                 </td>
             </tr>
             <tr>
-                <td></td>
+                <td class="text-center"><b>POIN @1</b></td>
                 <td width="5%" class="text-center"><b>Diskon Std.</b></td>
                 <td width="5%" class="text-center" colspan="2"><b>Diskon Promo</b></td>
-                <td width="5%" class="text-center" colspan="2"><b>Diskon QTY</b></td>
+                <td width="5%" class="text-center" colspan="2" style="border-right:1px solid #f4f4f4"><b>Diskon QTY</b></td>
+
             </tr>
             <tr>
-                <td></td>
+                <td class="text-center">
+                  <center><b>Nilai Per 1 POIN</b></center>
+                  <div class="input-group">
+                    <span class="input-group-addon">Rp</span>
+                    <input type="text" name="poin_per_item" id="poin_per_item" class="form-control input-sm" readonly>
+                    <input type="hidden" name="jumlah_poin" id="jumlah_poin" class="form-control input-sm" readonly>
+                  </div>
+                </td>
                 <td width="10%" class="text-center">
                   <b>Persen</b>
                   <div class="input-group">
@@ -285,13 +325,16 @@
                   <b>Bonus</b>
                     <input type="text" name="diskon_qty_gratis" id="diskon_qty_gratis" class="form-control input-sm" readonly>
                 </td>
-
+                <td class="text-center" colspan="2" rowspan="2" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
+                    <button class="btn btn-success btn-sm" type="submit" id="submit" name="save"><i class="fa fa-plus"></i> Tambah</button>
+                </td>
             </tr>
             <tr>
                 <td></td>
                 <td width="5%" class="text-center" colspan="2"><b>PRODUCT SET BONUS :</b></td>
                 <td width="5%" class="text-center" colspan="2">
-                  <select onchange="setitembarang()" id="item_brg_so_bonus" name="item_brg_so_bonus" class="form-control input-xs" style="width: 100%;" tabindex="-1" disabled>
+                  <div class="form-group form-inline">
+                  <select onchange="setitembarang_bonus()" id="item_brg_so_bonus" name="item_brg_so_bonus" class="form-control input-xs" style="width: 70%;" tabindex="-1" disabled>
                           <option value=""></option>
                           <?php
                           foreach(@$itembarang as $k=>$v){
@@ -300,131 +343,142 @@
                               <?php echo $v->id_barang.' , '.$v->nm_barang ?>
                           </option>
                           <?php } ?>
-                      </select>
+                  </select>
+
+                  <input type="hidden" name="nama_barang_bonus" id="nama_barang_bonus" class="form-control input-sm">
+                  <input type="hidden" name="satuan_bonus" id="satuan_bonus" class="form-control input-sm">
+                  <input type="hidden" name="jenis_bonus" id="jenis_bonus" class="form-control input-sm">
+
+                  <button class="btn btn-warning btn-sm" type="submit" id="submit_bonus" name="save_bonus" disabled ><i class="fa fa-plus"></i> OK</button>
+                  </div>
+                </td>
+                <td>
+                  <center><b>Available:</b></center>
+                  <input type="text" name="qty_avl_bonus" id="qty_avl_bonus" class="form-control input-sm" readonly="readonly">
                 </td>
             </tr>
         </table>
-        </form>
-        <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
-            <thead>
-                <tr>
-                    <th width="2%">
-                      #
+      </form>
+      <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
+          <thead>
+              <tr>
+                  <th width="2%">
+                    #
 
-                    </th>
-                    <th>Item Barang</th>
-                    <th>Satuan</th>
-                    <th>Stok Avl</th>
-                    <th>Qty Order</th>
-                    <th>Qty Confirm</th>
-                    <th>Qty Pending</th>
-                    <th>Qty Cancel</th>
-                    <th>Harga</th>
-                    <th>Subtotal Diskon (%)</th>
-                    <th>Total</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                $grand = 0;
-                if(@$detail){
-                $n=1;
-                foreach(@$detail as $ks=>$vs){
-                    $grand += $vs->subtotal;
-                    $no = $n++;
-                ?>
-                <tr>
-                    <td class="text-center">
+                  </th>
+                  <th>Item Barang</th>
+                  <th>Satuan</th>
+                  <th>Stok Avl</th>
+                  <th>Qty Order</th>
+                  <th>Qty Confirm</th>
+                  <th>Qty Pending</th>
+                  <th>Qty Cancel</th>
+                  <th>Harga</th>
+                  <th>Subtotal Diskon (%)</th>
+                  <th>Total</th>
+                  <th>Aksi</th>
+              </tr>
+          </thead>
+          <tbody>
+              <?php
+              $grand = 0;
+              if(@$detail){
+              $n=1;
+              foreach(@$detail as $ks=>$vs){
+                  $grand += $vs->subtotal;
+                  $no = $n++;
+              ?>
+              <tr>
+                  <td class="text-center">
 
-                      <input type="checkbox" id="get_<?php echo $vs->no_so?>" name="id[]" class="checkbox_opsi" value="<?php echo $vs->id_barang?>">
-                      <?php echo $no?>
-                    </td>
-                    <td><?php echo $vs->id_barang.' / '.$vs->nm_barang?></td>
-                    <td><?php echo $vs->satuan?></td>
-                    <td><?php echo $vs->stok_avl?></td>
-                    <td><?php echo $vs->qty_order?></td>
-                    <td><?php echo $vs->qty_booked?></td>
-                    <td><?php echo $vs->qty_pending?></td>
-                    <td><?php echo $vs->qty_cancel?></td>
-                    <td><?php echo formatnomor($vs->harga)?></td>
-                    <td><span id="pop_diskon" data-toggle="popover" data-placement="bottom" data-content="Jumlah Seluruh Diskon"><?php echo formatnomor($vs->diskon)?></span></td>
-                    <td class="text-right"><?php echo formatnomor($vs->subtotal)?></td>
-                    <td class="text-center">
-                      <a onclick="edit_barang('<?php echo @$data->no_so?>','<?php echo @$vs->id_barang?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                    <input type="checkbox" id="get_<?php echo $vs->no_so?>" name="id[]" class="checkbox_opsi" value="<?php echo $vs->id_barang?>">
+                    <?php echo $no?>
+                  </td>
+                  <td><?php echo $vs->id_barang.' / '.$vs->nm_barang?></td>
+                  <td><?php echo $vs->satuan?></td>
+                  <td><?php echo $vs->stok_avl?></td>
+                  <td><?php echo $vs->qty_order?></td>
+                  <td><?php echo $vs->qty_booked?></td>
+                  <td><?php echo $vs->qty_pending?></td>
+                  <td><?php echo $vs->qty_cancel?></td>
+                  <td><?php echo formatnomor($vs->harga)?></td>
+                  <td><span id="pop_diskon" data-toggle="popover" data-placement="bottom" data-content="Jumlah Seluruh Diskon"><?php echo formatnomor($vs->diskon)?></span></td>
+                  <td class="text-right"><?php echo formatnomor($vs->subtotal)?></td>
+                  <td class="text-center">
+                    <a onclick="edit_barang('<?php echo @$data->no_so?>','<?php echo @$vs->id_barang?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
 
-                        <i class='fa fa-edit'></i>
+                      <i class='fa fa-edit'></i>
 
+                    </a>
+                      <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
                       </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
-                        </a>
-                    </td>
-                </tr>
-                <?php } ?>
-                <?php } ?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <th class="text-right">
-                      <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
-                    </th>
-                    <th class="text-right">
-                      <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
-                      <input type="hidden" name="input_edit" id="input_edit">
-                      <a onclick="edit_pso('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                        <i class='fa fa-edit'></i>
+                  </td>
+              </tr>
+              <?php } ?>
+              <?php } ?>
+          </tbody>
+          <tfoot>
+              <tr>
+                  <th class="text-right">
+                    <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
+                  </th>
+                  <th class="text-right">
+                    <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
+                    <input type="hidden" name="input_edit" id="input_edit">
+                    <a onclick="edit_pso('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                      <i class='fa fa-edit'></i>
+                    </a>
+                      <a class="text-red" href="javascript:void(0)" title="Delete" onclick="hapus_list('<?php echo $vs->no_so?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+                        <i class="fa fa-trash"></i>
                       </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-                          <i class="fa fa-trash"></i>
-                        </a>
-                    </th>
-                    <!--th class="text-left">
-                      <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                        <i class='fa fa-edit'></i>
+                  </th>
+                  <!--th class="text-left">
+                    <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                      <i class='fa fa-edit'></i>
+                    </a>
+                      <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+                        <i class="fa fa-trash"></i>
                       </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-                          <i class="fa fa-trash"></i>
-                        </a>
-                    </th-->
-                    <th colspan="7" class="text-right">DPP : </th>
-                    <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
-                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">Diskon Toko : </th>
-                    <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
-                    <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">PPN : </th>
-                    <th colspan="2" class="text-right"><span id="ppnview"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">GRAND TOTAL : </th>
-                    <th colspan="2" class="text-right"><span id="totalview"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th class="text-right" colspan="13">
-                        <button class="btn btn-danger" onclick="kembali()">
-                            <i class="fa fa-refresh"></i><b> Kembali</b>
-                        </button>
-                        <button class="btn btn-primary" type="button" onclick="saveheaderpso()">
-                            <i class="fa fa-save"></i><b> Simpan Data SO</b>
-                        </button>
-                    </th>
-                </tr>
-            </tfoot>
+                  </th-->
+                  <th colspan="7" class="text-right">DPP : </th>
+                  <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
+                  <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
+                  <th></th>
+              </tr>
+              <tr>
+                  <th colspan="9" class="text-right">Diskon Toko : </th>
+                  <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
+                  <th></th>
+              </tr>
+              <tr>
+                  <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
+                  <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
+                  <th></th>
+              </tr>
+              <tr>
+                  <th colspan="9" class="text-right">PPN : </th>
+                  <th colspan="2" class="text-right"><span id="ppnview"></span></th>
+                  <th></th>
+              </tr>
+              <tr>
+                  <th colspan="9" class="text-right">GRAND TOTAL : </th>
+                  <th colspan="2" class="text-right"><span id="totalview"></span></th>
+                  <th></th>
+              </tr>
+              <tr>
+                  <th class="text-right" colspan="13">
+                      <button class="btn btn-danger" onclick="kembali()">
+                          <i class="fa fa-refresh"></i><b> Kembali</b>
+                      </button>
+                      <button class="btn btn-primary" type="button" onclick="saveheaderso_pso()">
+                          <i class="fa fa-save"></i><b> Simpan Data SO</b>
+                      </button>
+                  </th>
+              </tr>
+          </tfoot>
 
-        </table>
-    </div>
+      </table>
+  </div>
 </div>
 <!-- Modal -->
 <div class="modal modal-primary" id="dialog-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" width="100px" style="width:100% !important">
@@ -446,143 +500,36 @@
     </div>
   </div>
 </div>
+
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
 
 <script type="text/javascript">
-	var base_url			= '<?php echo base_url(); ?>';
-	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
-    $(document).ready(function() {
-        $('#salesorderitemnya').DataTable({
-            "sDom": 'Bfrtip',
-            "responsive": true,
-            "bInfo":false,
-            "bPaginate":false,
-            "bFilter":false,
-            "processing": false,
-        });
 
-        $("#item_brg_so,#idcustomer,#idsalesman,#pic").select2({
+    $(document).ready(function() {
+      $('#salesorderitemnya').DataTable({
+          "sDom": 'Bfrtip',
+          "responsive": true,
+          "bInfo":false,
+          "bPaginate":false,
+          "bFilter":false,
+          "processing": false,
+      });
+        $("#item_brg_so,#idcustomer,#idsalesman,#pic,#item_brg_so_bonus").select2({
             placeholder: "Pilih",
             allowClear: true
         });
-        $(".label_call").on('click', function(){
 
-          //alert(document.getElementById('get_all').checked);
-            if (document.getElementById('get_all').checked == true) {
-              $('#get_all').prop('checked', false);
-              $('.checkbox_opsi').prop('checked', false);
-            }
-            else{
-              $('#get_all').prop('checked', true);
-              $('.checkbox_opsi').prop('checked', true);
-            }
-            //var jumcus = 0;
-            var reason = [];
-            $(".checkbox_opsi:checked").each(function() {
-              reason.push($(this).val());
-              //jumcus++;
-            });
-            $('#input_edit').val(reason.join(';'));
-
-        });
-        $("#get_all").on('change', function(){
-
-            $('.checkbox_opsi').prop('checked', this.checked);
-
-        });
-        $(".checkbox_opsi").on('change', function(){
-
-          var reason = [];
-          $(".checkbox_opsi:checked").each(function() {
-            reason.push($(this).val());
-            //jumcus++;
-          });
-          $('#input_edit').val(reason.join(';'));
-        });
         $("#item_brg_so").prop("disabled", true);
         var a = $('#idcustomer').val();
-        //alert(a);
+
         if (a != '') {
           $("#item_brg_so").prop("disabled", false);
         }
-        $("#item_brg_so").on('mouseover', function(){
-          $('#item_brg_so').popover('show')
-        });
-
-        $("#ket_item").on('click', function(){
-          var a = $('#idcustomer').val();
-          if (a !== '') {
-            //alert(a);
-            $( "#ket_item" ).popover('destroy');
-          }
-          else {
-
-            $( "#ket_item" ).popover('show');
-          }
-        });
-        $('#idcustomer').on('change', function(){
-          var a = $('#idcustomer').val();
-          if (a !== '') {
-            $( "#ket_item" ).popover('destroy');
-            $("#item_brg_so").prop("disabled", false);
-          }
-          else {
-
-            $( "#ket_item" ).popover('show');
-          }
-        });
 
 
-        $("#pop_diskon").on('mouseover', function(){
-          $('#pop_diskon').popover('show')
-        });
-        $("#pop_diskon").on('mouseout', function(){
-          $('#pop_diskon').popover('hide')
-        });
-        $("#qty_supply").on('keyup', function(){
-          $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()));
-          $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
-        });
-        $("#qty_order").on('keyup', function(){
-          //filterAngka(this.value);
-          this.value = this.value.match(/^[0-9]+$/);
-            var qo = parseInt($("#qty_order").val());
-            var ket_bonus = parseInt($("#diskon_jika_qty").val());
-            var bonus = parseInt(qo/ket_bonus);
-            if (ket_bonus == 0) {
-              bonus = 0;
-            }
-            var harga = parseInt($('#harga').val());
-            var avl = parseInt($('#qty_avl').val());
-            var qty = parseInt($('#qty_supply').val());
-            var order = parseInt($('#qty_order').val());
-            var diskon = parseInt($('#diskon').val());
-            //var qtybonus = parseInt($('#qty_bonus').val());
-            var qtybonus = parseInt(0);
-
-            $("#qty_bonus").val(bonus);
-            $("#qty_supply").val(parseInt(qo));
-            if ( parseInt($('#qty_supply').val()) > parseInt($('#qty_avl').val()) ) {
-              $("#qty_supply").val(parseInt($('#qty_avl').val()));
-              $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_avl').val()) + bonus);
-              $("#qty_cancel").val(parseInt($('#qty_order').val()) + parseInt($('#qty_bonus').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
-            }
-            else {
-              $("#qty_supply").val(parseInt(qo));
-              $("#qty_pending").val(parseInt( parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) + bonus ));
-              $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) - parseInt($('#qty_pending').val()) + parseInt($('#qty_bonus').val()) );
-            }
-            //alert(bonus);
-            if (isNaN($("#qty_bonus").val()) || isNaN($("#qty_supply").val()) || isNaN($("#qty_pending").val()) ) {
-              $("#qty_bonus,#qty_supply,#qty_pending,#qty_cancel").val('');
-            }
-            hitungso();
-
-        });
         var gt = $('#grandtotalso').val();
         $('#dppso').val(gt);
-        //console.log(gt);
 
         $(".datepicker").datepicker({
             format : "yyyy-mm-dd",
@@ -593,6 +540,210 @@
         sethitung();
     });
 
+    $("#item_brg_so").on('mouseover', function(){
+      $('#item_brg_so').popover('show');
+    });
+
+    $("#ket_item").on('click', function(){
+      var a = $('#idcustomer').val();
+      if (a !== '') {
+        $( "#ket_item" ).popover('destroy');
+      }
+      else {
+        $( "#ket_item" ).popover('show');
+      }
+    });
+
+    $('#idcustomer').on('change', function(){
+      var a = $('#idcustomer').val();
+      if (a !== '') {
+        $( "#ket_item" ).popover('destroy');
+        $("#item_brg_so").prop("disabled", false);
+      }
+      else {
+
+        $( "#ket_item" ).popover('show');
+      }
+    });
+
+    $("#disso").on('keyup', function(){
+      var harga_normal = parseInt($("#harga_normal").val());
+      var disstd = parseInt($("#diskon_standar_persen").val());
+      var dispro = parseInt($("#diskon_promo_persen").val());
+      var harga = parseInt((harga_normal*(100 - disstd)/100)*(100 - dispro)/100);
+      var disso = parseFloat($("#disso").val());
+      if ($("#tipe_disso").val() === "%") {
+        if (parseInt($("#disso").val()) > 100) {
+          swal({
+            title: "Peringatan!",
+            text: "Tidak boleh lebih dari 100%",
+            type: "warning",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("#disso").val(0);
+        }else {
+          $("#harga").val(harga*(100 - disso)/100);
+        }
+      }else {
+        var radioValue = $("input[name='radio_disso_rp']:checked"). val();
+        if (radioValue == "tambah") {
+          $("#harga").val(harga + disso);
+        }else {
+          $("#harga").val(harga - disso);
+        }
+      }
+      if (isNaN($("#harga").val())) {
+        $("#harga").val(harga);
+      }
+    });
+
+    $("#pop_diskon").on('mouseover', function(){
+      $('#pop_diskon').popover('show');
+    });
+    $("#pop_diskon").on('mouseout', function(){
+      $('#pop_diskon').popover('hide');
+    });
+    $("#qty_supply").on('keyup', function(){
+      $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()));
+      $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
+    });
+    $("#qty_order").on('keyup', function(){
+      this.value = this.value.match(/^[0-9]+$/);
+        var qo = parseInt($("#qty_order").val());
+        var ket_bonus = parseInt($("#diskon_jika_qty").val());
+        var bonus = parseInt(qo/ket_bonus);
+        if (ket_bonus == 0) {
+          bonus = 0;
+        }
+        var harga = parseInt($('#harga').val());
+        var avl = parseInt($('#qty_avl').val());
+        var qty = parseInt($('#qty_supply').val());
+        var order = parseInt($('#qty_order').val());
+        var diskon = parseInt($('#diskon').val());
+        var qtybonus = parseInt(0);
+
+        $("#qty_bonus").val(bonus);
+        $("#qty_supply").val(parseInt(qo));
+        if ( parseInt($('#qty_supply').val()) > parseInt($('#qty_avl').val()) ) {
+          $("#qty_supply").val(parseInt($('#qty_avl').val()));
+          $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_avl').val()) + bonus);
+          $("#qty_cancel").val(parseInt($('#qty_order').val()) + parseInt($('#qty_bonus').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
+        }
+        else {
+          $("#qty_supply").val(parseInt(qo));
+          $("#qty_pending").val(parseInt( parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) ));
+          $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) - parseInt($('#qty_pending').val()));
+        }
+        //alert(bonus);
+        if (isNaN($("#qty_bonus").val()) || isNaN($("#qty_supply").val()) || isNaN($("#qty_pending").val()) ) {
+          $("#qty_bonus,#qty_supply,#qty_pending,#qty_cancel").val('');
+        }
+        hitungso();
+    });
+
+    $(".label_call").on('click', function(){
+
+      //alert(document.getElementById('get_all').checked);
+        if (document.getElementById('get_all').checked == true) {
+          $('#get_all').prop('checked', false);
+          $('.checkbox_opsi').prop('checked', false);
+        }
+        else{
+          $('#get_all').prop('checked', true);
+          $('.checkbox_opsi').prop('checked', true);
+        }
+        //var jumcus = 0;
+        var reason = [];
+        $(".checkbox_opsi:checked").each(function() {
+          reason.push($(this).val());
+          //jumcus++;
+        });
+        $('#input_edit').val(reason.join(';'));
+
+    });
+    $("#get_all").on('change', function(){
+
+        $('.checkbox_opsi').prop('checked', this.checked);
+
+    });
+    $(".checkbox_opsi").on('change', function(){
+
+      var reason = [];
+      $(".checkbox_opsi:checked").each(function() {
+        reason.push($(this).val());
+        //jumcus++;
+      });
+      $('#input_edit').val(reason.join(';'));
+    });
+
+
+    function getdisso(dis){
+      $('#tipe_disso').html(dis);
+      $('#tipe_disso').val(dis);
+      if (dis == "%") {
+        $('.radio_disso_rp').hide();
+      }else {
+        $('.radio_disso_rp').show();
+      }
+    }
+    function edit_barang(noso,id){
+      $('#input_edit').val(id);
+      edit_pso(noso);
+    }
+    function edit_pso(noso){
+      var param = $('#input_edit').val();
+      tujuan = siteurl+'salesorder/edit_pso/'+noso+'?param='+param;
+      $.post(tujuan,{'NOSO':noso},function(result){
+        $("#MyModalBodyEdit").html(result);
+      });
+
+    }
+
+    function save_edit_pso(){
+      var param3 = '<?php echo $this->uri->segment(3)?>';
+      //e.preventDefault();
+      var formdata = $("#form-detail-so-pending").serialize();
+      $.ajax({
+        url: siteurl+"salesorder/save_edit_so_pending",
+        dataType : "json",
+        type: 'POST',
+        data: formdata,
+        success: function(result){
+          if(result.save=='1'){
+            swal({
+              title: "Sukses!",
+              text: result['msg'],
+              type: "success",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            //resetform();
+            /*setTimeout(function(){
+              window.location.href = siteurl+"salesorder/edit/"+param3;
+            },1600);
+            console.log(result.header);*/
+          } else {
+            swal({
+              title: "Gagal!",
+              text: result['msg'],
+              type: "error",
+              timer: 1500,
+              showConfirmButton: false
+            });
+          };
+        },
+        error: function(){
+          swal({
+            title: "Gagal!",
+            text: "Ajax Data Gagal Di Proses",
+            type: "error",
+            timer: 1500,
+            showConfirmButton: false
+          });
+        }
+      });
+    }
     function filterAngka(a){
         if(!a.match(/^[0-9]+$/)){
             return 0;
@@ -602,10 +753,6 @@
     }
     function kembali(){
         window.location.href = siteurl+'salesorder';
-    }
-    function cancel(){
-        $(".box").show();
-        $("#form-area").hide();
     }
     function resetform(){
         $('#item_brg_so').val('');
@@ -634,6 +781,17 @@
             $('#nilaidiskoncash').val(d);
             sethitung();
     }
+    function pembulatan(x){
+      var string_harga = x.toString();
+      var cek = parseInt(string_harga.substr(-3));
+      if (cek > 0) {
+        var pembantu = 1000 - cek;
+        var hasil = parseInt(x) + parseInt(pembantu);
+        return hasil;
+      }else {
+        return x;
+      }
+    }
     function setitembarang(){
         var idbarang = $('#item_brg_so').val();
         var qty = $('#qty_order').val();
@@ -653,6 +811,7 @@
                     $('#qty_avl').val(data.qty_avl);
                     $('#total').val(data.harga*qty_sup);
                     $('#harga_normal').val(data.harga);
+                    $('#poin_per_item').val(data.poin_per_item);
 
                     $('#diskon_standar_persen').val(data.diskon_standar_persen)
                     $('#diskon_promo_persen').val(data.diskon_promo_persen);
@@ -660,11 +819,46 @@
                     $('#diskon_jika_qty').val(data.diskon_jika_qty);
                     $('#diskon_qty_gratis').val(data.diskon_qty_gratis);
 
-                    var d_std = parseInt($('#diskon_standar_persen').val() * $('#harga').val()/100);
-                    var d_pp = parseInt($('#diskon_promo_persen').val() * $('#harga').val()/100);
+                    if ($('#diskon_qty_gratis').val() > 0) {
+                      $('#item_brg_so_bonus').prop('disabled', false);
+                    }else {
+                      $('#item_brg_so_bonus').prop('disabled', true);
+                    }
+                    var h_d_std = parseInt($('#harga_normal').val()) - (parseInt($('#diskon_standar_persen').val() * $('#harga_normal').val()/100));
+                    var d_pp = parseInt($('#diskon_promo_persen').val()) * h_d_std/100;
                     var d_rp = $('#diskon_promo_rp').val();
-                    var harga = parseInt($('#harga').val() - d_std - d_pp - d_rp);
+                    var harga = h_d_std - d_pp - d_rp;
+                    var harga_sebelum_ppn = parseInt($('#harga_normal').val())/110*100;
+                    $('#harga_sebelum_ppn').val(harga_sebelum_ppn)
                     $('#harga').val(harga);
+
+                }
+            });
+        }
+    }
+    function setitembarang_bonus(){
+        var idbarang = $('#item_brg_so_bonus').val();
+        if(idbarang != ""){
+            $('#submit_bonus').prop('disabled', false);
+        }
+        else {
+          $('#submit_bonus').prop('disabled', true);
+        }
+
+        if(idbarang != ""){
+            $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_item_barang_bonus",
+                data:"idbarang="+idbarang,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    console.log(data);
+                    $('#qty_avl_bonus').val(data.qty_avl);
+
+                    $('#nama_barang_bonus').val(data.nm_barang);
+                    $('#harga_bonus').val(data.harga);
+                    $('#satuan_bonus').val(data.satuan);
+                    $('#jenis_bonus').val(data.jenis);
 
                 }
             });
@@ -696,18 +890,7 @@
             success:function(result){
               $('#pic').html("");
               $('#pic').html(result);
-              /*var hasilpic = JSON.parse(result);  // Memanggil result dengan json
-              var dataHandler = $("#pic");  // Pemanggilan id muat-data-disini
 
-              $.each(hasilpic, function(key,val){  // Menampung hasilDtt dalam variable val
-              var newRow = $("<option>");
-
-                                      // Menyimpan elemen data kedalam tabel
-              //newRow.val(val.id_pic);
-              newRow.html(val.nm_pic);
-              dataHandler.append(newRow);
-
-            });*/
             }
         });
     }
@@ -732,8 +915,10 @@
         var order = parseInt($('#qty_order').val());
         var diskon = parseInt($('#diskon').val());
         var bonus = parseInt($('#qty_bonus').val());
+        var poin_per_item = parseInt($('#poin_per_item').val());
 
         var total = harga*qty;
+        var poin = parseInt(total/poin_per_item);
         if(qty > avl){
           swal({
             title: "Peringatan!",
@@ -745,6 +930,7 @@
           $('#qty_supply').val(0);
         }else{
           $('#total').val(total);
+          $('#jumlah_poin').val(poin);
         }
 
         //
@@ -762,21 +948,21 @@
         var dto = parseFloat($('#persen_diskon_toko').val())*dpp_so/100;
         var dpp_n = parseInt($('#dppso').val()) - dto;
         var dcc = parseInt($('#nilaidiskoncash').val())*dpp_n/100;
-        var dpp = dpp_n - dcc;
-        var ppn = 10*dpp*0.01;
+        var dpp = parseInt(dpp_n - dcc);
+
         if(npp == 0){
             ppn = 0;
         }
-        //alert(dpp_n);
-        $('#ppnso').val(ppn);
-        $('#flagppnso').val(ppn);
-        $('#totalso').val(dpp+ppn);
+
+        $('#ppnso').val(npp);
+
+        $('#totalso').val(dpp);
         $('#diskon_toko').val(dto);
         $('#diskon_cash').val(dcc);
         $('#diskoncash').text(formatCurrency(dcc,',','.',0));
-        $('#ppnview').text(ppn);
+        $('#ppnview').text("(Include) "+npp+"%");
         $('#diskontoko').text(formatCurrency(dto,',','.',0));
-        $('#totalview').text(formatCurrency(dpp+ppn,',','.',0));
+        $('#totalview').text(formatCurrency(dpp,',','.',0));
     }
     function hitungcancel(){
         var avl = parseInt($('#qty_avl').val());
@@ -836,23 +1022,50 @@
             $('#qty_pending').val(ang.replace(/[^0-9]/g,''));
         }
     }
-    function edit_barang(noso,id){
-      $('#input_edit').val(id);
-      edit_pso(noso);
-    }
-    function edit_pso(noso){
-      var param = $('#input_edit').val();
-      //var uri3 = $('#no_so_pending').val();
-      //window.location.href = siteurl+"salesorder/edit_pso/"+noso+"?param="+param;
-      tujuan = siteurl+'salesorder/edit_pso/'+noso+'?param='+param;
-      $.post(tujuan,{'NOSO':noso},function(result){
-        $("#MyModalBodyEdit").html(result);
-      });
-      //param=noso;
-
-        //$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-    }
-
+    $('#form-detail-so').on('submit', function(e){
+        hitungso();
+        e.preventDefault();
+        var formdata = $("#form-detail-so,#form-header-so").serialize();
+        $.ajax({
+            url: siteurl+"salesorder/saveitemso",
+            dataType : "json",
+            type: 'POST',
+            data: formdata,
+            success: function(result){
+                if(result.save=='1'){
+                    swal({
+                        title: "Sukses!",
+                        text: result['msg'],
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    resetform();
+                    setTimeout(function(){
+                        window.location.href=siteurl+"salesorder/create";
+                    },1600);
+                    console.log(result.header);
+                } else {
+                    swal({
+                        title: "Gagal!",
+                        text: "Data Gagal Di Simpan",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                };
+            },
+            error: function(){
+                swal({
+                    title: "Gagal!",
+                    text: "Ajax Data Gagal Di Proses",
+                    type: "error",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
     function delete_data(noso,id){
         //alert(id);
         swal({
@@ -869,7 +1082,7 @@
         function(isConfirm){
           if (isConfirm) {
             $.ajax({
-                    url: siteurl+'salesorder/hapus_item_so_pending',
+                    url: siteurl+'salesorder/hapus_item_so',
                     data :{"NO_SO":noso,"ID":id},
                     dataType : "json",
                     type: 'POST',
@@ -910,98 +1123,9 @@
           }
         });
     }
-
-    $('#form-detail-so').on('submit', function(e){
-      hitungso();
-      //$('#totalso').val(parseInt($('#totalso').val()) + parseInt($('#total').val()));
-      e.preventDefault();
-      var formdata = $("#form-detail-so,#form-header-so").serialize();
-      $.ajax({
-        url: siteurl+"salesorder/saveitemso_pending",
-        dataType : "json",
-        type: 'POST',
-        data: formdata,
-        success: function(result){
-          if(result.save=='1'){
-            swal({
-              title: "Sukses!",
-              text: result['msg'],
-              type: "success",
-              timer: 1500,
-              showConfirmButton: false
-            });
-            resetform();
-            setTimeout(function(){
-              window.location.reload();
-            },1600);
-            console.log(result.header);
-          } else {
-            swal({
-              title: "Gagal!",
-              text: result['msg'],
-              type: "error",
-              timer: 1500,
-              showConfirmButton: false
-            });
-          };
-        },
-        error: function(){
-          swal({
-            title: "Gagal!",
-            text: "Ajax Data Gagal Di Proses",
-            type: "error",
-            timer: 1500,
-            showConfirmButton: false
-          });
-        }
-      });
-    });
-
-    function save_edit_pso(){
-      //e.preventDefault();
-      var formdata = $("#form-detail-so-pending").serialize();
-      $.ajax({
-        url: siteurl+"salesorder/save_edit_so_pending",
-        dataType : "json",
-        type: 'POST',
-        data: formdata,
-        success: function(result){
-          if(result.save=='1'){
-            swal({
-              title: "Sukses!",
-              text: result['msg'],
-              type: "success",
-              timer: 1500,
-              showConfirmButton: false
-            });
-            //resetform();
-            setTimeout(function(){
-              window.location.reload();
-            },1600);
-            console.log(result.header);
-          } else {
-            swal({
-              title: "Gagal!",
-              text: result['msg'],
-              type: "error",
-              timer: 1500,
-              showConfirmButton: false
-            });
-          };
-        },
-        error: function(){
-          swal({
-            title: "Gagal!",
-            text: "Ajax Data Gagal Di Proses",
-            type: "error",
-            timer: 1500,
-            showConfirmButton: false
-          });
-        }
-      });
-    }
-    function saveheaderpso(){
-        var formdata = $("#form-header-so,#form-detail-so").serialize();
+    function saveheaderso_pso(){
+      //sethitung();
+        var formdata = $("#form-header-so").serialize();
         if($('#idcustomer').val() != ""){
         $.ajax({
             url: siteurl+"salesorder/saveheaderpso",

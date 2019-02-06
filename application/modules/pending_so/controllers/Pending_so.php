@@ -10,10 +10,10 @@
 class Pending_so extends Admin_Controller {
 
     //Permission
-    protected $viewPermission   = "Salesorder.View";
-    protected $addPermission    = "Salesorder.Add";
-    protected $managePermission = "Salesorder.Manage";
-    protected $deletePermission = "Salesorder.Delete";
+    protected $viewPermission   = "Pending_so.View";
+    protected $addPermission    = "Pending_so.Add";
+    protected $managePermission = "Pending_so.Manage";
+    protected $deletePermission = "Pending_so.Delete";
 
     public function __construct(){
         parent::__construct();

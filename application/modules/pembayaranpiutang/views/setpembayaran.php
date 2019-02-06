@@ -151,10 +151,10 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title" id="myModalLabelGiro">Form Data Giro</h4>
+        <h4 class="modal-title" id="myModalLabelGiro">Data Giro</h4>
       </div>
       <div class="modal-body" id="MyModalBodyGiro" style="background: #FFF !important;color:#000 !important;">
-        <form id="form-data-giro" method="post">
+        <form id="form-data-giro" method="post" style="display: none;">
           <div class="form-horizontal">
             <div class="row">
             <div class="col-sm-6">

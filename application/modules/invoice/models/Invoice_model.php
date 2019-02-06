@@ -91,6 +91,28 @@ class Invoice_model extends BF_Model
         return $kdcab.'-IV-'.$kode;
     }
 
+    function generate_nojv($kdcab){
+        $query = "SELECT noJS
+                  FROM
+                  pastibisa_tb_cabang WHERE nocab = '$kdcab'";
+        $q = $this->db->query($query);
+        $r = $q->row();
+        $kode = (int)$r->noJS+1;
+        $next_kode = str_pad($kode, 4, "0", STR_PAD_LEFT);
+
+        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+                         7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
+                        );
+        $bln_now = date('m');
+        $kode_bln = '';
+        foreach($arr_tgl as $k=>$v){
+            if($k == $bln_now){
+                $kode_bln = $v;
+            }
+        }
+        return $kdcab.'-A-JS'.date('my').$next_kode;
+    }
+
     function get_customer($idcus){
         $query="SELECT
                 *

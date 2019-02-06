@@ -142,7 +142,7 @@ class Deliveryorder_model extends BF_Model
         $query="SELECT
                 kendaraan.id_kendaraan,
                 kendaraan.nm_kendaraan
-                FROM kendaraan  WHERE kdcab='$kdcab' ";
+                FROM kendaraan WHERE kdcab='$kdcab'";
         return $this->db->query($query);
     }
 

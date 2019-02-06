@@ -64,8 +64,8 @@ class Barang_model extends BF_Model
         parent::__construct();
     }
 
-    public function get_kode_barang($param,$id_group) {
-      $query = $this->db->query("SELECT MAX(id_barang) as max_id FROM barang_master WHERE id_group = '".$id_group."'");
+    public function get_kode_barang($param,$id_group,$id_jenis) {
+      $query = $this->db->query("SELECT MAX(id_barang) as max_id FROM barang_master WHERE jenis='".$id_jenis."' AND id_group = '".$id_group."'");
       $row = $query->row_array();
       $max_id = $row['max_id'];
       $max_id1 =(int) substr($max_id,4,3);

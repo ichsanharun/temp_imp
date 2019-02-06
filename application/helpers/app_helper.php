@@ -348,7 +348,7 @@ if (!function_exists('ynz_terbilang')) {
 if(! function_exists('tipe_pengiriman')){
     function tipe_pengiriman($ket=false){
         $uu = array(
-            'SENDIRI' => 'MILIK SENDIRI', 
+            'SENDIRI' => 'MILIK SENDIRI',
             'SEWA' => 'SEWA',
             'EKSPEDISI' => 'EKSPEDISI',
             'PELANGGAN' => 'PELANGGAN AMBIL SENDIRI'
@@ -373,7 +373,7 @@ if(! function_exists('selisih_hari')){
 if(! function_exists('kategori_umur_piutang')){
     function kategori_umur_piutang($ket=false){
         $uu = array(
-            '0|14'  => '0-14', 
+            '0|14'  => '0-14',
             '15|29' => '15-29',
             '30|59' => '30-59',
             '60|89' => '60-89',
@@ -409,7 +409,7 @@ if( ! function_exists('the_bulan'))
 if(! function_exists('is_jenis_bayar')){
     function is_jenis_bayar($ket=false){
         $uu = array(
-            'CASH' => 'CASH', 
+            'CASH' => 'CASH',
             'TRANSFER' => 'TRANSFER',
             'BG' => 'GIRO'
             );
@@ -421,3 +421,47 @@ if(! function_exists('is_jenis_bayar')){
     }
 }
 
+if(! function_exists('is_status_giro')){
+    function is_status_giro($ket=false){
+        $uu = array(
+            'OPEN' => 'OPEN',
+            'INV' => 'INVOICE',
+            'CAIR' => 'CAIR',
+            'TOLAK' => 'TOLAK'
+            );
+        if($ket ==  true){
+            return $uu[$ket];
+        } else {
+            return $uu;
+        }
+    }
+}
+
+if(! function_exists('is_filter_report_jual')){
+    function is_filter_report_jual($ket=false){
+        $uu = array(
+            'by_customer' => 'Per Customer',
+            'by_sales' => 'Per Sales'
+            );
+        if($ket ==  true){
+            return $uu[$ket];
+        } else {
+            return $uu;
+        }
+    }
+}
+
+if(! function_exists('is_filter_detail_jual')){
+    function is_filter_detail_jual($ket=false){
+        $uu = array(
+            'by_produk' => 'Per Produk',
+            'by_customer' => 'Per Customer',
+            'by_sales' => 'Per Sales'
+            );
+        if($ket ==  true){
+            return $uu[$ket];
+        } else {
+            return $uu;
+        }
+    }
+}

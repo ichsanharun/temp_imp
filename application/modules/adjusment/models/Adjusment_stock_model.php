@@ -13,7 +13,7 @@ class Adjusment_stock_model extends BF_Model
     /**
      * @var string  User Table Name
      */
-    protected $table_name = 'stock_adjusment';
+    protected $table_name = 'stock_adjusment_header';
     protected $key        = 'id_adjusment';
 
     /**
@@ -104,5 +104,10 @@ class Adjusment_stock_model extends BF_Model
                 WHERE barang_stock.id_barang='$idbarang' AND barang_stock.kdcab ='$kdcab'";
         return $this->db->query($query);
         //LEFT JOIN barang_master ON `barang_stock`.`id_barang` = `barang_master`.`id_barang`
+    }
+    public function cek_data($kunci,$tabel) {
+        $this->db->where($kunci);
+        $query=$this->db->get($tabel);
+        return $query->row();
     }
 }

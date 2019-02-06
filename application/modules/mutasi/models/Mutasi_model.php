@@ -66,24 +66,24 @@ class Mutasi_model extends BF_Model
 
     /*
     function generate_nodo($kdcab){
-        $query = "SELECT cabang.no_suratjalan 
-                  FROM 
-                  cabang WHERE cabang.kdcab='$kdcab'"; 
+        $query = "SELECT cabang.no_suratjalan
+                  FROM
+                  cabang WHERE cabang.kdcab='$kdcab'";
         $q = $this->db->query($query);
         $r = $q->row();
-        $kode = (int)$r->no_suratjalan+1; 
+        $kode = (int)$r->no_suratjalan+1;
         $next_kode = str_pad($kode, 4, "0", STR_PAD_LEFT);
         return $kdcab.'-DO'.date('y').$next_kode;
     }
     */
 
     function generate_no_mutasi($kdcab){
-        $query = "SELECT cabang.no_mutasi 
-                  FROM 
-                  cabang WHERE cabang.kdcab='$kdcab'"; 
+        $query = "SELECT cabang.no_mutasi
+                  FROM
+                  cabang WHERE cabang.kdcab='$kdcab'";
         $q = $this->db->query($query);
         $r = $q->row();
-        $kode = (int)$r->no_mutasi+1; 
+        $kode = (int)$r->no_mutasi+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
         $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
@@ -111,19 +111,19 @@ class Mutasi_model extends BF_Model
         return $query->result();
     }
 
-    function pilih_driver(){
+    function pilih_driver($kdcab){
         $query="SELECT
                 karyawan.id_karyawan,
                 karyawan.nama_karyawan
-                FROM karyawan where divisi='12'";
+                FROM karyawan where divisi='12' and kdcab='$kdcab'";
         return $this->db->query($query);
     }
 
-    function pilih_kendaraan(){
+    function pilih_kendaraan($kdcab){
         $query="SELECT
                 kendaraan.id_kendaraan,
                 kendaraan.nm_kendaraan
-                FROM kendaraan ";
+                FROM kendaraan WHERE kdcab='$kdcab'";
         return $this->db->query($query);
     }
 

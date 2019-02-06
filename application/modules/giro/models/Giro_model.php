@@ -63,4 +63,16 @@ class Giro_model extends BF_Model
     {
         parent::__construct();
     }
+
+    public function get_data($kunci,$tabel) {
+        $this->db->where($kunci);
+        $query=$this->db->get($tabel);
+        return $query->result();
+    }
+
+    public function cek_data($kunci,$tabel) {
+        $this->db->where($kunci);
+        $query=$this->db->get($tabel);
+        return $query->row();
+    }
 }

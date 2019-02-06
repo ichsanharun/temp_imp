@@ -8,25 +8,25 @@
  */
 
 class Receivingmutasi extends Admin_Controller {
-    
+
     //Permission
-    /*
-    protected $viewPermission   = "Deliveryorder.View";
-    protected $addPermission    = "Deliveryorder.Add";
-    protected $managePermission = "Deliveryorder.Manage";
-    protected $deletePermission = "Deliveryorder.Delete";
-    */
+
+    protected $viewPermission   = "Receivingmutasi.View";
+    protected $addPermission    = "Receivingmutasi.Add";
+    protected $managePermission = "Receivingmutasi.Manage";
+    protected $deletePermission = "Receivingmutasi.Delete";
+
     public function __construct()
     {
         parent::__construct();
         $this->load->library(array('Mpdf','upload','Image_lib'));
-        
+
         $this->load->model(array('Mutasi/Mutasi_model',
                                  'Mutasi/Detailmutasi_model',
                                  'Cabang/Cabang_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
-        
+
         $this->template->title('Mutasi Produk');
         $this->template->page_icon('fa fa-table');
 
@@ -34,7 +34,7 @@ class Receivingmutasi extends Admin_Controller {
     }
 
     public function index()
-    {   
+    {
         $session = $this->session->userdata('app_session');
         $kdcabtujuan = $session['kdcab'];
         //$kdcabtujuan = '102';
@@ -123,17 +123,17 @@ class Receivingmutasi extends Admin_Controller {
         $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
-        
+
         $header = $this->Mutasi_model->find_data('trans_mutasi_header',$mutasi,'no_mutasi');
         $detail = $this->Detailmutasi_model->find_all_by(array('no_mutasi' => $mutasi));
 
         $this->template->set('header', $header);
         $this->template->set('detail', $detail);
-        
+
         $show = $this->template->load_view('print_data',$data);
 
         $this->mpdf->AddPage('L');
-        $this->mpdf->WriteHTML($show);        
+        $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
 

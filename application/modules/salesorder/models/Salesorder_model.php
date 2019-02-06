@@ -204,9 +204,7 @@ class Salesorder_model extends BF_Model
 
     function get_customer($idcus){
         $query="SELECT
-                customer.id_customer,
-                customer.nm_customer,
-                customer.diskon_toko
+                *
                 FROM customer where id_customer='$idcus'";
         return $this->db->query($query);
     }

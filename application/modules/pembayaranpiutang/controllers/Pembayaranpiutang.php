@@ -15,12 +15,12 @@ class Pembayaranpiutang extends Admin_Controller {
      *
      */
     //Permission
-    /*
-    protected $viewPermission   = "Reportstok.View";
-    protected $addPermission    = "Reportstok.Add";
-    protected $managePermission = "Reportstok.Manage";
-    protected $deletePermission = "Reportstok.Delete";
-    */
+
+    protected $viewPermission   = "Pembayaranpiutang.View";
+    protected $addPermission    = "Pembayaranpiutang.Add";
+    protected $managePermission = "Pembayaranpiutang.Manage";
+    protected $deletePermission = "Pembayaranpiutang.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -174,7 +174,7 @@ class Pembayaranpiutang extends Admin_Controller {
         $pembayaran_ke = $this->Invoice_model->get_data(array("no_invoice"=>$this->input->post('no_invoice')),'pembayaran_piutang');
         $newpiutang = $this->input->post('jml_piutang')-$this->input->post('jml_bayar');
         $nomor_jurnal_jarh = $this->generatenomorjurnaljarh($this->input->post('kdcab'));
-        
+
         $datapost = array(
             'kd_pembayaran' => $this->generatekodepembayaran($this->input->post('kdcab')),
             'no_invoice' => $this->input->post('no_invoice'),

@@ -163,7 +163,7 @@
         window.location.href = siteurl+"deliveryorder_2/create";
     }
     function add_data_from_pending(){
-        window.location.href = siteurl+"deliveryorder_2/createpending";
+        window.location.href = siteurl+"pickinglistdop";
     }
 /*
 	  $(function() {

@@ -1,8 +1,8 @@
 <?php
-    $ENABLE_ADD     = has_permission('Supplier.Add');
-    $ENABLE_MANAGE  = has_permission('Supplier.Manage');
-    $ENABLE_VIEW    = has_permission('Supplier.View');
-    $ENABLE_DELETE  = has_permission('Supplier.Delete');
+    $ENABLE_ADD = has_permission('Supplier.Add');
+    $ENABLE_MANAGE = has_permission('Supplier.Manage');
+    $ENABLE_VIEW = has_permission('Supplier.View');
+    $ENABLE_DELETE = has_permission('Supplier.Delete');
 ?>
 <style type="text/css">
 thead input {
@@ -10,7 +10,7 @@ thead input {
 }	
 </style>
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 
 <div class="box">
 	<div class="box-header">
@@ -38,52 +38,63 @@ thead input {
 			<th>HP Kotak Person / WeChat ID</th>
 			<th>Email</th>
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if ($ENABLE_MANAGE) : ?>
 			<th width="25">Action</th>
 			<?php endif; ?>
 		</tr>
 		</thead>
 
 		<tbody>
-		<?php if(empty($results)){
-		}else{
-			$numb=0; foreach($results AS $record){ $numb++; ?>
+		<?php if (empty($results)) {
+} else {
+    $numb = 0;
+    foreach ($results as $record) {
+        ++$numb; ?>
 		<tr>
 		    <td><?= $numb; ?></td>
-			<td><?= $record->id_supplier ?></td>
-			<td><?= $record->nm_supplier ?></td>
-			<td><?= strtoupper($record->nm_negara) ?></td>
-			<td><?= $record->alamat ?></td>
-			<td><?= $record->telpon." / ".$record->fax ?></td>			
-			<td><?= $record->cp ?></td>
-			<td><?= $record->hp_cp." / ".$record->id_webchat ?></td>
-			<td><?= $record->email ?></td>
+			<td><?= $record->id_supplier; ?></td>
+			<td><?= $record->nm_supplier; ?></td>
+			<td><?= strtoupper($record->nm_negara); ?></td>
+			<td><?= $record->alamat; ?></td>
+			<td><?= $record->telpon.' / '.$record->fax; ?></td>			
+			<td><?= $record->cp; ?></td>
+			<td><?= $record->hp_cp.' / '.$record->id_webchat; ?></td>
+			<td><?= $record->email; ?></td>
 			<td>
-				<?php if($record->sts_aktif == 'aktif'){ ?>
+				<?php if ($record->sts_aktif == 'aktif') {
+            ?>
 					<label class="label label-success">Aktif</label>
-				<?php }else{ ?>
+				<?php
+        } else {
+            ?>
 					<label class="label label-danger">Non Aktif</label>
-				<?php } ?>
+				<?php
+        } ?>
 			</td>
 			<td style="padding-left:20px">
-			<?php if($ENABLE_VIEW) : ?>
-				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_supplier?>')">
+			    <a href="<?= base_url('supplier/produk/'.$record->id_supplier); ?>" >
+                    PRODUK
+                </a>
+			<?php if ($ENABLE_VIEW) : ?>
+				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_supplier; ?>')">
 				<span class="glyphicon glyphicon-print"></span>
 				</a>
 			<?php endif; ?>
 
-			<?php if($ENABLE_MANAGE) : ?>
-				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="edit_data('<?=$record->id_supplier?>')"><i class="fa fa-pencil"></i>
+			<?php if ($ENABLE_MANAGE) : ?>
+				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="edit_data('<?=$record->id_supplier; ?>')"><i class="fa fa-pencil"></i>
 				</a>
 			<?php endif; ?>
 
-			<?php if($ENABLE_DELETE) : ?>
-				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_supplier?>')"><i class="fa fa-trash"></i>
+			<?php if ($ENABLE_DELETE) : ?>
+				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_supplier; ?>')"><i class="fa fa-trash"></i>
 				</a>
 			<?php endif; ?>
 			</td>
 		</tr>
-		<?php } }  ?>
+		<?php
+    }
+}  ?>
 		</tbody>
 
 		<tfoot>
@@ -98,7 +109,7 @@ thead input {
 			<th>HP Kotak Person / WebChat ID</th>
 			<th>Email</th>
 			<th>Status</th>
-			<?php if($ENABLE_MANAGE) : ?>
+			<?php if ($ENABLE_MANAGE) : ?>
 			<th width="25">Action</th>
 			<?php endif; ?>
 		</tr>
@@ -109,7 +120,7 @@ thead input {
 </div>
 
 <div id="form-area">
-<?php $this->load->view('supplier/supplier_form') ?>
+<?php $this->load->view('supplier/supplier_form'); ?>
 </div>
 
 <!-- awal untuk modal dialog -->
@@ -133,8 +144,8 @@ thead input {
 </div>
 
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">

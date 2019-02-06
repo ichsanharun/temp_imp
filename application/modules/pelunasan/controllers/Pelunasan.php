@@ -3,22 +3,22 @@
 /*
  * @author Yunaz
  * @copyright Copyright (c) 2018, Yunaz
- * 
+ *
  * This is controller for Koli
  */
 
 class Pelunasan extends Admin_Controller {
-    
+
     /**
      * Load the models, library, etc
      *
-     * 
+     *
      */
     //Permission
-    protected $viewPermission   = "Koli.View";
-    protected $addPermission    = "Koli.Add";
-    protected $managePermission = "Koli.Manage";
-    protected $deletePermission = "Koli.Delete";
+    protected $viewPermission   = "Pelunasan.View";
+    protected $addPermission    = "Pelunasan.Add";
+    protected $managePermission = "Pelunasan.Manage";
+    protected $deletePermission = "Pelunasan.Delete";
 
     public function __construct()
     {
@@ -50,7 +50,7 @@ class Pelunasan extends Admin_Controller {
 
         $this->template->set('results', $data);
         $this->template->title('Pelunasan Pembayaran Piutang');
-        $this->template->render('list'); 
+        $this->template->render('list');
     }
 
     function pelunasanpiutang(){
@@ -114,12 +114,12 @@ class Pelunasan extends Admin_Controller {
         $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
-        
-        $brg_data      =  $this->Barang_koli_model->find_data('barang_koli',$id_koli,'id_koli');        
+
+        $brg_data      =  $this->Barang_koli_model->find_data('barang_koli',$id_koli,'id_koli');
         $this->template->set('brg_data', $brg_data);
         $show = $this->template->load_view('print_data',$data);
 
-        $this->mpdf->WriteHTML($show);        
+        $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
 }

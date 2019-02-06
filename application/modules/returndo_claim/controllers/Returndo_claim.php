@@ -10,12 +10,12 @@
 class Returndo_claim extends Admin_Controller {
 
     //Permission
-    /*
-    protected $viewPermission   = "Deliveryorder.View";
-    protected $addPermission    = "Deliveryorder.Add";
-    protected $managePermission = "Deliveryorder.Manage";
-    protected $deletePermission = "Deliveryorder.Delete";
-    */
+
+    protected $viewPermission   = "Returndo_claim.View";
+    protected $addPermission    = "Returndo_claim.Add";
+    protected $managePermission = "Returndo_claim.Manage";
+    protected $deletePermission = "Returndo_claim.Delete";
+
     public function __construct()
     {
         parent::__construct();
@@ -56,7 +56,7 @@ class Returndo_claim extends Admin_Controller {
 
     public function setkonfirmasido(){
         $header = $this->Deliveryorder_model->order_by('no_do','ASC')->find_by(array('no_do' => $this->input->post('NODO')));
-        $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $this->input->post('NODO'),'konfirm_do_detail'=>"CLOSE"));
+        $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $this->input->post('NODO'),'konfirm_do_detail !='=>"OPEN"));
         $this->template->set('header', $header);
         $this->template->set('detail', $detail);
         $this->template->render('getdetaildo');
@@ -148,10 +148,8 @@ class Returndo_claim extends Admin_Controller {
             for($i=0;$i < count($this->input->post('konfirm_do'));$i++){
               //for($j=0;$j < count($this->input->post('konfirm_do')[$i]);$j++){}
                 $dataKonfirm = array(
-                    'konfirm_do_detail' => $this->input->post('konfirm_do')[$i],
-                    'return_do' => $this->input->post('return_do_bagus')[$i],
-                    'return_do_rusak' => $this->input->post('return_do_rusak')[$i],
-                    'return_do_hilang' => $this->input->post('return_do_hilang')[$i],
+                    'konfirm_do_detail' => 'RETURN',
+                    'return_claim' => $this->input->post('return_do_rusak')[$i]+$this->input->post('return_do_hilang')[$i]
 
                     );
                 $key = array(

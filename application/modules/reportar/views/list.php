@@ -21,12 +21,17 @@ thead input {
         <div class="form-group">
           <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-sm" id="filtercabang">
+              <select class="form-control input-sm" id="filtercabang" disabled="disabled">
                 <option value="">Pilih Cabang</option>
                 <?php 
                 foreach(@$cabang as $k=>$v){ 
                   $selected = '';
+                  $session = $this->session->userdata('app_session');
+                  $kdcab = $session['kdcab'];
                   if($this->uri->segment(3) == $v->kdcab){
+                    $selected='selected="selected"';
+                  }
+                  if($kdcab == $v->kdcab){
                     $selected='selected="selected"';
                   }
                 ?>

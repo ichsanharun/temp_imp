@@ -20,12 +20,17 @@ thead input {
         <div class="form-group">
           <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-sm" id="filtercabang" style="width: 200px;">
+              <select class="form-control input-sm" id="filtercabang" style="width: 200px;" disabled="disabled">
                 <option value="">Pilih Cabang</option>
                 <?php 
                 foreach(@$cabang as $k=>$v){ 
                   $selected = '';
+                  $session = $this->session->userdata('app_session');
+                  $kdcab = $session['kdcab'];
                   if($this->uri->segment(3) == $v->kdcab){
+                    $selected='selected="selected"';
+                  }
+                  if($kdcab == $v->kdcab){
                     $selected='selected="selected"';
                   }
                 ?>
@@ -99,10 +104,12 @@ thead input {
         <tbody>
         <?php
         $n=1;
+        $totalpiutang=0;
         if(@$results){
         foreach(@$results as $kr=>$vr){
           $no = $n++;
           $ar = $this->Invoice_model->cek_data(array('no_invoice'=>$vr->no_invoice),'ar');
+          $totalpiutang += $vr->piutang;
         ?>
         <tr>
           <td><center><?php echo $no?></center></td>
@@ -136,6 +143,13 @@ thead input {
         <?php } ?>
         <?php } ?>
         </tbody>
+        <tfoot>
+        	<tr>
+        		<td colspan="6"><center><b>TOTAL</b></center></td>
+        		<td colspan="2" style="text-align: right;"><b><?php echo formatnomor($totalpiutang)?></b></td>
+        		<td colspan="5"></td>
+        	</tr>
+        </tfoot>
         </table>
   </div>
   <!-- /.box-body -->

@@ -75,7 +75,7 @@ class Customer_model extends BF_Model
       return $idcust;
     }*/
 
-    function generate_id($kode='') {
+    function generate_id_old($kode='') {
       $query = $this->db->query("SELECT MAX(id_customer) as max_id FROM customer");
       $row = $query->row_array();
       $thnbln = date('Ym');
@@ -115,6 +115,27 @@ class Customer_model extends BF_Model
       return $idcust;
     }
 
+    function generate_id($kode='') {
+      $session = $this->session->userdata('app_session');
+      $cek_gen = $kode.$session['kdcab']."-";
+      $query = $this->db->query("SELECT MAX(id_customer) as max_id FROM customer WHERE id_customer LIKE '%$cek_gen%'");
+      $row = $query->row_array();
+      $thn = date('Y');
+      $max_id = $row['max_id'];
+      $thn_max = substr($max_id,5,4);
+      if ($thn_max == $thn) {
+        $max_id1 =(int) substr($max_id,9,5);
+        $max_id1 += 1;
+        $idcust = $kode.$session['kdcab']."-".$thn.str_pad($max_id1, 5, "0", STR_PAD_LEFT);
+      }
+      else {
+        $max_id1 = 0;
+        $idcust = $kode.$session['kdcab']."-".$thn.str_pad($max_id1, 5, "0", STR_PAD_LEFT);
+
+      }
+      return $idcust;
+    }
+
     function get_idtoko($kode=''){
         $query = $this->db->query("SELECT MAX(id_toko) as max_id FROM customer_toko");
         $row = $query->row_array();
@@ -150,11 +171,11 @@ class Customer_model extends BF_Model
         return $this->db->query($query);
     }
 
-    function pilih_marketing(){
+    function pilih_marketing($kdcab){
         $query="SELECT
                 karyawan.id_karyawan,
                 karyawan.nama_karyawan
-                FROM karyawan where divisi=3 and sts_aktif='aktif'";
+                FROM karyawan where divisi=3 and sts_aktif='aktif' and kdcab='".$kdcab."'";
         return $this->db->query($query);
     }
 
@@ -191,10 +212,9 @@ class Customer_model extends BF_Model
             `customer`
         LEFT JOIN `karyawan` ON `customer`.`id_marketing` = `karyawan`.`id_karyawan`
         WHERE
-            `customer`.`deleted` = 0 AND `customer`.`kdcab` = '$kdcab'
-        ORDER BY
-            `id_customer` ASC";
+            `customer`.`deleted` = 0 AND `customer`.`kdcab` = '".$kdcab."' ORDER BY `id_customer` ASC";
         return $this->db->query($query);
     }
+
 
 }

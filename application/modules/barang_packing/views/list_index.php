@@ -1,8 +1,8 @@
 <?php
-    $ENABLE_ADD     = has_permission('Barang.Add');
-    $ENABLE_MANAGE  = has_permission('Barang.Manage');
-    $ENABLE_VIEW    = has_permission('Barang.View');
-    $ENABLE_DELETE  = has_permission('Barang.Delete');
+    $ENABLE_ADD     = has_permission('Barang_packing.Add');
+    $ENABLE_MANAGE  = has_permission('Barang_packing.Manage');
+    $ENABLE_VIEW    = has_permission('Barang_packing.View');
+    $ENABLE_DELETE  = has_permission('Barang_packing.Delete');
 ?>
 <style type="text/css">
 thead input {
@@ -32,7 +32,6 @@ thead input {
                   			<th>Jenis Produk</th>
                   			<th>Group Produk</th>
                   			<th>Nama Set</th>
-                  			<th>Supplier</th>
                   			<th>Satuan</th>
                   			<th>Qty</th>
                   			<th>Status</th>
@@ -60,7 +59,6 @@ thead input {
                 			<td><?= strtoupper($record->nm_jenis) ?></td>
                 			<td><?= strtoupper($record->nm_group) ?></td>
                 			<td><?= $record->nm_barang ?></td>
-                			<td><?= $record->nm_supplier ?></td>
                 			<td><?= $satuan ?></td>
                 			<td><?= $record->qty_stock ?></td>
                 			<td>
@@ -72,7 +70,7 @@ thead input {
                 			</td>
                 			<td style="padding-left:20px">
                   			<?php if($ENABLE_MANAGE) : ?>
-                  				<a class="btn bg-primary btn-sm" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record->id_barang?>')">
+                  				<a class="btn bg-primary btn-sm" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record->id_barang?>','<?= $record->qty_avl ?>')">
                             Unpacking
                   				</a>
                   			<?php endif; ?>
@@ -88,7 +86,6 @@ thead input {
                 			<th>Jenis Produk</th>
                 			<th>Group Produk</th>
                 			<th>Nama Set</th>
-                			<th>Supplier</th>
                 			<th>Satuan</th>
                 			<th>Qty</th>
                 			<th>Status</th>
@@ -402,15 +399,25 @@ thead input {
   	});
 
 
-    function unpacking(kodebarang){
-      if(kodebarang!=""){
-        var url = 'barang_packing/edit/'+kodebarang;
-        $(".box").hide();
-        $("#form-area").show();
-        $("#button_submit").show();
-        $("#form-area").load(siteurl+url);
+    function unpacking(kodebarang,qty){
+      if (qty == 0) {
+        swal({
+            title: "Peringatan!",
+            text: "QTY AVL 0",
+            type: "error",
+            timer: 1500,
+            showConfirmButton: false
+        });
+      }else {
+        if(kodebarang!=""){
+          var url = 'barang_packing/edit/'+kodebarang;
+          $(".box").hide();
+          $("#form-area").show();
+          $("#button_submit").show();
+          $("#form-area").load(siteurl+url);
 
           $("#title").focus();
+        }
       }
     }
     function kembali_up(){

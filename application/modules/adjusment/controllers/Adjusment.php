@@ -29,6 +29,7 @@ class Adjusment extends Admin_Controller {
                                  'Barang_stock/Barang_stock_model',
                                  'Trans_stock/Trans_stock_model',
                                  'Adjusment/Adjusment_stock_model',
+                                 'Adjusment/Adjusment_detail_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
 
@@ -41,7 +42,7 @@ class Adjusment extends Admin_Controller {
     public function index()
     {
         $this->auth->restrict($this->viewPermission);
-        $data = $this->Adjusment_stock_model->find_all_by( array('kdcab'=>$this->auth->user_cab(), 'deleted'=>0) );
+        $data = $this->Adjusment_stock_model->order_by('id_adjusment','DESC')->find_all_by( array('kdcab'=>$this->auth->user_cab(), 'deleted'=>0) );
         $this->template->set('results', $data);
         $this->template->render('list');
     }
@@ -87,6 +88,7 @@ class Adjusment extends Admin_Controller {
         $session    = $this->session->userdata('app_session');
         //$datbarang  = $this->Adjusment_stock_model->get_item_barang($idbarang,$session['kdcab'])->row();
                           $this->db->where_in('id_barang',$getparamid);
+                          $this->db->where(array('kdcab'=>$session['kdcab']));
         $list_teripilih = $this->db->get('barang_stock')->result_array();
         $Arr_Data		      = array();
         foreach($list_teripilih as $key=>$vals){
@@ -296,7 +298,7 @@ class Adjusment extends Admin_Controller {
         $n=0;
         foreach ($qty_adjus as $key => $value) {
           $n++;
-          $detbarang = $this->Barang_stock_model->find_by(array('id_barang' => $key));
+          $detbarang = $this->Barang_stock_model->find_by(array('id_barang' => $key, 'kdcab'=>$session['kdcab']) );
           $id_barang      = @$detbarang->id_barang;
           $nm_barang      = @$detbarang->nm_barang;
           $kategori       = @$detbarang->kategori;
@@ -546,14 +548,50 @@ class Adjusment extends Admin_Controller {
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
-        $brg_data      =  $this->Adjusment_stock_model->find_by( array('kdcab'=>$this->auth->user_cab(), 'id_adjusment'=>$id) );
+        $adj_head      =  $this->Adjusment_stock_model->find_by( array('kdcab'=>$this->auth->user_cab(), 'id_adjusment'=>$id) );
 
-        $this->template->set('brg_data', $brg_data);
-        $show = $this->template->load_view('print_data',$data);
+        $adj_detail      =  $this->Adjusment_detail_model->find_all_by(array('id_adjusment'=>$id));
 
-        $this->mpdf->AddPage('P');
-        $this->mpdf->WriteHTML($show);
-        $this->mpdf->Output();
+        $this->template->set('detail', $adj_detail);
+        $show = $this->template->load_view('print_data_adjus',$data);
+        $tglprint = date("d-m-Y H:i:s");
+        $header = '
+        <div style="display: inline-block; position:relative;width:100%;display: none;">
+          <div style="width:25%">
+            <img src="assets/img/logo.JPG">
+          </div>
+        </div>
+
+        	<table width="100%" border="0" id="header-tabel">
+  	      	<tr>
+  	      		<th width="30%" style="text-align: left;">
+  	      			<img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
+  	      		</th>
+  	      		<th colspan="4" style="border-right: none;text-align: center;padding:0 !important;margin:-10px !important" width="65%">DATA ADJUSMENT<br>NO. : '.@$adj_head->id_adjusment.'</th>
+              	<th colspan="3" style="border-left: none;"></th>
+  	      	</tr>
+        	</table>
+          ';
+          $this->mpdf->SetHTMLHeader($header,'0',true);
+          $this->mpdf->SetHTMLFooter('
+          <hr>
+          <div id="footer">
+          <table>
+              <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($userData->nm_lengkap).' On '.$tglprint.'</td></tr>
+          </table>
+          </div>');
+          $this->mpdf->AddPageByArray([
+                  'orientation' => 'P',
+                  'sheet-size'=> [210,148],
+                  'margin-top' => 25,
+                  'margin-bottom' => 15,
+                  'margin-left' => 5,
+                  'margin-right' => 10,
+                  'margin-header' => 1,
+                  'margin-footer' => 0,
+              ]);
+          $this->mpdf->WriteHTML($show);
+          $this->mpdf->Output();
     }
 
     function print_rekap(){

@@ -24,14 +24,14 @@
 			<th><?= lang('users_facility_name') ?></th>
 			<?php foreach ($header as $key => $hd) : ?>
 			<th class="text-center"><?= $hd ?></th>
-			<?php endforeach ?>		
+			<?php endforeach ?>
 		</tr>
 		</thead>
-        
+
 		<tbody>
-		<?php 
+		<?php
 			$no = 1;
-			foreach ($permissions as $key => $pr) : 
+			foreach ($permissions as $key => $pr) :
 		?>
 		<tr>
 			<td><?= $no ?></td>
@@ -44,18 +44,18 @@
 			<input type="checkbox" name="id_permissions[]" value="<?= $action['perm_id'] ?>" title="<?= $action['action_name'] ?>" <?= ($action['value'] == 1) ? "checked='checked'" : '' ?> <?= ($action['is_role_permission'] == 1) ? "disabled='disabled'" : '' ?> />
 			<?php endif ?>
 			</td>
-			<?php endforeach ?>	
+			<?php endforeach ?>
 		</tr>
-		<?php $no++;endforeach ?>    
+		<?php $no++;endforeach ?>
 		</tbody>
-		
+
 		<tfoot>
 		<tr>
 			<th>#</th>
 			<th><?= lang('users_facility_name') ?></th>
 			<?php foreach ($header as $key => $hd) : ?>
 			<th class="text-center"><?= $hd ?></th>
-			<?php endforeach ?>		
+			<?php endforeach ?>
 		</tr>
 		</tfoot>
 		</table>
@@ -67,7 +67,7 @@
             ?>
 	  	</div>
 	  	</div>
-	  	
+
 	<?= form_close() ?>
 </div><!-- /.box -->
 
@@ -80,7 +80,7 @@
 <script>
 	$(document).ready(function() {
 	    $('#example1').DataTable( {
-	        "lengthMenu": [[25, 50, -1], [25, 50, "All"]]
+	        "lengthMenu": [[50, -1], [50, "All"]]
 	    } );
 	} );
 </script>
