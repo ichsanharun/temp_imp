@@ -301,7 +301,7 @@
         function(isConfirm){
           if(isConfirm){
             $.ajax({
-                    url: siteurl+'salesorder/set_cancel_so',
+                    url: siteurl+'pending_so/set_cancel_so',
                     data :{"NO_SO":noso},
                     dataType : "json",
                     type: 'POST',

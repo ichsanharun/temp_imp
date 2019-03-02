@@ -1754,6 +1754,8 @@ class Pending_so extends Admin_Controller {
         echo json_encode($param);
     }
 
+
+
     function print_request($noso){
         $no_so = $noso;
         $mpdf=new mPDF('','','','','','','','','','');

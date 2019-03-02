@@ -1,65 +1,46 @@
 <?php
 date_default_timezone_set("Asia/Bangkok");
+header("Content-type: application/vnd-ms-excel");
+
+header("Content-Disposition: attachment; filename=x.xls");
+
+header("Pragma: no-cache");
+
+header("Expires: 0");
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <title></title>
     <style>
-                
-        {
-            margin:0;
-            padding:0;
-            font-family:Arial;
-            font-size:10pt;
-            color:#000;
-        }
-        body
-        {
-            width:100%;
-            font-family:Arial;
-            font-size:10pt;
-            margin:0;
-            padding:0;
-        }
-         
-        p
-        {
-            margin:0;
-            padding:0;
-        }
-                  
-        .page
-        {
-            /*height:297mm;
-            width:210mm;*/
-            width: 297mm;
-            height: 210mm;
-            page-break-after:always;
-        }
+
+        
 
         #header-tabel tr {
             padding: 0px;
         }
-
         #tabel-laporan {
             border-spacing: -1px;
         }
 
         #tabel-laporan th{
+            /*
             border-top: solid 1px #000;
             border-bottom: solid 1px #000;
+            */
+           border : dotted 1px #000;
             margin: 0px;
+            height: 20px;
         }
 
-        #tabel-laporan tr{
-            border-top: solid 1px #000;
-            border-bottom: solid 1px #000;
+        #tabel-laporan td{
+            border : dotted 1px #000;
             margin: 0px;
+            height: 20px;
         }
-         
+
         #footer
-        {   
+        {
             /*width:180mm;*/
             margin:0 15mm;
             padding-bottom:3mm;
@@ -69,11 +50,11 @@ date_default_timezone_set("Asia/Bangkok");
             width:100%;
             border-left: 1px solid #ccc;
             border-top: 1px solid #ccc;
-             
+
             background:#eee;
-             
+
             border-spacing:0;
-            border-collapse: collapse; 
+            border-collapse: collapse;
         }
         #footer table td
         {
@@ -88,85 +69,151 @@ date_default_timezone_set("Asia/Bangkok");
           max-width:12%;
           max-height:12%;
         }
-
-        th, td {
-            padding: 15px;
-            text-align: left;
-        }
-
-        tr.border_bottom td {
-          border-bottom:1pt ridge black;
-        }
-
-        #summary table {
-            border-collapse: collapse;
-        }
-
-        #summary th, td {
-            border: 1px solid black;
-        }
     </style>
 </head>
-<body> 
-<div id="wrapper"> 
-    <p style="text-align:center; font-weight:bold; padding-top:5mm;">REKAP DATA STOK</p>
+<body style="border: solid 1px #000;">
+    <div id="wrapper">
+    <table width="100%" id="tabel-laporan">
+          <tr>
+              <th colspan="16" style="font-size: 12pt !important;">
+                  <center>
+                  TTNT
+                  </center>
+              </th>
+          </tr>
+          <tr>
+            <th colspan="16" style="text-align: left;">SALES &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <?php echo @$header[0]->nm_salesman?></th>
+          </tr>
+          <tr>
+            <th colspan="16" style="text-align: left;">TANGGAL : <?php echo date('d F Y')?></th>
+          </tr>
+          <tr>
+              <th width="2%" rowspan="3">NO</th>
+              <th width="13%" rowspan="3">CUSTOMER</th>
+              <th rowspan="3">TGL INVOICE</th>
+              <th rowspan="3">NO INVOICE</th>
+              <th rowspan="3">JATUH TEMPO</th>
+              <th rowspan="3">NILAI INVOICE</th>
+              <th rowspan="3">SISA PIUTANG</th>
+              <th colspan="8">DIBAYAR DENGAN</th>
+              <th width="5%" rowspan="3">KET</th>
+          </tr>
+          <tr>
+              <th width="7%" rowspan="2">TUNAI</th>
+              <th width="7%" rowspan="2">TRANSFER</th>
+              <th colspan="4">GIRO</th>
+              <th width="7%" rowspan="2">DISKON<br>JUAL</th>
+              <th width="7%" rowspan="2">RETURN<br>JUAL</th>
+          </tr>
+          <tr>
+              <th width="7%">NILAI GIRO</th>
+              <th width="7%">NM. BANK</th>
+              <th width="7%">NO. GIRO</th>
+              <th width="7%">JTT</th>
+          </tr>
+       <?php
+        $n=1;
+        $total_sub = 0;
+        if(@$header){
+        foreach(@$header as $kr=>$vr){
+          $no = $n++;
+          $total += $vr->piutang;
+          $umur = selisih_hari($vr->tanggal_invoice,date('Y-m-d'));
+          if ($cus1 != $vr->nm_customer && $cus1 !="") {
+            ?>
+              <tr>
+                <td><center></center></td>
+                <td colspan="3"><center><strong><?php echo "TOTAL ==> ".$cus1?></strong></center></td>
+                <td></td>
+                <td colspan="2" style="text-align: right;"><center><strong><?php echo "Rp ".formatnomor($total_sub)?></strong></center></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            <?php
+          }
+
+        ?>
+        <tr>
+          <td><center><?php echo $no?></center></td>
+          <td><?php echo $vr->nm_customer?></td>
+          <td><center><?php echo date('d-m-Y',strtotime($vr->tanggal_invoice))?></center></td>
+          <td><center><?php echo $vr->no_invoice?></center></td>
+          <td><center><?php echo date('d-m-Y',strtotime($vr->tgljatuhtempo))?></center></td>
+          <td style="text-align: right;"><?php echo formatnomor($vr->hargajualtotal)?></td>
+          <td style="text-align: right;"><?php echo formatnomor($vr->piutang)?></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td><center><?php echo $umur?></center></td>
+        </tr>
+        <?php
+        $cus1 = $vr->nm_customer;
+        $total_sub += $vr->piutang;
+        } ?>
+        <tr>
+            <td colspan="6"><center><b>TOTAL</b></center></td>
+            <td style="text-align: right;"><b><?php echo formatnomor($total)?></b></td>
+            <td colspan="9"></td>
+        </tr>
+        <?php
+
+        } ?>
+    </table>
+    </div>
+    <?php $tglprint = date("d-m-Y H:i:s");?>
+<htmlpagefooter name="footer">
+    <hr />
     <table width="100%" id="tabel-laporan">
         <tr>
-            <th>Kode Produk</th>
-			<th>Nama Set</th>
-			<th>Jenis Produk</th>					
-			<th>Satuan</th>			
-			<th>Qty Stock</th>
-			<th>Qty Available</th>
-			<th>Qty Rusak</th>	
-			<th>Landed Cost</th>
-			<th>Harga</th>
-			<th>Status</th>
-        </tr>        
-        <tr class="border_bottom" id='tabel-laporan'>   
-        <?php                 
-        if(empty($stok_data)){
-		}else{
-			$numb=0; foreach($stok_data AS $record){ $numb++; ?>
-		<tr>
-			<?php
-				if($record->satuan==''){
-					$satuan = $record->setpcs;
-				}else{
-					$satuan = $record->satuan;
-				}
-			?>
-	        <td><?= $record->id_barang ?></td>
-			<td><?= $record->nm_barang ?></td>	
-			<td><?= strtoupper($record->jenis) ?></td>
-			<td><?= $satuan ?></td>		
-			<td><?= $record->qty_stock ?></td>	
-			<td><?= $record->qty_avl ?></td>	
-			<td><?= $record->qty_rusak ?></td>			
-			<td><?= number_format($record->landed_cost) ?></td>	
-			<td><?= number_format($record->harga) ?></td>	
-			<td>
-				<?php if($record->sts_aktif == 'aktif'){ ?>
-					<label class="label label-success">Aktif</label>
-				<?php }else{ ?>
-					<label class="label label-danger">Non Aktif</label>
-				<?php } ?>
-			</td>
+            <td width="10%"><center>DIPERIKSA</center></td>
+            <td width="10%"><center>FISIK UANG TUNAI/GIRO</center></td>
+            <td width="40%" colspan="2"><center>PENGEMBALIAN FAKTUR</center></td>
+            <td width="40%" colspan="2"><center>PENYERAHAN FAKTUR</center></td>
         </tr>
-        <?php 
-        } 
-        }
-        ?>
-    </table>        
-</div>
-    <?php $tglprint = date("d-m-Y H:i:s");?>     
-<htmlpagefooter name="footer">    
-    <div id="footer"> 
+        <tr>
+            <td width="20%" style="border-bottom: none;"><center></center></td>
+            <td width="20%"><center>DITERIMA</center></td>
+            <td width="20%"><center>DITERIMA</center></td>
+            <td width="20%"><center>DISERAHKAN</center></td>
+            <td width="20%"><center>DITERIMA</center></td>
+            <td width="20%"><center>DISERAHKAN</center></td>
+        </tr>
+        <tr>
+            <td width="20%" style="height: 80px;border-top: none;" valign="bottom"><center>(..................................................)<br>SALES SPV</center></td>
+            <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>KASIR</center></td>
+            <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>ADM. PENAGIHAN</center></td>
+            <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>SALESMAN</center></td>
+            <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>SALESMAN</center></td>
+            <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>ADM. PENAGIHAN</center></td>
+        </tr>
+        <tr>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+            <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
+        </tr>
+    </table>
+    <br>
+    <div id="footer">
     <table>
         <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
     </table>
     </div>
 </htmlpagefooter>
-<sethtmlpagefooter name="footer" value="on" />  
+<sethtmlpagefooter name="footer" value="on" />
 </body>
-</html> 
+</html>

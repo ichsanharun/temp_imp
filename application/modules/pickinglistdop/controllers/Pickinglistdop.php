@@ -336,6 +336,45 @@ class Pickinglistdop extends Admin_Controller {
         $this->template->render('po_form');
     }
 
+    function set_cancel_so(){
+        $noso = $this->input->post('NO_SO');
+        if(!empty($noso)){
+            $kdcab = substr($noso,0,3);
+            $session = $this->session->userdata('app_session');
+           $this->db->trans_begin();
+           $getitemso = $this->Salesorder_model->get_data(array('no_so'=>$noso),'trans_so_detail');
+           foreach($getitemso as $k=>$v){
+                //Update QTY_AVL
+                $keycek = array('kdcab'=>$kdcab,'id_barang'=>$v->id_barang);
+                $stok_avl = $this->Salesorder_model->cek_data($keycek,'barang_stock');
+                $this->db->where($keycek);
+                if ($stok_avl->qty_stock < $stok_avl->qty_avl) {
+                  $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_stock));
+                }else {
+                  $this->db->update('barang_stock',array('qty_avl'=>$stok_avl->qty_avl+$v->qty_booked-$v->qty_supply));
+                }
+
+                //Update QTY_AVL
+                $this->db->where(array('no_so'=>$noso,'id_barang'=>$v->id_barang));
+                $this->db->update('trans_so_detail',array(
+                  'qty_cancel'=>$v->qty_booked-$v->qty_supply,
+                  'proses_do'=>'DO',
+                  'modified_on'=>date("Y-m-d H:m:s")
+                ));
+           }
+           $this->db->where(array('no_so'=>$noso));
+           $this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
+            if ($this->db->trans_status() === FALSE){
+                $this->db->trans_rollback();
+                $param['cancel'] = 0;
+            }else{
+                $this->db->trans_commit();
+                $param['cancel'] = 1;
+            }
+        }
+        echo json_encode($param);
+    }
+
     //Create New Purchase Order
     public function proses()
     {

@@ -118,6 +118,7 @@
                                     <input type="hidden" name="persen_diskon_cash" id="persen_diskon_cash" value="<?php echo $headersession['persen_diskon_cash']?>">
                                     <input type="hidden" name="diskon_toko" id="diskon_toko" value="<?php echo $headersession['diskon_toko']?>">
                                     <input type="hidden" name="diskon_cash" id="diskon_cash" value="<?php echo $headersession['diskon_cash']?>">
+                                    <input type="hidden" name="total_lc" id="total_lc" value="<?php echo $headersession['total_lc']?>">
                                 </div>
                             </div>
                         </div>
@@ -378,6 +379,8 @@
                   <input type="hidden" name="nama_barang_bonus" id="nama_barang_bonus" class="form-control input-sm">
                   <input type="hidden" name="satuan_bonus" id="satuan_bonus" class="form-control input-sm">
                   <input type="hidden" name="jenis_bonus" id="jenis_bonus" class="form-control input-sm">
+                  <input type="hidden" name="landed_cost" id="landed_cost" class="form-control input-sm">
+                  <input type="hidden" name="sub_landed_cost" id="sub_landed_cost" class="form-control input-sm">
 
                   <button class="btn btn-warning btn-sm" type="submit" id="submit_bonus" name="save_bonus" disabled ><i class="fa fa-plus"></i> OK</button>
                   </div>
@@ -413,8 +416,10 @@
                 $grand = 0;
                 if(@$listitembarang){
                 $n=1;
+                $total_lc = 0;
                 foreach(@$listitembarang as $ks=>$vs){
                     $grand += $vs->subtotal;
+                    $total_lc += $vs->landed_cost;
                     $no = $n++;
                 ?>
                 <tr>
@@ -442,7 +447,8 @@
                 <tr>
                     <th colspan="10" class="text-right">DPP : </th>
                     <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
-                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
+                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>">
+                    <input type="hidden" name="grandtotallc" id="grandtotallc" value="<?php echo $total_lc?>"></th>
                     <th></th>
                 </tr>
                 <tr>
@@ -775,6 +781,7 @@
                     $('#total').val(data.harga*qty_sup);
                     $('#harga_normal').val(data.harga);
                     $('#poin_per_item').val(data.poin_per_item);
+                    $('#landed_cost').val(data.landed_cost);
 
                     $('#diskon_standar_persen').val(data.diskon_standar_persen)
                     $('#diskon_promo_persen').val(data.diskon_promo_persen);
@@ -870,6 +877,9 @@
         var diskon = parseInt($('#diskon').val());
         var bonus = parseInt($('#qty_bonus').val());
         var poin_per_item = parseInt($('#poin_per_item').val());
+        var landed_cost = parseInt($('#landed_cost').val());
+
+        var sub_total_lc = landed_cost*qty;
 
         var total = harga*qty;
         var poin = parseInt(total/poin_per_item);
@@ -885,13 +895,15 @@
         }else{
           $('#total').val(total);
           $('#jumlah_poin').val(poin);
+          $('#sub_landed_cost').val(sub_total_lc);
+
         }
 
         //
     }
     function sethitung(){
         var gt = $('#grandtotalso').val();
-
+        var total_lc = parseInt($('#grandtotallc').val());
         $('#dppso').val(gt);
         var npp = parseInt($('#nilaippn').val());//PPN APA TIDAK
         //alert(dto);
@@ -910,7 +922,7 @@
         }
 
         $('#ppnso').val(npp);
-
+        $('#total_lc').val(total_lc);
         $('#totalso').val(dpp);
         $('#diskon_toko').val(dto);
         $('#diskon_cash').val(dcc);

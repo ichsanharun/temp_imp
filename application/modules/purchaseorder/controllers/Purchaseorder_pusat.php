@@ -128,6 +128,7 @@ class Purchaseorder_pusat extends Admin_Controller
                         'no_po' => "$nopo",
                         'persen' => $_POST['pembayaran'][$i],
                         'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
+                        'status' => 'open',
                     );
             $this->Purchaseorder_pusat_model->insert_po_payment($detil);
         }

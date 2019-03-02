@@ -20,7 +20,7 @@
         <thead>
 	        <tr>
 	          <th width="2%">#</th>
-              <th width="15%">NO. Receiving</th>
+              <th width="20%">NO. Receiving</th>
               <th>Supplier</th>
               <th>Tanggal</th>
               <th width="7%">Aksi</th>
@@ -34,8 +34,8 @@
                 $no = $n++; ?>
         <tr>
           <td width="1%"><center><?php echo $no; ?></center></td>
-          <td width="10%"><center><?php echo $vr->no_receiving; ?></center></td>
-          <td><?php echo $vr->id_supplier; ?></td>
+          <td width="20%"><center><?php echo $vr->no_receiving; ?></center></td>
+          <td><?php echo $vr->id_supplier; ?> / <?= get_supplier($vr->id_supplier); ?></td>
           <td><center><?php echo date('d/m/Y', strtotime($vr->tglreceive)); ?></center></td>
           <td>
             <center>
@@ -74,7 +74,7 @@
 
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">

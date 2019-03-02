@@ -70,6 +70,7 @@ class Salesorder_model extends BF_Model
                 barang_stock.harga,
                 barang_stock.qty_stock,
                 barang_stock.qty_avl,
+                barang_stock.landed_cost,
                 barang_stock.kdcab
                 FROM
                 barang_stock WHERE kdcab='$kdcab'";

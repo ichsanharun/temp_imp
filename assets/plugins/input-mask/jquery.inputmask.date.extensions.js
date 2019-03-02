@@ -443,4 +443,46 @@ Optional extensions on the jquery.inputmask base
                     },
                     casing: "lower",
                     cardinality: 1
-   
+                }
+            },
+            insertMode: false,
+            autoUnmask: false
+        },
+        'datetime12': {
+            mask: "1/2/y h:s t\\m",
+            placeholder: "dd/mm/yyyy hh:mm xm",
+            alias: "datetime",
+            hourFormat: "12"
+        },
+        'hh:mm t': {
+            mask: "h:s t\\m",
+            placeholder: "hh:mm xm",
+            alias: "datetime",
+            hourFormat: "12"
+        },
+        'h:s t': {
+            mask: "h:s t\\m",
+            placeholder: "hh:mm xm",
+            alias: "datetime",
+            hourFormat: "12"
+        },
+        'hh:mm:ss': {
+            mask: "h:s:s",
+            autoUnmask: false
+        },
+        'hh:mm': {
+            mask: "h:s",
+            autoUnmask: false
+        },
+        'date': {
+            alias: "dd/mm/yyyy" // "mm/dd/yyyy"
+        },
+        'mm/yyyy': {
+            mask: "1/y",
+            placeholder: "mm/yyyy",
+            leapday: "donotuse",
+            separator: '/',
+            alias: "mm/dd/yyyy"
+        }
+    });
+})(jQuery);

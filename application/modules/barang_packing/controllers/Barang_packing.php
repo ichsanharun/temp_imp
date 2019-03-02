@@ -65,7 +65,10 @@ class Barang_packing extends Admin_Controller {
         $colly = $this->Barang_stock_model
                   ->select("barang_stock.*")
                 ->join("barang_koli","barang_stock.id_barang = barang_koli.id_koli","left")
-                ->where(array('barang_stock.deleted'=>0,'barang_stock.kategori'=>'colly'))
+                ->where(array(
+                  'barang_stock.deleted'=>0,
+                  'barang_stock.kategori'=>'colly',
+                  'barang_stock.kdcab'=>$session['kdcab']))
                 ->order_by('barang_stock.nm_barang','ASC')->find_all();
      $component = $this->Barang_stock_model
                 ->join("barang_komponen","barang_stock.id_barang = barang_komponen.id_komponen","left")
@@ -85,7 +88,7 @@ class Barang_packing extends Admin_Controller {
         $id_barang = $this->input->post('id_barang');
         $qty_unpacking = $this->input->post('qty_unpacking');
         $koli = $this->Barang_model->get_data(array('id_barang'=>$id_barang),'barang_koli');
-        $barang = $this->Barang_model->cek_data(array('id_barang'=>$this->input->post('id_barang')),'barang_stock');
+        $barang = $this->Barang_model->cek_data(array('id_barang'=>$this->input->post('id_barang'),'kdcab'=>$session['kdcab']),'barang_stock');
         //echo count($koli);
         $this->db->trans_begin();
         foreach ($koli as $key => $val) :

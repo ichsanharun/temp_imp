@@ -1,5 +1,5 @@
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 
 <div class="box">
     
@@ -17,20 +17,21 @@
         </thead>
 
         <tbody>
-            <?php if($results->num_rows() !== 0) {
-                $num = 1;
-                foreach ($results->result() as $row) : ?>
+            <?php if ($results->num_rows() !== 0) {
+    $num = 1;
+    foreach ($results->result() as $row) : ?>
                 <tr>
-                    <td><?= $num;  ?></td>
-                    <td><?= $row->no_po;  ?></td>
-                    <td><?= $row->no_pi;  ?></td>
-                    <td><?= $row->id_supplier;  ?></td>
+                    <td><?= $num; ?></td>
+                    <td><?= $row->no_po; ?></td>
+                    <td><?= $row->no_pi; ?></td>
+                    <td><?= $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
                     <td style="text-align: center">
-                        <a href="<?= base_url("profroma_invoice/konfrimasi/$row->id_supplier/$row->no_po") ?>">Confrim</a>
+                        <a href="<?= base_url("profroma_invoice/konfrimasi/$row->id_supplier/$row->no_po"); ?>">Confrim</a>
                     </td>
                 </tr>
-            <?php $num++; endforeach;
-                 } ?>
+            <?php ++$num;
+    endforeach;
+} ?>
         </tbody>
 
         </table>
@@ -39,12 +40,11 @@
 </div>
 
 <div id="form-area">
-<?php $this->load->view('cbm/cbm_form') ?>
 </div>
 
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">

@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 <div class="nav-tabs-receiving">
     <div class="tab-content">
         <div class="tab-pane active" id="receiving">
@@ -8,10 +8,10 @@
                 <div class="box-body">
                     <?php
                               $session = $this->session->userdata('app_session');
-                              $caba = $this->Purchaserequest_model->cek_data(array('kdcab'=>$session['kdcab']),'cabang');
+                              $caba = $this->Purchaserequest_model->cek_data(array('kdcab' => $session['kdcab']), 'cabang');
                                ?>
-                               <input type="hidden" name="kdcab" id="kdcab" class="form-control input-sm" value="<?php echo $caba->kdcab?>">
-                              <input type="hidden" name="namacabang" id="namacabang" class="form-control input-sm" value="<?php echo $caba->namacabang?>">
+                               <input type="hidden" name="kdcab" id="kdcab" class="form-control input-sm" value="<?php echo $caba->kdcab; ?>">
+                              <input type="hidden" name="namacabang" id="namacabang" class="form-control input-sm" value="<?php echo $caba->namacabang; ?>">
                     <?php 
                     $querys = $this->db->query("SELECT * FROM `supplier` WHERE id_supplier='$supplier'");
 
@@ -21,17 +21,17 @@
                         <div class="form-group">
                             <label for="idsupplier" class="col-sm-4 control-label">Nama Supplier :</font></label>
                             <div class="col-sm-8" style="padding-top: 8px;">
-                            <?php echo @$rows->id_supplier.' / '.@$rows->nm_supplier?>
-                            <input type="hidden" name="idsupplier" id="idsupplier" value="<?php echo @$rows->id_supplier?>">
-                            <input type="hidden" name="nmsupplier" id="nmsupplier" value="<?php echo @$rows->nm_supplier?>">
-                            <input id="no_pr" type="hidden" name="no_pr" value="<?= $no_pr ?>"/>
+                            <?php echo @$rows->id_supplier.' / '.@$rows->nm_supplier; ?>
+                            <input type="hidden" name="idsupplier" id="idsupplier" value="<?php echo @$rows->id_supplier; ?>">
+                            <input type="hidden" name="nmsupplier" id="nmsupplier" value="<?php echo @$rows->nm_supplier; ?>">
+                            <input id="no_pr" type="hidden" name="no_pr" value="<?= $no_pr; ?>"/>
                             </div>
                         </div>
                         <div class="form-group">
                             <label for="tglreceive" class="col-sm-4 control-label">Tanggal Receive :</font></label>
                             <div class="col-sm-8" style="padding-top: 8px;">
-                            <?php echo date('d M Y');?>
-                            <input type="hidden" name="tglreceive" id="tglreceive" value="<?php echo date('Y-m-d')?>">
+                            <?php echo date('d M Y'); ?>
+                            <input type="hidden" name="tglreceive" id="tglreceive" value="<?php echo date('Y-m-d'); ?>">
                             </div>
                         </div>
                     </div>
@@ -47,12 +47,12 @@
                             </div>
                         </div>
                         <div class="form-group ">
-                            <?php $tgldosupp=date('Y-m-d')?>
+                            <?php $tgldosupp = date('Y-m-d'); ?>
                             <label for="tgldosupp" class="col-sm-6 control-label">Tanggal DO Supplier :</label>
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="tgldosupp" id="tgldosupp" class="form-control input-sm datepicker" value="<?php echo $tgldosupp?>">
+                                    <input type="text" name="tgldosupp" id="tgldosupp" class="form-control input-sm datepicker" value="<?php echo $tgldosupp; ?>">
                                 </div>
                             </div>
                         </div>
@@ -73,7 +73,7 @@
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                    <input type="text" name="administrator" id="administrator" value="<?= $cabang->administrator ?>" class="form-control input-sm">
+                                    <input type="text" name="administrator" id="administrator" value="<?= $cabang->administrator; ?>" class="form-control input-sm">
                                 </div>
                             </div>
                         </div>
@@ -82,29 +82,29 @@
                             <div class="col-sm-8">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                    <input type="text" name="head" id="head" value="<?= $cabang->head ?>" class="form-control input-sm">
+                                    <input type="text" name="head" id="head" value="<?= $cabang->head; ?>" class="form-control input-sm">
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-6">
                           <div class="form-group ">
-                            <?php $tgldosupp=date('Y-m-d')?>
+                            <?php $tgldosupp = date('Y-m-d'); ?>
                             <label for="tgldosupp" class="col-sm-6 control-label">Date of unloading :</label>
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="date_unloading" id="date_unloading" class="form-control input-sm datepicker" value="<?php echo $tgldosupp?>">
+                                    <input type="text" name="date_unloading" id="date_unloading" class="form-control input-sm datepicker" value="<?php echo $tgldosupp; ?>">
                                 </div>
                             </div>
                         </div>
                          <div class="form-group ">
-                            <?php $tgldosupp=date('Y-m-d')?>
+                            <?php $tgldosupp = date('Y-m-d'); ?>
                             <label for="tgldosupp" class="col-sm-6 control-label">Check Date :</label>
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" name="date_check" id="date_check" class="form-control input-sm datepicker" value="<?php echo $tgldosupp?>">
+                                    <input type="text" name="date_check" id="date_check" class="form-control input-sm datepicker" value="<?php echo $tgldosupp; ?>">
                                 </div>
                             </div>
                         </div>
@@ -113,7 +113,7 @@
                             <div class="col-sm-6">
                                 <div class="input-group">
                                     <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                                    <input type="text" name="branch" id="branch" value="<?= $cabang->branch ?>" class="form-control input-sm">
+                                    <input type="text" name="branch" id="branch" value="<?= $cabang->branch; ?>" class="form-control input-sm">
                                 </div>
                             </div>
                         </div>
@@ -141,26 +141,26 @@
            </thead>
            <tbody>
                <?php
-               $no=0;
-                foreach(@$itembarang as $data => $datas){
-                    $no ++;
-                    ?>
-                    <input type="hidden" name="idet[]" value="<?= $datas->id_detail_po ?>" />
-                    <input type="hidden" name="idet_barang[]" value="<?= $datas->id_barang ?>" />
-                    <input type="hidden" name="nm_barangb[]" value="<?= $datas->nm_barang ?>" />
-                    <input type="hidden" name="qty_ib[]" value="<?= $datas->qty_acc ?>" />
+               $no = 0;
+                foreach (@$itembarang as $data => $datas) {
+                    ++$no; ?>
+                    <input type="hidden" name="idet[]" value="<?= $datas->id_detail_po; ?>" />
+                    <input type="hidden" name="idet_barang[]" value="<?= $datas->id_barang; ?>" />
+                    <input type="hidden" name="nm_barangb[]" value="<?= $datas->nm_barang; ?>" />
+                    <input type="hidden" name="qty_ib[]" value="<?= $datas->qty_acc; ?>" />
+                    <input type="hidden" name="hargab[]" value="<?= $datas->harga_rp / $datas->qty_acc; ?>" />
                     <tr>
-                        <td><?= $no ?></td>
-                        <td><?= $datas->nm_barang ?></td>
-                        <td><?= $datas->qty_acc ?></td>
+                        <td><?= $no; ?></td>
+                        <td><?= $datas->nm_barang; ?></td>
+                        <td><?= $datas->qty_acc; ?></td>
                         <td>
-                            <input onblur="pl(<?= $no ?>,this.value)" name="qty_plb[]" value="<?= $datas->qty_acc ?>" />
+                            <input onblur="pl(<?= $no; ?>,this.value)" name="qty_plb[]" value="<?= $datas->qty_acc; ?>" />
                         </td>
                         <td>
-                            <input class="form-control input-sm qty_bagus<?= $no ?>" readonly="" name="qty_bagus_t[]" type="text" value="<?= $datas->qty_acc ?>" />
+                            <input class="form-control input-sm qty_bagus<?= $no; ?>" readonly="" name="qty_bagus_t[]" type="text" value="<?= $datas->qty_acc; ?>" />
                         </td>
                         <td>
-                            <input class="form-control input-sm qty_rusak<?= $no ?>" readonly="" name="qty_rusak_t[]" type="text" value="0"/>
+                            <input class="form-control input-sm qty_rusak<?= $no; ?>" readonly="" name="qty_rusak_t[]" type="text" value="0"/>
                         </td>
                         <td>
                         </td>
@@ -168,38 +168,35 @@
                <?php 
                     $query = $this->db->query("SELECT * FROM `barang_koli` WHERE id_barang='$datas->id_barang'");
 
-                    if ($query->num_rows() > 0)
-                    {
-                       foreach ($query->result() as $row)
-                       {
-                          ?>
-                          <input type="hidden" name="id_barangc[]" value="<?= $datas->id_barang ?>"/>
-                          <input type="hidden" name="id_koli[]" value="<?= $row->id_koli ?>"/>
-                          <input type="hidden" name="nama_koli[]" value="<?= $row->nm_koli ?>"/>
-                          <input type="hidden" name="qty_i[]" value="<?= $datas->qty_acc ?>" />
+                    if ($query->num_rows() > 0) {
+                        foreach ($query->result() as $row) {
+                            ?>
+                          <input type="hidden" name="id_barangc[]" value="<?= $datas->id_barang; ?>"/>
+                          <input type="hidden" name="id_koli[]" value="<?= $row->id_koli; ?>"/>
+                          <input type="hidden" name="nama_koli[]" value="<?= $row->nm_koli; ?>"/>
+                          <input type="hidden" name="qty_i[]" value="<?= $datas->qty_acc; ?>" />
                           <tr>
                               <td></td>
                               <td>
-                                  - <?= $row->nm_koli ?>
+                                  - <?= $row->nm_koli; ?>
                               </td>
-                              <td><?= $datas->qty_acc ?></td>
+                              <td><?= $datas->qty_acc; ?></td>
                               <td>
-                                    <input class="qty<?= $no ?>" name="qty_pl[]" value="<?= $datas->qty_acc ?>" />
+                                    <input class="qty<?= $no; ?>" name="qty_pl[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
-                                    <input onblur="cek(<?= $no ?>,<?= $query->num_rows() ?>)" class="barang<?= $no ?>" name="qty_bagus[]" value="<?= $datas->qty_acc ?>" />
+                                    <input onblur="cek(<?= $no; ?>,<?= $query->num_rows(); ?>)" class="barang<?= $no; ?>" name="qty_bagus[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
-                                    <input class="rusak<?= $no ?>" name="qty_rusak[]" value="0"/>
+                                    <input class="rusak<?= $no; ?>" name="qty_rusak[]" value="0"/>
                                 </td>
                                 <td>
                                     <input name="keterangan[]" />
                                 </td>
                           </tr>
                           <?php
-                       }
+                        }
                     }
-                
                 } ?>
            </tbody>
        </table>

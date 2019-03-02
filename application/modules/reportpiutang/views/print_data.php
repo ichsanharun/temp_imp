@@ -6,7 +6,7 @@ date_default_timezone_set("Asia/Bangkok");
 <head>
     <title></title>
     <style>
-                
+
         {
             margin:0;
             padding:0;
@@ -22,13 +22,13 @@ date_default_timezone_set("Asia/Bangkok");
             margin:0;
             padding:0;
         }
-         
+
         p
         {
             margin:0;
             padding:0;
         }
-                  
+
         .page
         {
             /*height:297mm;
@@ -60,9 +60,9 @@ date_default_timezone_set("Asia/Bangkok");
             margin: 0px;
             height: 20px;
         }
-         
+
         #footer
-        {   
+        {
             /*width:180mm;*/
             margin:0 15mm;
             padding-bottom:3mm;
@@ -72,11 +72,11 @@ date_default_timezone_set("Asia/Bangkok");
             width:100%;
             border-left: 1px solid #ccc;
             border-top: 1px solid #ccc;
-             
+
             background:#eee;
-             
+
             border-spacing:0;
-            border-collapse: collapse; 
+            border-collapse: collapse;
         }
         #footer table td
         {
@@ -135,11 +135,32 @@ date_default_timezone_set("Asia/Bangkok");
           </tr>
        <?php
         $n=1;
+        $total_sub = 0;
         if(@$header){
         foreach(@$header as $kr=>$vr){
           $no = $n++;
           $total += $vr->piutang;
           $umur = selisih_hari($vr->tanggal_invoice,date('Y-m-d'));
+          if ($cus1 != $vr->nm_customer && $cus1 !="") {
+            ?>
+              <tr>
+                <td><center></center></td>
+                <td colspan="3"><center><strong><?php echo "TOTAL ==> ".$cus1?></strong></center></td>
+                <td></td>
+                <td colspan="2" style="text-align: right;"><center><strong><?php echo "Rp ".formatnomor($total_sub)?></strong></center></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            <?php
+          }
+
         ?>
         <tr>
           <td><center><?php echo $no?></center></td>
@@ -159,16 +180,21 @@ date_default_timezone_set("Asia/Bangkok");
           <td></td>
           <td><center><?php echo $umur?></center></td>
         </tr>
-        <?php } ?>
+        <?php
+        $cus1 = $vr->nm_customer;
+        $total_sub += $vr->piutang;
+        } ?>
         <tr>
             <td colspan="6"><center><b>TOTAL</b></center></td>
             <td style="text-align: right;"><b><?php echo formatnomor($total)?></b></td>
             <td colspan="9"></td>
         </tr>
-        <?php } ?>
+        <?php
+
+        } ?>
     </table>
-    </div> 
-    <?php $tglprint = date("d-m-Y H:i:s");?>     
+    </div>
+    <?php $tglprint = date("d-m-Y H:i:s");?>
 <htmlpagefooter name="footer">
     <hr />
     <table width="100%" id="tabel-laporan">
@@ -204,12 +230,12 @@ date_default_timezone_set("Asia/Bangkok");
         </tr>
     </table>
     <br>
-    <div id="footer"> 
+    <div id="footer">
     <table>
         <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
     </table>
     </div>
 </htmlpagefooter>
-<sethtmlpagefooter name="footer" value="on" />  
+<sethtmlpagefooter name="footer" value="on" />
 </body>
-</html> 
+</html>

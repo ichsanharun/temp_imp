@@ -25,6 +25,8 @@
   <link rel="stylesheet" href="<?= base_url('assets/css/styles.css') ?>">
   <!-- jQuery 2.2.3 -->
   <script src="<?= base_url('assets/plugins/jQuery/jquery-2.2.3.min.js') ?>"></script>
+  <script src="<?= base_url('assets/plugins/daterangepicker/moment.min.js')?>"></script>
+  <script src="<?=base_url('assets/plugins/slimScroll/jquery.slimscroll.min.js');?>"></script>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

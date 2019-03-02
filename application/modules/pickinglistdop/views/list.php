@@ -19,7 +19,7 @@
                 <th>Total</th>
                 <th width="5%">Status</th>
                 <th width="5%">Picking</th>
-                <th width="5%">Create DO</th>
+                <th width="5%">Action</th>
 
             </tr>
         </thead>
@@ -59,6 +59,8 @@
                     <span class='badge bg-green' id='cso' title='Create DO' data-toggle='tooltip' data-placement='bottom'>
                     <i class='fa fa-arrow-circle-right'></i> DO
                     </span>
+                  </a>
+                  <a class="text-red" href="javascript:void(0)" title="Cancel SO" onclick="setcancelso('<?php echo $vso->no_so?>')"><i class="fa fa-times"></i>
                   </a>
 
                   </center>
@@ -122,6 +124,62 @@
     function proses(noso){
         window.location.href = siteurl+"pickinglistdop/proses_do/"+noso;
     }
+    function setcancelso(noso){
+      swal({
+          title: "Peringatan!",
+          text: "Yakin Cancel Sales Order "+noso+"?",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Ya, Cancel SO",
+          cancelButtonText: "Tidak!",
+          closeOnConfirm: true,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if(isConfirm){
+            $.ajax({
+                    url: siteurl+'pickinglistdop/set_cancel_so',
+                    data :{"NO_SO":noso},
+                    dataType : "json",
+                    type: 'POST',
+                    success: function(result){
+                        if(result.cancel=='1'){
+                            swal({
+                              title: "Sukses!",
+                              text: "Data berhasil dicancel",
+                              type: "success",
+                              timer: 1500,
+                              showConfirmButton: false
+                            });
+                            //console.log
+                            setTimeout(function(){
+                                window.location.reload();
+                            },1600);
+                        } else {
+                            swal({
+                              title: "Gagal!",
+                              text: "Data gagal dicancel",
+                              type: "error",
+                              timer: 1500,
+                              showConfirmButton: false
+                            });
+                        };
+                    },
+                    error: function(){
+                        swal({
+                          title: "Gagal!",
+                          text: "Gagal Eksekusi Ajax",
+                          type: "error",
+                          timer: 1500,
+                          showConfirmButton: false
+                        });
+                    }
+                });
+          }
+      });
+    }
+
     function delete_data(noso){
         swal({
           title: "Anda Yakin?",

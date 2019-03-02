@@ -1,5 +1,5 @@
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 
 <div class="box">
     
@@ -20,31 +20,43 @@
 
         <tbody>
            <?php
-           $no=0;
-           $query = $this->db->query("SELECT * FROM `receive_detail_barang` as a, trans_receive as b WHERE a.no_po=b.po_no AND a.rusak !='0' GROUP BY a.no_po " );
+           $no = 0;
+           $query = $this->db->query("SELECT * FROM `receive_detail_barang` as a, trans_receive as b WHERE a.no_po=b.po_no AND a.rusak !='0' GROUP BY a.no_po ");
 
-            foreach ($query->result() as $row)
-            {
-                $no ++;
-           ?>
+            foreach ($query->result() as $row) {
+                ++$no; ?>
            <tr>
-             <td><center><?php echo $no?></center></td>
-             <td><center><?php echo $row->no_po?></center></td>
-             <td><?php echo $row->id_supplier?></td>
-             <td><?php echo $row->container_no?></td>
-             <td><center><?php echo date('d/m/Y',strtotime($row->tglreceive))?></center></td>
-             <td><?php echo $row->status?></td>
+             <td><center><?php echo $no; ?></center></td>
+             <td><center><?php echo $row->no_po; ?></center></td>
+             <td><?php echo $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
+             <td><?php echo $row->container_no; ?></td>
+             <td><center><?php echo date('d/m/Y', strtotime($row->tglreceive)); ?></center></td>
+             <td> <?php
+                 if ($row->status == 0) {
+                     echo 'Proses';
+                 } elseif ($row->status == 1) {
+                     echo 'Diterima';
+                 } else {
+                     echo 'Selesai';
+                 } ?></td>
              <td>
                 <center>
-                    <a href="<?= base_url("receiving/receiving_complain/konfrimasi/$row->no_po")?>">Confrim</a>
+                    <?php
+                    if ($row->status == '0') {
+                        ?>
+                        <a href="<?= base_url("receiving/receiving_complain/konfrimasi/$row->no_po"); ?>">Confrim</a>
+                        <?php
+                    } ?>
+                    
                     &nbsp;&nbsp;
-                        <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdfxxx('<?php echo $row->no_po?>')">
+                        <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdfxxx('<?php echo $row->no_po; ?>')">
                             <span class="glyphicon glyphicon-print"></span>
                         </a>
                     </center>
              </td>
            </tr>
-           <?php } ?>
+           <?php
+            } ?>
         </tbody>
 
         </table>
@@ -72,8 +84,8 @@
 </div>
 
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">

@@ -41,6 +41,7 @@
                               <?php } ?>
                               </select>
                               <input type="hidden" name="nmcustomer" id="nmcustomer" value="<?php echo @$data->nm_customer?>">
+                              <input type="hidden" name="total_lc" id="total_lc" value="<?php echo @$data->total_lc?>">
                               </div>
                           </div>
                       </div>
@@ -379,40 +380,50 @@
                   </td>
               </tr>
           </table>
-        </form>
-        <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
+          <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
             <thead>
-                <tr>
-                    <th width="2%">
-                      #
+              <tr>
+                <th width="2%">
+                  #
 
-                    </th>
-                    <th>Item Barang</th>
-                    <th>Satuan</th>
-                    <th>Stok Avl</th>
-                    <th>Qty Order</th>
-                    <th>Qty Confirm</th>
-                    <th>Qty Pending</th>
-                    <th>Qty Cancel</th>
-                    <th>Harga</th>
-                    <th>Subtotal Diskon (%)</th>
-                    <th>Total</th>
-                    <th>Aksi</th>
-                </tr>
+                </th>
+                <th>Item Barang</th>
+                <th>Satuan</th>
+                <th>Stok Avl</th>
+                <th>Qty Order</th>
+                <th>Qty Confirm</th>
+                <th>Qty Pending</th>
+                <th>Qty Cancel</th>
+                <th>Harga</th>
+                <th>Subtotal Diskon (%)</th>
+                <th>Total</th>
+                <th>Aksi</th>
+              </tr>
             </thead>
             <tbody>
-                <?php
-                $grand = 0;
-                if(@$detail){
+              <?php
+              $grand = 0;
+              if(@$detail){
                 $n=1;
+                $total_lc = 0;
                 foreach(@$detail as $ks=>$vs){
-                    $grand += $vs->subtotal;
-                    $no = $n++;
-                ?>
-                <tr>
+                  $grand += $vs->subtotal;
+                  $no = $n++;
+                  ?>
+                  <tr>
                     <td class="text-center">
 
                       <input type="checkbox" id="get_<?php echo $vs->no_so?>" name="id[]" class="checkbox_opsi" value="<?php echo $vs->id_barang?>">
+                      <?php
+                      $lc = $this->Detailsoedittmp_model->cek_data(array('id_barang'=>$vs->id_barang,'no_so'=>$vs->no_so),'trans_so_detail');
+                      if ($lc->landed_cost == 0 || $lc->landed_cost == "") {
+                        $lc = $this->Detailsoedittmp_model->cek_data(array('id_barang'=>$vs->id_barang,'kdcab'=>$this->auth->user_cab()),'barang_stock');
+                      }
+
+                      $total_lc += $lc->landed_cost*$vs->qty_booked;
+                      ?>
+                      <input type="hidden" id="lc_<?php echo $vs->no_so?>" name="lc[<?php echo $vs->no_so ?>]" value="<?php echo $lc->landed_cost*$vs->qty_booked?>">
+                      <input type="hidden" id="landed_cost_<?php echo $vs->no_so?>" name="landed_cost[]" value="<?php echo $lc->landed_cost?>">
                       <?php echo $no?>
                     </td>
                     <td><?php echo $vs->id_barang.' / '.$vs->nm_barang?></td>
@@ -431,74 +442,76 @@
                         <i class='fa fa-edit'></i>
 
                       </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
-                        </a>
+                      <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
+                      </a>
                     </td>
-                </tr>
+                  </tr>
                 <?php } ?>
-                <?php } ?>
+              <?php } ?>
             </tbody>
             <tfoot>
-                <tr>
-                    <th class="text-right">
-                      <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
-                    </th>
-                    <th class="text-right">
-                      <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
-                      <input type="hidden" name="input_edit" id="input_edit">
-                      <a onclick="edit_list('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                        <i class='fa fa-edit'></i>
-                      </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="hapus_list('<?php echo $vs->no_so?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-                          <i class="fa fa-trash"></i>
-                        </a>
-                    </th>
-                    <!--th class="text-left">
-                      <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                        <i class='fa fa-edit'></i>
-                      </a>
-                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-                          <i class="fa fa-trash"></i>
-                        </a>
-                    </th-->
-                    <th colspan="7" class="text-right">DPP : </th>
-                    <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
-                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">Diskon Toko : </th>
-                    <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
-                    <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">PPN : </th>
-                    <th colspan="2" class="text-right"><span id="ppnview"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th colspan="9" class="text-right">GRAND TOTAL : </th>
-                    <th colspan="2" class="text-right"><span id="totalview"></span></th>
-                    <th></th>
-                </tr>
-                <tr>
-                    <th class="text-right" colspan="13">
-                        <button class="btn btn-danger" onclick="kembali()">
-                            <i class="fa fa-refresh"></i><b> Kembali</b>
-                        </button>
-                        <button class="btn btn-primary" type="button" onclick="saveheaderso_edit()">
-                            <i class="fa fa-save"></i><b> Simpan Data SO</b>
-                        </button>
-                    </th>
-                </tr>
-            </tfoot>
+              <tr>
+                <th class="text-right">
+                  <input type="hidden" id="grandtotallc" name="grandtotallc[]" value="<?php echo $lc->landed_cost?>">
+                  <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
+                </th>
+                <th class="text-right">
+                  <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
+                  <input type="hidden" name="input_edit" id="input_edit">
+                  <a onclick="edit_list('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                    <i class='fa fa-edit'></i>
+                  </a>
+                  <a class="text-red" href="javascript:void(0)" title="Delete" onclick="hapus_list('<?php echo $vs->no_so?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+                    <i class="fa fa-trash"></i>
+                  </a>
+                </th>
+                <!--th class="text-left">
+                <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                <i class='fa fa-edit'></i>
+              </a>
+              <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+              <i class="fa fa-trash"></i>
+            </a>
+          </th-->
+          <th colspan="7" class="text-right">DPP : </th>
+          <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
+            <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="9" class="text-right">Diskon Toko : </th>
+            <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
+            <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="9" class="text-right">PPN : </th>
+            <th colspan="2" class="text-right"><span id="ppnview"></span></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th colspan="9" class="text-right">GRAND TOTAL : </th>
+            <th colspan="2" class="text-right"><span id="totalview"></span></th>
+            <th></th>
+          </tr>
+          <tr>
+            <th class="text-right" colspan="13">
+              <button class="btn btn-danger" onclick="kembali()">
+                <i class="fa fa-refresh"></i><b> Kembali</b>
+              </button>
+              <button class="btn btn-primary" type="button" onclick="saveheaderso_edit()">
+                <i class="fa fa-save"></i><b> Simpan Data SO</b>
+              </button>
+            </th>
+          </tr>
+        </tfoot>
 
-        </table>
+      </table>
+        </form>
     </div>
 </div>
 <!-- Modal -->
@@ -975,7 +988,7 @@
     }
     function sethitung(){
         var gt = $('#grandtotalso').val();
-
+        var total_lc = parseInt($('#grandtotallc').val());
         $('#dppso').val(gt);
         var npp = parseInt($('#nilaippn').val());//PPN APA TIDAK
         //alert(dto);
@@ -995,6 +1008,7 @@
         $('#ppnso').val(npp);
         //$('#flagppnso').val(ppn);
         $('#totalso').val(dpp);
+        $('#total_lc').val(total_lc);
         $('#diskon_toko').val(dto);
         $('#diskon_cash').val(dcc);
         $('#diskoncash').text(formatCurrency(dcc,',','.',0));

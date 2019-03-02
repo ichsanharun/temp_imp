@@ -187,6 +187,7 @@
             <tbody>
                 <?php
                 $n = $i =0;
+                $hargalandedtotal = 0;
 				if($records){
 
 					foreach($records as $keys => $vals){
@@ -198,11 +199,13 @@
 						foreach($vals['detail_data'] as $values){
 							$n++;
 							$qty_supply			= $values['qty_supply'];
-							$kunci 		= array('no_so'=>$values['no_so'],'id_barang'=>$values[id_barang]);
+							$kunci 		= array('no_so'=>$values['no_so'],'id_barang'=>$values['id_barang']);
 							$detailso	= $this->Invoice_model->cek_data($kunci,'trans_so_detail');
               $headerso	= $this->Invoice_model->cek_data(array('no_so'=>$values['no_so']),'trans_so_header');
 
               $harga_normal       = $detailso->harga_normal;
+              $session = $this->session->userdata('app_session');
+              $detaillanded	= $this->Invoice_model->cek_data(array('id_barang'=>$values['id_barang'],'kdcab'=>$session['kdcab']),'barang_stock');
 
               if ($headerso->ppn > 0) {
                 //$harga  = $detailso->harga_normal/110*100;
@@ -258,6 +261,7 @@
               $grand_setelah_toko += $harga_setelah_diskon_toko*$qty_supply;
               $grand 				+= $dpp_barang;
               $grand = ceil($grand);
+              $hargalandedtotal += $detaillanded->landed_cost*$qty_supply;
 
 							echo"<tr>";
 								if(!empty($kode_sales) && $kode_sales !='-'){
@@ -328,7 +332,7 @@
             <input type="hidden" name="dpp" value="<?php echo ceil($dpp)?>">
             <input type="hidden" name="n_ppn" id="n_ppn" value="<?php echo (Int)$pn?>">
             <input type="hidden" name="hargajualtotal" id="n_grand" value="<?php echo ceil($grand)?>">
-
+            <input type="hidden" name="hargalandedtotal" id="n_landed" value="<?php echo ceil($hargalandedtotal)?>">
             <tfoot>
                 <tr>
                     <td colspan="8" class="text-right"><b>SubTotal :</b></td>

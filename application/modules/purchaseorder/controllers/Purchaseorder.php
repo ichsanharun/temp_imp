@@ -515,4 +515,54 @@ class Purchaseorder extends Admin_Controller
         $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
+
+    public function print_request_po_conf($nopo)
+    {
+        $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
+        $mpdf->SetImportUse();
+        $mpdf->RestartDocTemplate();
+
+        $po_data = $this->Purchaseorder_model->find_data('trans_po_header', $nopo, 'no_po');
+        $cabang = $this->Purchaseorder_model->cek_data(array('kdcab' => $po_data->kdcab), 'cabang');
+        $detail = $this->Detailpurchaseorder_model->find_all_by(array('no_po' => $nopo));
+
+        $barang = $this->db->query("SELECT * FROM trans_po_detail INNER JOIN barang_master ON trans_po_detail.id_barang = barang_master.id_barang WHERE no_po = '$nopo'")->result();
+
+        $this->template->set('po_data', $po_data);
+        $this->template->set('cabang', $cabang);
+        $this->template->set('detail', $detail);
+
+        $this->template->set('barang', $barang);
+
+        $show = $this->template->load_view('print_request_po_conf', $data);
+
+        $this->mpdf->AddPage('L');
+        $this->mpdf->WriteHTML($show);
+        $this->mpdf->Output();
+    }
+
+    public function print_request_po($nopo)
+    {
+        $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
+        $mpdf->SetImportUse();
+        $mpdf->RestartDocTemplate();
+
+        $po_data = $this->Purchaseorder_model->find_data('trans_po_header', $nopo, 'no_po');
+        $cabang = $this->Purchaseorder_model->cek_data(array('kdcab' => $po_data->kdcab), 'cabang');
+        $detail = $this->Detailpurchaseorder_model->find_all_by(array('no_po' => $nopo));
+
+        $barang = $this->db->query("SELECT * FROM trans_po_detail INNER JOIN barang_master ON trans_po_detail.id_barang = barang_master.id_barang WHERE no_po = '$nopo'")->result();
+
+        $this->template->set('po_data', $po_data);
+        $this->template->set('cabang', $cabang);
+        $this->template->set('detail', $detail);
+
+        $this->template->set('barang', $barang);
+
+        $show = $this->template->load_view('print_request_po', $data);
+
+        $this->mpdf->AddPage('L');
+        $this->mpdf->WriteHTML($show);
+        $this->mpdf->Output();
+    }
 }

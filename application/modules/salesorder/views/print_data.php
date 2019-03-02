@@ -11,7 +11,7 @@ date_default_timezone_set("Asia/Bangkok");
         {
             width:100%;
             font-family:Arial;
-            font-size:10pt;
+            font-size:8pt;
             margin:0;
             padding:0;
         }
@@ -79,72 +79,9 @@ date_default_timezone_set("Asia/Bangkok");
 </head>
 <body>
 <div id="wrapper">
-    <table width="100%" border="0" id="header-tabel">
-      <?php  ?>
-        <tr>
-          <th width="30%" style="text-align: left;">
-            <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
-          </th>
-          <th colspan="3" style="border-right: none;text-align: center;padding-left:0% !important;margin-left:-10px !important" width="100%">SALES ORDER (SO)<br><?php echo 'NO. : '.@$so_data->no_so?></th>
-          <th colspan="4" style="border-left: none;"></th>
 
-            <!--th colspan="3" width="30%" style="text-align: left;">PT IMPORTA JAYA ABADI<br><?php //echo @$cabang->namacabang?></th-->
-
-        </tr>
-      </table>
-      <hr style="padding:0;margin:0">
-      <table width="100%" border="0" id="header-tabel">
-        <tr>
-            <td width="10%">SALES</td>
-            <td width="1%">:</td>
-            <td colspan="2"><?php echo strtoupper(@$so_data->nm_salesman)?></td>
-            <td width="15%">TGL SO</td>
-            <td width="1%">:</td>
-            <td><?php echo date('d-M-Y',strtotime(@$so_data->tanggal))?></td>
-        </tr>
-        <tr>
-            <td width="10%">CUSTOMER</td>
-            <td width="1%">:</td>
-            <td colspan="2"><?php echo strtoupper(@$so_data->nm_customer)?></td>
-            <td width="10%">TGL KIRIM</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="10%">ALAMAT</td>
-            <td width="1%">:</td>
-            <td colspan="2"><?php echo @$customer->alamat?></td>
-            <td width="10%">TOP (Hari)</td>
-            <td width="1%">:</td>
-            <td><?php echo @$so_data->top?></td>
-        </tr>
-        <tr>
-            <td width="10%">KETERANGAN</td>
-            <td width="1%">:</td>
-            <td colspan="2"><?php echo @$so_data->keterangan?></td>
-            <td width="10%"></td>
-            <td width="1%"></td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="10%"></td>
-            <td width="1%"></td>
-            <td></td>
-        </tr>
-    </table>
     <table width="100%" id="tabel-laporan">
-        <tr>
-            <th width="1%">NO</th>
-            <th width="40%">NAMA BARANG</th>
-            <th width="20%">COLLY</th>
-            <th width="7%">QTY COLLY</th>
-            <th width="7%">TOTAL COLLY</th>
-            <th width="8%">SATUAN</th>
-            <th width="5%">QTY</th>
-            <th width="15%">HARGA</th>
-            <th width="15%">JUMLAH</th>
 
-        </tr>
         <?php
         $n=1;
         $total = 0;
@@ -154,9 +91,9 @@ date_default_timezone_set("Asia/Bangkok");
         $colly = $this->Salesorder_model->get_data(array('id_barang' => $vs->id_barang),'barang_koli');
         ?>
         <tr>
-            <td style="vertical-align: top;"><center><?php echo $no?></center></td>
-            <td style="vertical-align: top;"><?php echo $vs->nm_barang?></td>
-            <td>
+            <td width="1%" style="vertical-align: top;"><center><?php echo $no?></center></td>
+            <td width="40%" style="vertical-align: top;"><?php echo $vs->nm_barang?></td>
+            <td width="20%">
                  <?php
                 $sn = 1;
                 foreach($colly as $kc=>$vc){
@@ -164,7 +101,7 @@ date_default_timezone_set("Asia/Bangkok");
                 }
                 ?>
             </td>
-            <td style="vertical-align: top;">
+            <td width="7%" style="vertical-align: top;">
                 <center>
                 <?php
                 $sn = 1;
@@ -174,7 +111,7 @@ date_default_timezone_set("Asia/Bangkok");
                 ?>
                 </center>
             </td>
-            <td style="vertical-align: top;">
+            <td width="7%" style="vertical-align: top;">
                 <center>
                 <?php
                 $tc = 0;
@@ -185,10 +122,10 @@ date_default_timezone_set("Asia/Bangkok");
                 ?>
                 </center>
             </td>
-            <td style="vertical-align: top;"><center><?php echo $vs->satuan?></center></td>
-            <td style="vertical-align: top;"><center><?php echo $vs->qty_order?></center></td>
-            <td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga)?></td>
-            <td style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga*$vs->qty_order)?></td>
+            <td width="8%" style="vertical-align: top;"><center><?php echo $vs->satuan?></center></td>
+            <td width="5%" style="vertical-align: top;"><center><?php echo $vs->qty_order?></center></td>
+            <td width="15%" style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga)?></td>
+            <td width="15%" style="text-align: right;vertical-align: top;"><?php echo formatnomor($vs->harga*$vs->qty_order)?></td>
 
         </tr>
         <?php }
@@ -196,116 +133,6 @@ date_default_timezone_set("Asia/Bangkok");
          ?>
     </table>
 </div>
-<?php $tglprint = date("d-m-Y H:i:s");?>
-<htmlpagefooter name="footer">
-    <hr>
-    <table width="100%" border="0">
-        <tr>
-            <td width="20%"><center>Dibuat Oleh,</center></td>
-            <td width="20%"><center>Mengetahui,</center></td>
-            <td width="20%"><center>Disetujui,</center></td>
-            <td width="10%">JUMLAH NOMINAL</td>
-            <td width="1%">:</td>
-            <td width="10%" style="text-align: right;"><?php echo  formatnomor(@$so_data->dpp)?></td>
-            <td width="8%" style="text-align: right;">Blm JTT</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%">
-              <?php
-                if (@$so_data->diskon_toko != 0) {
-                  echo "1. Diskon Toko";
-                }else {
-                  echo "1. Disc - %";
-                }
-              ?>
-            </td>
-            <td width="1%">:</td>
-            <td width="10%" style="text-align: right;">
-              <?php
-              $disc_toko = @$so_data->persen_diskon_toko*@$so_data->dpp/100;
-              echo formatnomor($disc_toko) ?>
-            </td>
-            <td width="8%" style="text-align: right;">01-30</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%">
-              <?php
-                if (@$so_data->diskon_cash != 0) {
-                  echo "2. Diskon Cash";
-                }else {
-                  echo "2. Disc - %";
-                }
-              ?>
-            </td>
-            <td width="1%">:</td>
-            <td width="10%" style="text-align: right;">
-              <?php echo formatnomor(@$so_data->persen_diskon_cash*@$so_data->dpp/100) ?>
-            </td>
-            <td width="8%" style="text-align: right;">31-60</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%">
-              <?php
-                if (@$so_data->diskon_toko != 0) {
-                  echo "3. PPN";
-                }else {
-                  echo "3. PPN - %";
-                }
-              ?>
-            </td>
-            <td width="1%">:</td>
-            <td width="10%" style="text-align: right;">
-              <?php echo formatnomor(@$so_data->ppn) ?>
-            </td>
-            <td width="8%" style="text-align: right;">61-90</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="15%"><center>( Adm Sales & Stok )</center></td>
-            <td width="15%"><center>( Spv. ACC & Tax )</center></td>
-            <td width="15%"><center>( BM )</center></td>
-            <td width="15%">ONGKOS KIRIM</td>
-            <td width="1%">:</td>
-            <td></td>
-            <td width="8%" style="text-align: right;">> 90</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%"></td>
-            <td width="15%"><b>GRAND TOTAL</b></td>
-            <td width="1%">:</td>
-            <td style="border:solid 1px #000;text-align: right;margin-right: 10px;"><b><?php echo  formatnomor(@$so_data->total)?></b></td>
-            <td width="8%" style="text-align: right;">TOTAL</td>
-            <td width="1%">:</td>
-            <td></td>
-        </tr>
-    </table>
-    <hr />
-    <div id="footer">
-    <table>
-        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
-    </table>
-    </div>
-</htmlpagefooter>
-<sethtmlpagefooter name="footer" value="on" />
+
 </body>
 </html>

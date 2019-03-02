@@ -25,7 +25,7 @@
                             $supp = $this->Purchaserequest_model->cek_data(array('id_supplier' => $this->uri->segment(3)), 'supplier');
                         }
                         ?>
-                        
+
                     </div>
 
                     <div class="col-sm-6">
@@ -42,8 +42,10 @@
                                     if ($this->uri->segment(3) == $vc->id_supplier) {
                                         $selected = 'selected="selected"';
                                     } ?>
-                                <option value="<?php echo $vc->id_supplier; ?>" <?php echo set_select('nm_supplier', $vc->id_supplier, isset($data->nm_supplier) && $data->id_supplier == $vc->id_supplier); ?> <?php echo $selected; ?>>
-                                    <?php echo $vc->id_supplier; ?> - <?php echo $vc->group_produk; ?>
+                                <option value="<?php echo $vc->id_supplier; ?>" <?php echo set_select('nm_supplier', $vc->id_supplier, isset($data->nm_supplier) && $data->id_supplier == $vc->id_supplier); ?> <?php echo $selected; ?> >
+
+                                    <?php echo $vc->id_supplier; ?> - <?php echo strtoupper($vc->group_produk); ?>
+
                                 </option>
                                 <?php
                                 } ?>
@@ -53,16 +55,16 @@
                             </div>
                             <?php //print_r($supp)?>
                         </div>
-                        
-                       
+
+
                             <?php $tglpr = date('Y-m-d'); ?>
                             <input type="hidden" name="tglpr" id="tglpr" class="form-control input-sm datepicker" value="<?php echo $tglpr; ?>">
-                       
-                       
+
+
                              <?php $plandeliverypr = date('Y-m-d'); ?>
                             <input type="hidden" name="plandeliverypr" id="plandeliverypr" class="form-control input-sm datepicker" value="<?php echo $plandeliverypr; ?>">
                             <input type="hidden" name="totalpr" id="totalpr" class="form-control input-sm">
-                      
+
                     </div>
                 </div>
                 </div>
@@ -73,7 +75,7 @@
                   ?>
                    <input id="cbm_tot" type="hidden" name="cbm_tot" >
 
-                
+
             </div>
         </div>
     </div>
@@ -120,7 +122,7 @@
                     </td>
                     <input type="hidden" id="cbmTtl<?= $noor; ?>" />
                     <td id="cbmTotal<?= $noor; ?>">
-                        
+
                     </td>
                     <td>
                         <input type="hidden" id="kgs<?= $noor; ?>" value="<?php echo $datas->gross_weight; ?>" />
@@ -128,7 +130,7 @@
                     </td>
                     <input type="hidden" id="kgsTtl<?= $noor; ?>" />
                     <td id="kgsTotal<?= $noor; ?>">
-                        
+
                     </td>
                 </tr>
                 <script>
@@ -138,7 +140,7 @@
                              document.getElementById("cbmTotal<?= $noor; ?>").innerHTML = result.toFixed(2);
                              document.getElementById("cbmTtl<?= $noor; ?>").value = result.toFixed(2);
                           }
-                          
+
                           var resultzz = parseInt(document.getElementById('qty<?= $noor; ?>').value) * parseFloat(document.getElementById('kgs<?= $noor; ?>').value);
                           if (!isNaN(resultzz)) {
                              document.getElementById("kgsTotal<?= $noor; ?>").innerHTML = resultzz.toFixed(2);
@@ -148,7 +150,7 @@
                 </script>
                 <?php
             } ?>
-            
+
             </tbody>
             <tr>
                 <td></td>
@@ -160,12 +162,12 @@
                 <td id="totalKgs"></td>
             </tr>
         </table>
-        
+
         <script>
-            
+
             function HitungTotal(id)
             {
-                
+
                 sumKgs      = 0;
                 $('#dtazz tr').each(function(){
                     SubTotalKgs = parseFloat($(this).find("td:eq(6)").text());
@@ -174,28 +176,28 @@
                       } else {
                         datasKgs  =SubTotalKgs;
                       }
-                      
+
                       sumKgs += parseFloat(datasKgs);
                 });
                 document.getElementById("totalKgs").innerHTML = sumKgs.toFixed(2);
-                
-                
+
+
                 var Total   = 0;
                 sum         = 0;
                 qtytotal    =0;
                 $('#dtazz tr').each(function(){
-                    
+
                     SubTotal = parseFloat($(this).find("td:eq(4)").text());
                     if (isNaN(SubTotal)) {
                         datass  =0;
                       } else {
                         datass  =SubTotal;
                       }
-                      
+
                       sum += parseFloat(datass);
                 });
                 //console.log($('#dtazz tr').length);
-                
+
                 document.getElementById("totalCbmsuub").innerHTML = sum.toFixed(2);
                 document.getElementById("cbm_tot").value = sum;
                  <?php
@@ -205,29 +207,29 @@
                 losefocus<?= $nxg; ?>(sum.toFixed(2), sumKgs.toFixed(2));
                 <?php
             } ?>
-                
-                  
+
+
                 var i;
                 for (i=1;i<=<?= count($itembarang); ?>;i++)
                 {
-                    
+
                     SubQtys = parseInt(document.getElementById('qty'+i).value);
                     if (isNaN(SubQtys)) {
                         datassQ  =0;
                       } else {
                         datassQ  =SubQtys;
                       }
-                      
+
                       qtytotal += parseInt(datassQ);
                 }
-                
+
                 document.getElementById("totalQtyy").innerHTML =qtytotal;
-                
-                
-                
+
+
+
             }
-            
-           
+
+
         </script>
 
         <div class="box-body">
@@ -245,7 +247,7 @@
                                     <input type="radio" value="<?= $data_cbm->id_cbm; ?>" id="test<?= $ncb; ?>" name="radio-group"  checked>
                                     <label for="test<?= $ncb; ?>"><?= $data_cbm->name_cbm; ?></label>
                                   </p>
-                                
+
                             </th>
                             <?php
             } ?>
@@ -256,15 +258,15 @@
             foreach (@$cbm_sup as $data => $data_cbm) {
                 ++$nxg; ?>
                             <script>
-                            
+
                                 function losefocus<?= $nxg; ?>($id, tkgs) {
-                                    
+
                                     $cbmmm=parseFloat($id)/<?= $data_cbm->cbm; ?>;
                                     document.getElementById("hasilctn<?= $nxg; ?>").innerHTML =$cbmmm.toFixed(2);
-                                    
+
                                     ckgs=parseFloat(tkgs)/1000;
                                     document.getElementById("hasilckgs<?= $nxg; ?>").innerHTML =ckgs.toFixed(2);
-                                   
+
                                 }
                             </script>
                             <th style="text-align: center">
@@ -277,7 +279,7 @@
             } ?>
                         </tr>
                     </thead>
-                    
+
                     <tbody>
                         <tr>
                             <?php
@@ -301,7 +303,7 @@
                                 Jumlah Kontainer = <b id="hasilctn<?= $bgh; ?>">0</b>
                             </td>
                             <td id="hasilckgs<?= $bgh; ?>" style="text-align: center">
-                                
+
                             </td>
                             <?php
             } ?>
@@ -314,8 +316,8 @@
             <div class="col-sm-12">
                 <center><b>PR (Purchase Request) Tambahan</b></center>
                 <div class="input_fields_wrap">
-                    
-                    
+
+
                     <div class="row">
                         <div class="col-xs-3">
                           Nama Komponen
@@ -357,33 +359,33 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
             $(document).ready(function() {
                 $("#idbarangmx").select2({
                     placeholder: "Pilih",
                     allowClear: true
                 });
-                
+
                 $('.my-select').select2({
                     placeholder: "Pilih",
                     allowClear: true
                 });
-                
-                
-                        
+
+
+
                 var max_fields      = 10; //maximum input boxes allowed
                 var wrapper         = $(".input_fields_wrap"); //Fields wrapper
                 var add_button      = $(".add_field_button"); //Add button ID
-                
+
                 var x = 1; //initlal text box count
                 $(add_button).click(function(e){ //on add input button click
                     e.preventDefault();
                     if(x < max_fields){ //max input box allowed
                         x++; //text box increment
-                        
-                        
-                        
+
+
+
                         $(wrapper).append('<div class="row">'+
                                                 '<div class="col-xs-3">'+
                                                   '<input type="text" name="komponen[]" class="form-control" placeholder="komponen">'+
@@ -408,19 +410,19 @@
                                            '</div>'); //add input box
                     }
                 });
-                
+
                 $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
                     e.preventDefault(); $(this).parent('div').remove(); x--;
                 })
-                
-                
+
+
             });
         </script>
-        
-        
-        
+
+
+
         <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-           </form>  
+           </form>
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -434,8 +436,8 @@
                 </tr>
             </tfoot>
         </table>
-       
-      
+
+
        <?php
         } ?>
     </div>
@@ -446,11 +448,11 @@
 <script type="text/javascript">
     var uri3 = '<?php echo $this->uri->segment(3); ?>';
     var uri4 = '<?php echo $this->uri->segment(4);?>';
- 
+
     function kembali(){
         window.location.href = siteurl+'purchaserequest';
     }
-    
+
     function setitembarang(){
         var idbarang = $('#item_brg_pr').val();
         window.location.href = siteurl+'purchaserequest/new_create/'+uri3+'/'+idbarang;
@@ -466,7 +468,7 @@
 
 
     function saveheaderpr(){
-            
+
                 var formdata = $("#form-header-pr, #tambahaan").serialize();
                // console.log(formdata);
                 $.ajax({
@@ -506,8 +508,8 @@
                         });
                     }
                 });
-          
-        
-        
+
+
+
     }
 </script>

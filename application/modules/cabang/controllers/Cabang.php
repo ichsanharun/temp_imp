@@ -76,8 +76,8 @@ class Cabang extends Admin_Controller {
 
         $type           = $this->input->post("type");
         $id             = $this->input->post("id");
-        $kdcab          = $this->input->post("kdcab");        
-        $namacabang     = $this->input->post("namacabang");        
+        $kdcab          = $this->input->post("kdcab");
+        $namacabang     = $this->input->post("namacabang");
         $alamat         = $this->input->post('alamat');
         $kepalacabang   = $this->input->post('kepalacabang');
         $kabagjualan    = $this->input->post('kabagjualan');
@@ -85,6 +85,9 @@ class Cabang extends Admin_Controller {
         $gudang         = $this->input->post('gudang');
         $kota           = $this->input->post('kota');
         $no_so          = $this->input->post('no_so');
+        $no_do          = $this->input->post('no_do');
+        $no_picking_list= $this->input->post('no_picking_list');
+        $no_Invoice     = $this->input->post('no_Invoice');
         $biaya_logistik_lokal          = $this->input->post('biaya_logistik_lokal');
         $sts_aktif      = $this->input->post('sts_aktif');
 
@@ -106,6 +109,9 @@ class Cabang extends Admin_Controller {
                                 'gudang'=>$gudang,
                                 'kota'=>$kota,
                                 'no_so'=>$no_so,
+                                'no_do'=>$no_do,
+                                'no_invoice'=>$no_invoice,
+                                'no_picking_list'=>$no_picking_list,
                                 'biaya_logistik_lokal'=>$biaya_logistik_lokal,
                                 'sts_aktif'=>$sts_aktif,
                             )
@@ -152,6 +158,9 @@ class Cabang extends Admin_Controller {
                         'gudang'=>$gudang,
                         'kota'=>$kota,
                         'no_so'=>$no_so,
+                        'no_do'=>$no_do,
+                        'no_invoice'=>$no_invoice,
+                        'no_picking_list'=>$no_picking_list,
                         'biaya_logistik_lokal'=>$biaya_logistik_lokal,
                         'sts_aktif'=>$sts_aktif,
                         );
@@ -244,7 +253,7 @@ class Cabang extends Admin_Controller {
         $cust_pic       =  $this->Pic_model->tampil_pic($id_customer)->result();
         $cust_data      =  $this->Customer_model->find_data('customer',$id_customer,'id_customer');
         $inisial        =  $this->Customer_model->find_data('data_reff',$id_customer,'id_customer');
-        
+
 
         $this->template->set('cust_data', $cust_data);
         $this->template->set('inisial', $inisial);
@@ -254,7 +263,7 @@ class Cabang extends Admin_Controller {
         $this->template->set('cust_pic', $cust_pic);
         $show = $this->template->load_view('print_data',$data);
 
-        $this->mpdf->WriteHTML($show);        
+        $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
 
@@ -298,11 +307,11 @@ class Cabang extends Admin_Controller {
         $objPHPExcel->getActiveSheet()->getColumnDimension('P')->setWidth(17);
         //$objPHPExcel->getActiveSheet()->getColumnDimension('Q')->setWidth(17);
        //// $objPHPExcel->getActiveSheet()->getColumnDimension('R')->setWidth(17);
-        
+
         $objPHPExcel->getActiveSheet()->getStyle(1)->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle(2)->getFont()->setBold(true);
         $objPHPExcel->getActiveSheet()->getStyle(3)->getFont()->setBold(true);
-        
+
         $header = array(
             'alignment' => array(
                 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -338,12 +347,12 @@ class Cabang extends Admin_Controller {
             ->setCellValue('P3', 'Status');
             //->setCellValue('Q3', 'Hutang');
             //->setCellValue('R3', 'Hutang');
-        
+
         $ex = $objPHPExcel->setActiveSheetIndex(0);
         $no = 1;
         $counter = 4;
         foreach ($data as $row):
-            $tanggallahir = date('d-m-Y',strtotime($row->tanggallahir));            
+            $tanggallahir = date('d-m-Y',strtotime($row->tanggallahir));
             $ex->setCellValue('A'.$counter, $no++);
             $ex->setCellValue('B'.$counter, strtoupper($row->nama_mitra));
             $ex->setCellValue('C'.$counter, $row->nim);
@@ -360,10 +369,10 @@ class Cabang extends Admin_Controller {
             $ex->setCellValue('N'.$counter, $row->email);
             $ex->setCellValue('O'.$counter, $row->nopolisi);
             $ex->setCellValue('P'.$counter, $row->status_aktif);
-            
+
             $counter = $counter+1;
         endforeach;
-        
+
         $objPHPExcel->getProperties()->setCreator("Yunaz Fandy")
             ->setLastModifiedBy("Yunaz Fandy")
             ->setTitle("Export Daftar Mitra")
@@ -372,7 +381,7 @@ class Cabang extends Admin_Controller {
             ->setKeywords("office 2007 openxml php")
             ->setCategory("PHPExcel");
         $objPHPExcel->getActiveSheet()->setTitle('Data Mitra');
-        
+
         $objWriter  = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
         header('Last-Modified:'. gmdate("D, d M Y H:i:s").'GMT');
         header('Chace-Control: no-store, no-cache, must-revalation');
@@ -380,9 +389,9 @@ class Cabang extends Admin_Controller {
         header('Pragma: no-cache');
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="ExportDataMitra'. date('Ymd') .'.xlsx"');
-        
+
         $objWriter->save('php://output');
- 
+
     }
 }
 

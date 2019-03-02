@@ -154,10 +154,10 @@ class Pembayaranpiutang extends Admin_Controller {
         $counter = $this->Invoice_model->get_data('1=1','jarh');
         $kode = 1;
         if(count($counter) > 0){
-            $kode = count($counter)+1;
+            $kode = count($counter)+1; 
         }
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
-        return $kdcab.'AUM'.date('Y').$next_kode;
+        return $kdcab.'-A'.date('y').$next_kode;
     }
 
     function simpanpembayaran(){

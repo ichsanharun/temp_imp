@@ -111,7 +111,7 @@ class Reportpiutang extends Admin_Controller {
         if($this->uri->segment(5) != ''){
             $filter['id_customer'] = $this->uri->segment(5);
         }
-        $data_inv = $this->Invoice_model->where($filter)->order_by('no_invoice','DESC')->find_all();
+        $data_inv = $this->Invoice_model->where($filter)->order_by('nm_customer','ASC')->find_all();
 
         $this->template->set('header',$data_inv);
 
@@ -120,6 +120,26 @@ class Reportpiutang extends Admin_Controller {
         $this->mpdf->AddPage('L');
         $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
+    }
+
+    function excel_request(){
+
+        $filter = array(
+            'piutang >'=>0,
+            'kdcab'=>$this->uri->segment(3),
+            'id_salesman'=>$this->uri->segment(4)
+            //'id_customer'=>$this->uri->segment(5)
+            );
+        if($this->uri->segment(5) != ''){
+            $filter['id_customer'] = $this->uri->segment(5);
+        }
+        $data_inv = $this->Invoice_model->where($filter)->order_by('nm_customer','ASC')->find_all();
+        $data = array(
+    			'header'	=> $data_inv
+    		);
+
+        $this->load->view('print_rekap',$data);
+
     }
 
      function downloadExcel()

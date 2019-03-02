@@ -176,9 +176,14 @@
                       </a>
                     <?php }} ?>
                     <?php if($ENABLE_VIEW) { ?>
-                    <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
+                    <!--a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')" target="output">
+                    <span class="glyphicon glyphicon-print"></span>
+                    </a-->
+                    <a href="salesorder/print_request/<?php echo $vso->no_so?>" target="output">
                     <span class="glyphicon glyphicon-print"></span>
                     </a>
+
+                    
                     <?php } ?>
 
                     <?php //if($ENABLE_DELETE) { ?>

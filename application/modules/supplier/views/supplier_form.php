@@ -21,7 +21,7 @@
                     <div class="col-sm-3">
                         <div class="input-group">
                         <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                        <input type="text" class="form-control" id="nm_supplier" name="nm_supplier" maxlength="45" value="<?php echo set_value('nm_supplier', isset($data->nm_supplier) ? $data->nm_supplier : ''); ?>" placeholder="Nama Supplier" required style="text-transform:uppercase">
+                        <input type="text" class="form-control" id="nm_supplier" name="nm_supplier" value="<?php echo set_value('nm_supplier', isset($data->nm_supplier) ? $data->nm_supplier : ''); ?>" placeholder="Nama Supplier" required style="text-transform:uppercase">
                         </div>
                     </div>
 

@@ -1,10 +1,10 @@
 <?php
-    $ENABLE_ADD     = has_permission('Purchaseorder.Add');
-    $ENABLE_MANAGE  = has_permission('Purchaseorder.Manage');
-    $ENABLE_VIEW    = has_permission('Purchaseorder.View');
-    $ENABLE_DELETE  = has_permission('Purchaseorder.Delete');
+    $ENABLE_ADD = has_permission('Purchaseorder.Add');
+    $ENABLE_MANAGE = has_permission('Purchaseorder.Manage');
+    $ENABLE_VIEW = has_permission('Purchaseorder.View');
+    $ENABLE_DELETE = has_permission('Purchaseorder.Delete');
 ?>
-<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 <div class="box">
    
     <div class="box-body">
@@ -20,41 +20,48 @@
         </thead>
         <tbody>
            <?php
-           if(@$results){
-           $n=1;
-           foreach(@$results as $kp => $vp){
-            $no = $n++;
-           ?>
+           if (@$results) {
+               $n = 1;
+               foreach (@$results as $kp => $vp) {
+                   $no = $n++; ?>
            <tr>
-             <td><center><?php echo $no?></center></td>
-             <td><center><?php echo $vp->no_po?></center></td>
-             <td><?php echo $vp->id_supplier?></td>
-             <td><center><?php echo date('d/m/Y',strtotime($vp->tgl_po))?></center></td>
+             <td><center><?php echo $no; ?></center></td>
+             <td><center><?php echo $vp->no_po; ?></center></td>
+             <td><?php echo $vp->id_supplier; ?> - <?php echo $vp->nm_supplier; ?></td>
+             <td><center><?php echo date('d/m/Y', strtotime($vp->tgl_po)); ?></center></td>
              <td>
                 <center>
                     <?php
-                    if ($vp->status=="ACC") {
+                    if ($vp->status == 'ACC') {
                         ?>
-                        <a href="<?php echo base_url("purchaseorder/purchaseorder_pusat/konfirmasi/$vp->id_supplier/$vp->no_po") ?>">Confrim</a>
-                 &nbsp;
+                        <a href="<?php echo base_url("purchaseorder/purchaseorder_pusat/konfirmasi/$vp->id_supplier/$vp->no_po"); ?>">Confrim</a>
+                         &nbsp;
+                         <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vp->no_po; ?>')">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
                         <?php
-                    }
-                    ?>
+                    } else {
+                        ?>
+                        <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdfpooo('<?php echo $vp->no_po; ?>')">
+                            <span class="glyphicon glyphicon-print"></span>
+                        </a>
+                        <?php
+                    } ?>
                  
-                <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vp->no_po?>')">
-                    <span class="glyphicon glyphicon-print"></span>
-                </a>
+                
                 </center>
              </td>
            </tr>
-           <?php } ?>
-           <?php } ?>
+           <?php
+               } ?>
+           <?php
+           } ?>
         </tbody>
         </table>
     </div>
 </div>
 <div id="form-area">
-<?php //$this->load->view('salesorder/salesorder_form') ?>
+<?php //$this->load->view('salesorder/salesorder_form')?>
 </div>
 <!-- Modal -->
 <div class="modal modal-primary" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -75,8 +82,8 @@
   </div>
 </div>
 <!-- DataTables -->
-<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">
@@ -89,7 +96,14 @@
     }
     function PreviewPdf(nopo)
     {
-      tujuan = 'purchaseorder/print_request/'+nopo;
+      tujuan = 'purchaseorder/print_request_po_conf/'+nopo;
+
+        $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+    }
+    
+    function PreviewPdfpooo(nopo)
+    {
+      tujuan = 'purchaseorder/print_request_po/'+nopo;
 
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }

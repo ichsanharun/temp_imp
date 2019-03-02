@@ -22,8 +22,8 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
               <select class="form-control input-sm" id="filtercabang" style="width: 200px;" disabled="disabled">
                 <option value="">Pilih Cabang</option>
-                <?php 
-                foreach(@$cabang as $k=>$v){ 
+                <?php
+                foreach(@$cabang as $k=>$v){
                   $selected = '';
                   $session = $this->session->userdata('app_session');
                   $kdcab = $session['kdcab'];
@@ -42,8 +42,8 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-user"></i></span>
               <select class="form-control input-sm" id="filtersales" style="width: 200px;">
                 <option value="">Pilih Sales</option>
-                <?php 
-                foreach(@$marketing as $km=>$vm){ 
+                <?php
+                foreach(@$marketing as $km=>$vm){
                   $selected = '';
                   if($this->uri->segment(4) == $vm->id_karyawan){
                     $selected='selected="selected"';
@@ -57,8 +57,8 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-users"></i></span>
               <select class="form-control input-sm" id="filtercustomer" style="width: 300px;">
                 <option value="">Pilih Customer</option>
-                <?php 
-                foreach(@$customer as $kc=>$vc){ 
+                <?php
+                foreach(@$customer as $kc=>$vc){
                   $selected = '';
                   if($this->uri->segment(5) == $vc->id_customer){
                     $selected='selected="selected"';
@@ -68,8 +68,10 @@ thead input {
                 <?php } ?>
               </select>
           </div>
-          <input type="button" id="submit" class="btn btn-md btn-warning" value="Tampilkan">
-          <a class="btn btn-primary btn-md" data-toggle="modal" href="#dialog-rekap" title="PDF" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>CETAK</a>
+          <input type="button" id="submit" class="btn btn-sm btn-warning" value="Tampilkan">
+          <a class="btn btn-primary btn-sm" title="PDF" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>CETAK</a>
+
+          <a class="btn btn-primary btn-sm" title="EXCEL" onclick="PreviewExc()"><i class="fa fa-download">&nbsp;</i>EXCEL</a>
         </div>
       </div>
       <!--<span class="pull-right">
@@ -197,11 +199,11 @@ thead input {
           "bLengthChange" : false,
           "bPaginate": false,
           "aaSorting": [[ 0, "asc" ]],
-          "columnDefs": [ 
+          "columnDefs": [
               {"aTargets":[0], "sClass" : "column-hide"},
               {"aTargets": 'no-sort', "orderable": false}
           ],
-          "sPaginationType": "simple_numbers", 
+          "sPaginationType": "simple_numbers",
           "iDisplayLength": 10,
           "aLengthMenu": [[10, 20, 50, 100, 150], [10, 20, 50, 100, 150]]
       });
@@ -218,6 +220,19 @@ thead input {
     var sales = '<?php echo $this->uri->segment(4) ?>';
     var customer = '<?php echo $this->uri->segment(5) ?>';
     tujuan = siteurl+'reportpiutang/print_request/'+kdcab+'/'+sales+'/'+customer;
+    var win = window.open(tujuan, '_blank');
+    win.focus();
+    //alert(tujuan);
+    $("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+  }
+  function PreviewExc()
+  {
+    var kdcab = '<?php echo $this->uri->segment(3) ?>';
+    var sales = '<?php echo $this->uri->segment(4) ?>';
+    var customer = '<?php echo $this->uri->segment(5) ?>';
+    tujuan = siteurl+'reportpiutang/excel_request/'+kdcab+'/'+sales+'/'+customer;
+    var win = window.open(tujuan, '_blank');
+    win.focus();
     //alert(tujuan);
     $("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
   }
