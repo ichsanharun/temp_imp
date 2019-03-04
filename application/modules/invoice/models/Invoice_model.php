@@ -73,7 +73,7 @@ class Invoice_model extends BF_Model
         $kode = (int)$r->no_invoice+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
         $bln_now = date('m');
@@ -112,18 +112,18 @@ class Invoice_model extends BF_Model
         }
         return $kdcab.'-A-JM'.date('my').$next_kode;
     }
-	
+
 	function get_Nomor_Jurnal_Sales($Cabang='',$Tgl_Inv=''){
 		$nocab			= 'A';
 		$bulan_Proses	= date('Y-m',strtotime($Tgl_Inv));
 		$Urut			= 1;
-		$Query_Cab		= "SELECT subcab FROM pastibisa_tb_cabang WHERE nocab='".$Cabang."'";  
+		$Query_Cab		= "SELECT subcab FROM pastibisa_tb_cabang WHERE nocab='".$Cabang."'";
 		$Pros_Cab		= $this->db->query($Query_Cab);
 		$det_Cab		= $Pros_Cab->result_array();
 		if($det_Cab){
-			$nocab		= $det_Cab[0]['subcab']; 
+			$nocab		= $det_Cab[0]['subcab'];
 		}
-		
+
 		$Format			= $Cabang.'-'.$nocab.'-JS'.date('my',strtotime($Tgl_Inv));
 		$Query_JS		= "SELECT RIGHT(nomor,4) AS kode FROM javh WHERE kdcab='$Cabang' AND tgl LIKE '".$bulan_Proses."%' AND nomor LIKE '".$Format."%' ORDER BY nomor DESC LIMIT 1";
 		$Pros_JS		= $this->db->query($Query_JS);
@@ -132,23 +132,23 @@ class Invoice_model extends BF_Model
 			$det_JS		= $Pros_JS->result_array();
 			$Urut		= intval($det_JS[0]['kode']) + 1;
 		}
-		
+
 		$Nomor_JS		= $Format.str_pad($Urut, 4, "0", STR_PAD_LEFT);
-		
+
 		return $Nomor_JS;
 	}
-	
+
 	function get_Nomor_Jurnal_Memorial($Cabang='',$Tgl_Inv=''){
 		$nocab			= 'A';
 		$bulan_Proses	= date('Y-m',strtotime($Tgl_Inv));
 		$Urut			= 1;
-		$Query_Cab		= "SELECT subcab FROM pastibisa_tb_cabang WHERE nocab='".$Cabang."'";  
+		$Query_Cab		= "SELECT subcab FROM pastibisa_tb_cabang WHERE nocab='".$Cabang."'";
 		$Pros_Cab		= $this->db->query($Query_Cab);
 		$det_Cab		= $Pros_Cab->result_array();
 		if($det_Cab){
-			$nocab		= $det_Cab[0]['subcab']; 
+			$nocab		= $det_Cab[0]['subcab'];
 		}
-		
+
 		$Format			= $Cabang.'-'.$nocab.'-JM'.date('my',strtotime($Tgl_Inv));
 		$Query_JM		= "SELECT RIGHT(nomor,4) AS kode FROM javh WHERE kdcab='$Cabang' AND tgl LIKE '".$bulan_Proses."%' AND nomor LIKE '".$Format."%' ORDER BY nomor DESC LIMIT 1";
 		$Pros_JM		= $this->db->query($Query_JM);
@@ -157,12 +157,12 @@ class Invoice_model extends BF_Model
 			$det_JM		= $Pros_JM->result_array();
 			$Urut		= intval($det_JM[0]['kode']) + 1;
 		}
-		
+
 		$Nomor_JM		= $Format.str_pad($Urut, 4, "0", STR_PAD_LEFT);
-		
+
 		return $Nomor_JM;
 	}
-	
+
     function get_customer($idcus){
         $query="SELECT
                 *

@@ -35,7 +35,7 @@ class Salesorder extends Admin_Controller {
     public function index(){
         $this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab'],'LEFT(waktu,7)'=>date("Y-m")));
+        $data = $this->Salesorder_model->order_by('no_so','DESC')->find_all_by(array('total !='=>0,'LEFT(no_so,3)'=>$session['kdcab']));
         $disc_cash = $this->Salesorder_model->get_data(array('diskon'=>'CASH'),'diskon');
         //$this->Salesorder_model->find_data('trans_so_header',$no_so,'no_so');
         $this->template->set('results', $data);

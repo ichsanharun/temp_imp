@@ -55,7 +55,7 @@
           <?php
           foreach(@$bank as $kb=>$vb){
           ?>
-          <option value="<?php echo $vb->kd_bank.'|'.$vb->nama_bank?>"><?php echo $vb->nama_bank?></option>
+          <option value="<?php echo $vb->no_perkiraan.'|'.$vb->nama?>"><?php echo $vb->nama?></option>
           <?php } ?>
         </select>
       </div>
@@ -100,7 +100,7 @@
   <?php
   if(@$pembayaran){
     $total=0;
-  foreach(@$pembayaran as $ki=>$vi){ 
+  foreach(@$pembayaran as $ki=>$vi){
     $total += $vi->jumlah_pembayaran;
   ?>
   <tr>
@@ -226,8 +226,8 @@
   $('#bank').attr('disabled','disabled');
   $('#btn-giro').attr('disabled','disabled');
 	$('#tgl_bayar').datepicker({
-		startDate: 'm',
-		endDate: '+0d',
+		//startDate: 'm',
+		//endDate: '+0d',
 		format : "yyyy-mm-dd",
 		showInputs: true,
 		autoclose:true,

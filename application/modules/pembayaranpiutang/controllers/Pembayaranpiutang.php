@@ -80,9 +80,11 @@ class Pembayaranpiutang extends Admin_Controller {
         $invoice = $this->Invoice_model->cek_data(array("no_invoice"=>$no_inv),'trans_invoice_header');
         $pembayaran = $this->Invoice_model->get_data(array("no_invoice"=>$no_inv),'pembayaran_piutang');
         $bank = $this->Invoice_model->get_data('1=1','bank');
+        $bank1 = $this->Invoice_model->get_data(array("no_perkiraan LIKE"=>'%1102-01%',"bln"=>1,"level"=>5,"kdcab"=>$this->auth->user_cab()."-A"),'COA');
+
         $this->template->set('pembayaran', $pembayaran);
         $this->template->set('invoice', $invoice);
-        $this->template->set('bank', $bank);
+        $this->template->set('bank', $bank1);
         $this->template->render('setpembayaran');
     }
 
@@ -154,7 +156,7 @@ class Pembayaranpiutang extends Admin_Controller {
         $counter = $this->Invoice_model->get_data('1=1','jarh');
         $kode = 1;
         if(count($counter) > 0){
-            $kode = count($counter)+1; 
+            $kode = count($counter)+1;
         }
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
         return $kdcab.'-A'.date('y').$next_kode;
@@ -221,7 +223,7 @@ class Pembayaranpiutang extends Admin_Controller {
             'nomor'         => $nomor_jurnal_jarh,
             'tanggal'       => $this->input->post('tgl_bayar'),
             'tipe'          => 'BUM',
-            'no_perkiraan'  => $noPerkiraan,
+            'no_perkiraan'  => $kdbank,
             'keterangan'    => 'Pembayaran Invoice #'.$this->input->post('no_invoice').'#'.$this->input->post('nmcus'),
             'no_reff'       => $this->input->post('no_invoice'),
             'debet'         => $this->input->post('jml_bayar'),

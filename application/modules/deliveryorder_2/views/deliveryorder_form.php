@@ -277,8 +277,8 @@
             "processing": false,
         });
         $('#tgl_do').datepicker({
-            startDate: '-1d',
-            endDate: '+2d',
+            //startDate: '-1d',
+            //endDate: '+2d',
             format : "yyyy-mm-dd",
             showInputs: true,
             autoclose:true,

@@ -74,7 +74,7 @@
                             <div class="col-sm-8">
                               <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                <input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>" readonly>
+                                <input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>">
                               </div>
                             </div>
                           </div>
@@ -111,13 +111,11 @@
                         </div>
                         <div class="form-group ">
                             <label for="tgldo" class="col-sm-4 control-label">Tgl Jatuh Tempo </label>
-                            <div class="col-sm-8" style="padding-top: 8px;">
-                                <?php
-                                $tglnow = date('Y-m-d');
-                                $jthtempo = date('d M Y',strtotime('+'.$records[0]['detail_data'][0]['top'].' days',strtotime($tglnow)));
-                                echo ": ".$jthtempo;
-                                ?>
-                                <input type="hidden" name="tgljatuhtempo" value="<?php echo date('Y-m-d',strtotime($jthtempo))?>">
+                            <div class="col-sm-8">
+                              <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                <input type="text" name="tgljatuhtempo" id="tgljatuhtempo" class="form-control input-sm datepicker" value="<?php //echo $tglinv?>" readonly>
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -419,12 +417,12 @@
         });
         */
         $('#tgl_inv').datepicker({
-            startDate: 'm',
-            endDate: '+2d',
+            //startDate: 'm',
+            //endDate: '+2d',
             format : "yyyy-mm-dd",
             showInputs: true,
             autoclose:true,
-            maxViewMode: 0
+            maxViewMode: 1
          });
         var dataTableItem = $('#deliveryorderitem').DataTable({
             "sDom": 'Bfrtip',
@@ -559,4 +557,21 @@
     function kembali_inv(){
         window.location.href = siteurl+"invoice";
     }
+	
+ $("#tgl_inv").change(function() {
+	  
+   var idcus = $('#tgl_inv').val();
+        if(idcus != ''){
+           $.ajax({
+                type:"GET",
+                url:siteurl+"invoice/jatuhtempo",
+                data:"idcus="+idcus,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    $('#tgljatuhtempo').val(data.tgl);
+                    //$('#diskontoko').text(formatCurrency(data.diskon_toko*parseInt($('#grandtotalso').val())/100,',','.',0));
+                }
+            });
+        }
+  });
 </script>

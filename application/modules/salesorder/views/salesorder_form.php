@@ -492,6 +492,7 @@
 <script type="text/javascript">
 
     $(document).ready(function() {
+      $('.radio_disso_rp').hide();
 
         $("#item_brg_so,#idcustomer,#idsalesman,#pic,#item_brg_so_bonus").select2({
             placeholder: "Pilih",

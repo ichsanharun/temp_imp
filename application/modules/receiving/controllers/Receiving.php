@@ -74,11 +74,6 @@ class Receiving extends Admin_Controller
         $session = $this->session->userdata('app_session');
         $nopo = $this->input->post('no_pr');
         $kdcab = $this->input->post('kdcab');
-        //Update counter NO_DO
-        $count = $this->Receiving_model->cek_data(array('kdcab' => $session['kdcab']), 'cabang');
-        $this->db->where(array('kdcab' => $session['kdcab']));
-        $this->db->update('cabang', array('no_receive' => $count->no_receive + 1));
-        //Update counter NO_DO
 
         $norec = $this->Receiving_model->generate_noreceive($session['kdcab']);
         $dataheader = array(
@@ -103,7 +98,7 @@ class Receiving extends Admin_Controller
         $this->db->trans_begin();
         $this->db->insert('trans_receive', $dataheader);
         $jumlah_barang = count($_POST['idet_barang']);
-        $i=0;
+        $i = 0;
         for ($b = 0; $b < $jumlah_barang; ++$b) {
             $detil = array(
                     'no_po' => $nopo,
@@ -125,38 +120,37 @@ class Receiving extends Admin_Controller
                 $landed_cost = "$harga_barang";
             }
 
+            $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$i;
 
-                        $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$i;
+            $tipe = 'IN';
+            $jenis_trans = 'IN_Pembelian';
+            $qty_stock_new = $qty_stock + $qty;
+            $qty_avl_new = $qty_avl + $qty;
 
-                        $tipe = 'IN';
-                        $jenis_trans = 'IN_Pembelian';
-                        $qty_stock_new = $qty_stock + $qty;
-                        $qty_avl_new = $qty_avl + $qty;
-
-                        $data_adj_trans = array(
+            $data_adj_trans = array(
                           'id_st' => $id_st,
                           'tipe' => $tipe,
                           'jenis_trans' => $jenis_trans,
                           'noreff' => $norec,
                           'id_barang' => $_POST['idet_barang'][$b],
                           'nm_barang' => $_POST['nm_barangb'][$b],
-                          'jenis' => substr($_POST['idet_barang'][$b],0,2),
+                          'jenis' => substr($_POST['idet_barang'][$b], 0, 2),
                           'kategori' => $kategori,
-                          'brand' => "IMPORTA",
-                          'satuan' => "SET",
+                          'brand' => 'IMPORTA',
+                          'satuan' => 'SET',
                           'kdcab' => $this->auth->user_cab(),
                           'date_stock' => date('Y-m-d H:i:s'),
                           'qty' => $_POST['qty_bagus_t'][$b],
                           'qty_rusak' => $_POST['qty_rusak_t'][$b],
                           'qty_stock_awal' => $count->qty_stock,
                           'qty_avl_awal' => $count->qty_avl,
-                          'qty_stock_akhir' => $count->qty_stock+$_POST['qty_bagus_t'][$b],
-                          'qty_avl_akhir' => $count->qty_avl+$_POST['qty_bagus_t'][$b],
+                          'qty_stock_akhir' => $count->qty_stock + $_POST['qty_bagus_t'][$b],
+                          'qty_avl_akhir' => $count->qty_avl + $_POST['qty_bagus_t'][$b],
                           'nilai_barang' => $landed_cost,
                           'notes' => '',
                         );
-                        $this->Trans_stock_model->insert($data_adj_trans); //modules trans_stok
-                        $i++;
+            $this->Trans_stock_model->insert($data_adj_trans); //modules trans_stok
+            ++$i;
 
             $this->db->where(array('id_barang' => $_POST['idet_barang'][$b], 'kdcab' => $session['kdcab']));
             $this->db->update('barang_stock', array('landed_cost' => $landed_cost, 'qty_stock' => $count->qty_stock + $_POST['qty_bagus_t'][$b], 'qty_avl' => $count->qty_avl + $_POST['qty_bagus_t'][$b], 'qty_rusak' => $count->qty_rusak + $_POST['qty_rusak_t'][$b]));
@@ -179,6 +173,16 @@ class Receiving extends Admin_Controller
                     'keterangan' => $_POST['keterangan'][$i],
                 );
             $this->Receiving_model->insert_receive_detail_koli($detil);
+
+            $kdql = $_POST['id_koli'][$i];
+            $queryqol = $this->db->query("SELECT * FROM `barang_stock` WHERE id_barang='$kdql'");
+            $rowqly = $queryqol->row();
+
+            $qty_stock = $rowqly->qty_stock + $_POST['qty_bagus'][$i];
+            $qty_avl = $rowqly->qty_avl + $_POST['qty_bagus'][$i];
+            $qty_rusak = $rowqly->qty_rusak + $_POST['qty_rusak'][$i];
+
+            $this->db->query("UPDATE `barang_stock` SET `qty_stock` = '$qty_stock', qty_avl='$qty_avl', qty_rusak='$qty_rusak'  WHERE id_barang ='$kdql' and kdcab='$kdcab';");
         }
         $this->db->query("UPDATE `trans_po_header` SET `status` = 'RECEIVING' WHERE `trans_po_header`.`no_po` ='$nopo';");
 
@@ -187,40 +191,8 @@ class Receiving extends Admin_Controller
         $rowpo = $querypo->row();
         $inv = get_invoice($nopo);
 
-        $querycek_j = $this->db->query("SELECT RIGHT(nomor,4) AS kode FROM `jurnal` WHERE nomor LIKE '%$kdcab-A-JP$thb%' ORDER BY nomor DESC LIMIT 1 ");
-        if ($querycek_j->num_rows() > 0) {
-            $row = $querycek_j->row();
-            $kodej = $row->kode + 1;
-        } else {
-            $kodej = 1;
-        }
-
-        $bikin_kode_j = str_pad($kodej, 4, '0', STR_PAD_LEFT);
-        $kode_jadi_j = "$kdcab-A-JP$thb$bikin_kode_j";
-
-        $jurnal_d = array(
-            'tipe' => 'JV',
-            'nomor' => $kode_jadi_j,
-            'tanggal' => date('Y-m-d'),
-            'no_perkiraan' => '1105-01-01',
-            'keterangan' => "Persediaan#$nopo#$inv#$rowpo->nm_supplier",
-            'no_reff' => $inv,
-            'debet' => $rowpo->rupiah_total,
-            'kredit' => 0,
-        );
-
-        $jurnal_k = array(
-            'tipe' => 'JV',
-            'nomor' => $kode_jadi_j,
-            'tanggal' => date('Y-m-d'),
-            'no_perkiraan' => '1108-01-01',
-            'keterangan' => "Uang muka#$nopo#$inv#$rowpo->nm_supplier",
-            'no_reff' => $inv,
-            'debet' => 0,
-            'kredit' => $rowpo->rupiah_total,
-        );
-
-        $querycek = $this->db->query("SELECT RIGHT(nomor,4) AS kode FROM `javh` WHERE nomor LIKE '%$kdcab-A-JS$thb%' ORDER BY nomor DESC LIMIT 1 ");
+        /* INPUT JAVH */
+        $querycek = $this->db->query("SELECT RIGHT(nomor,4) AS kode FROM `javh` WHERE nomor LIKE '%$kdcab-A-JP$thb%' ORDER BY nomor DESC LIMIT 1 ");
         if ($querycek->num_rows() > 0) {
             $row = $querycek->row();
             $kode = $row->kode + 1;
@@ -229,7 +201,7 @@ class Receiving extends Admin_Controller
         }
 
         $bikin_kode = str_pad($kode, 4, '0', STR_PAD_LEFT);
-        $kode_jadi = "$kdcab-A-JS$thb$bikin_kode";
+        $kode_jadi = "$kdcab-A-JP$thb$bikin_kode";
 
         $javh = array(
             'nomor' => $kode_jadi,
@@ -242,12 +214,103 @@ class Receiving extends Admin_Controller
             'tahun' => date('Y'),
             'user_id' => $session['id_user'],
         );
-
         $this->db->insert('javh', $javh);
 
-        $this->db->insert('jurnal', $jurnal_d);
+        /* INPUT JURNAL */
+        $querycek_j = $this->db->query("SELECT RIGHT(nomor,4) AS kode FROM `jurnal` WHERE nomor LIKE '%$kdcab-A-JP$thb%' ORDER BY nomor DESC LIMIT 1 ");
+        if ($querycek_j->num_rows() > 0) {
+            $row = $querycek_j->row();
+            $kodej = $row->kode + 1;
+        } else {
+            $kodej = 1;
+        }
 
-        $this->db->insert('jurnal', $jurnal_k);
+        $bikin_kode_j = str_pad($kodej, 4, '0', STR_PAD_LEFT);
+        $kode_jadi_j = "$kdcab-A-JP$thb$bikin_kode_j";
+
+        $cek_open = $this->db->query("SELECT * FROM `trans_po_payment` WHERE no_po='$nopo' AND status='open'");
+        if ($cek_open->num_rows() > 0) {
+            $total_close = 0;
+            $clsoee = $this->db->query("SELECT * FROM `trans_po_payment` WHERE no_po='$nopo' AND status='close' ");
+            foreach ($clsoee->result() as $rowclsoe) {
+                $uangmuka = $rowclsoe->persen * $rowpo->rupiah_total / 100;
+                $total_close += $uangmuka;
+            }
+
+            $jurnal_d = array(
+                'tipe' => 'JV',
+                'nomor' => $kode_jadi_j,
+                'tanggal' => date('Y-m-d'),
+                'no_perkiraan' => '1105-01-01',
+                'keterangan' => "Persediaan#$nopo#$inv#$rowpo->nm_supplier",
+                'no_reff' => $inv,
+                'debet' => $rowpo->rupiah_total,
+                'kredit' => 0,
+            );
+
+            $jurnal_k = array(
+                'tipe' => 'JV',
+                'nomor' => $kode_jadi_j,
+                'tanggal' => date('Y-m-d'),
+                'no_perkiraan' => '1108-01-01',
+                'keterangan' => "Uang Muka $nopo#$inv#$rowpo->nm_supplier",
+                'no_reff' => $inv,
+                'debet' => 0,
+                'kredit' => $total_close,
+            );
+
+            $jurnal_ka = array(
+                'tipe' => 'JV',
+                'nomor' => $kode_jadi_j,
+                'tanggal' => date('Y-m-d'),
+                'no_perkiraan' => '2101-01-01',
+                'keterangan' => "Hutang $nopo#$inv#$rowpo->nm_supplier",
+                'no_reff' => $inv,
+                'debet' => 0,
+                'kredit' => $rowpo->rupiah_total - $total_close,
+            );
+
+            $this->db->insert('jurnal', $jurnal_d);
+
+    		    $this->db->insert('jurnal', $jurnal_ka);
+
+            $this->db->insert('jurnal', $jurnal_k);
+
+        } else {
+            $jurnal_d = array(
+                'tipe' => 'JV',
+                'nomor' => $kode_jadi_j,
+                'tanggal' => date('Y-m-d'),
+                'no_perkiraan' => '1105-01-01',
+                'keterangan' => "Persediaan#$nopo#$inv#$rowpo->nm_supplier",
+                'no_reff' => $inv,
+                'debet' => $rowpo->rupiah_total,
+                'kredit' => 0,
+            );
+
+            $jurnal_k = array(
+                'tipe' => 'JV',
+                'nomor' => $kode_jadi_j,
+                'tanggal' => date('Y-m-d'),
+                'no_perkiraan' => '2101-01-01',
+                'keterangan' => "Pembelian $nopo#$inv#$rowpo->nm_supplier",
+                'no_reff' => $inv,
+                'debet' => 0,
+                'kredit' => $rowpo->rupiah_total,
+            );
+
+            $this->db->insert('jurnal', $jurnal_d);
+
+            $this->db->insert('jurnal', $jurnal_k);
+        }
+
+        //Update counter NO_REC
+        $count = $this->Receiving_model->cek_data(array('kdcab' => $session['kdcab']), 'cabang');
+        $this->db->where(array('kdcab' => $session['kdcab']));
+        $this->db->update('cabang', array('no_receive' => $count->no_receive + 1));
+        //Update counter NO_REC
+
+
 
         if ($this->db->trans_status() === false) {
             $this->db->trans_rollback();

@@ -31,7 +31,7 @@
                         $rowc = $queryc->row();
                         ?>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Supplier</label>
+                            <label class="col-sm-4 control-label">NO. PI</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
                                 : <?= $rowc->nm_supplier; ?>
                             </div>
@@ -40,26 +40,6 @@
                             <label class="col-sm-4 control-label">Alamat Supplier</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
                                 : <?= $rowc->alamat; ?>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Freight Condition</label>
-                            <div class="col-sm-8" style="padding-top: 11px;">
-                                <select class="form-control input-sm" name="pilihan">
-                                    <option value='FOB' selected>FOB</option>
-                                    <option value='CIF'>CIF</option>
-                                    <option value='CNF'>CNF</option>
-                                    <option value='EXWORK'>EXWORK</option>
-                                    <option value='DOOR TO DOOR'>DOOR TO DOOR</option>
-                                 </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Payment Term</label>
-                            <div class="col-sm-8" style="padding-top: 11px;">
-                                <textarea class="form-control" rows="3" name="term" ></textarea>
                             </div>
                         </div>
                     </div>
@@ -79,10 +59,10 @@
                                 <table width="100%">
                                     <tr>
                                         <td>
-                                            USD
+                                            RMB
                                         </td>
                                         <td>
-                                            to RMB
+                                            to USD
                                         </td>
                                         <td>
                                             <input id="kurs_usd" name="kurs_usd" value="0" />
@@ -112,27 +92,7 @@
                                  </select>
                             </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">REF TO</label>
-                            <div class="col-sm-8" style="padding-top: 11px;">
-                                <select class="form-control input-sm" name="ref_to">
-                                    <option value='Tanjung Priok, Jakarta' selected>Tanjung Priok, Jakarta</option>
-                                    <option value='Tanjung Perak, Surabaya'>Tanjung Perak, Surabaya</option>
-                                 </select>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label class="col-sm-4 control-label">Lead time of delivery</label>
-                            <div class="col-sm-8" style="padding-top: 11px;">
-                                <textarea class="form-control" rows="3" name="lead" ></textarea>
-                            </div>
-                        </div>
-						
-						 
-                        
                     </div>
-                    
                 </div>
                 </div>
                    <input id="cbm_tot" type="hidden" name="cbm_tot" value="<?= $pr_hader->total_cbm; ?>">
@@ -153,9 +113,9 @@
                     <th>Nama Barang</th>
                     <th>QTY</th>
                     <th style="100px">QTY Proforma Invoice</th>
-                    <th>Harga Beli (RMB)</th>
-                    <th>Harga Beli (Dollar)</th>
-                    <th>Harga Beli (Rupiah)</th>
+                    <th>Harga Beli</th>
+                    <th>HB (Dollar)</th>
+                    <th>HB (Rupiah)</th>
                     <th>% Fiskal</th>
                     <th>Fiskal</th>
                     <th>No Fiskal</th>
@@ -164,10 +124,10 @@
             </thead>
             <tbody>
                 <?php
-                $no = 0;
+                $no = 1;
 
                 foreach (@$itembarang as $data => $datas) {
-                    $no++; ?>
+                    $no = $no++; ?>
                     <tr>
                         <td><?= $no; ?></td>
                         <td><?= $datas->nm_barang; ?></td>
@@ -177,30 +137,30 @@
                             <input id="qtyconfirm_<?php echo $no; ?>" class="form-control input-sm qtyconfirm" name="qty_acc[]" value="<?= $datas->qty_acc; ?>" />
                         </td>
                         <td>
-                            <input id="harga_beli_<?php echo $no; ?>" class="form-control input-sm harga_beli" name="harga_satuan[]" onblur="findall()"  value="0" />
+                            <input id="harga_beli_<?php echo $no; ?>" class="form-control input-sm harga_beli" name="harga_satuan[]"  value="0" />
                         </td>
                         <td>
-                            <input id="usd_rubah_<?php echo $no; ?>" type="hidden" name="usd[]" class="form-control input-sm usd" value="0" readonly="">
-                            <input  type="text"  name="usd_rubah[]" class="form-control input-sm usd_rubah" value="0" readonly="">
+                            <input type="hidden" name="usd[]" class="form-control input-sm usd" value="0" readonly="">
+                            <input type="text"  name="usd_rubah[]" class="form-control input-sm usd_rubah" value="0" readonly="">
                         </td>
                         <td>
-                            <input id="rupiah_rubah_<?php echo $no; ?>" type="hidden" name="rupiah[]" class="form-control input-sm rupiah" value="0" readonly="">
-                            <input  type="text" name="rupiah_rubah[]" class="form-control input-sm rupiah_rubah" value="0" readonly="">
+                            <input type="hidden" name="rupiah[]" class="form-control input-sm rupiah" value="0" readonly="">
+                            <input type="text" name="rupiah_rubah[]" class="form-control input-sm rupiah_rubah" value="0" readonly="">
                         </td>
                         <td style="width: 50px">
                             <input style="width: 40px" class="form-control input-sm fiskal" name="fiskal[]" value="0" />
                         </td>
                         <th>
-                            <input id="subtotal_rubah_<?php echo $no; ?>" type="hidden" class="form-control input-sm subtotal" name="subtotal[]"  readonly="" value="0"/>
-                            <input  class="form-control input-sm subtotal_rubah" name="subtotal_rubah[]"  readonly="" value="0"/>
+                            <input type="hidden" class="form-control input-sm subtotal" name="subtotal[]"  readonly="" value="0"/>
+                            <input class="form-control input-sm subtotal_rubah" name="subtotal_rubah[]"  readonly="" value="0"/>
                         </th>
                         <th>
-                            <input id="subtotal_no_rubah_<?php echo $no; ?>" type="hidden" class="form-control input-sm subtotal_no" name="subtotal_no[]"  readonly="" value="0"/>
-                            <input  class="form-control input-sm subtotal_no_rubah" name="subtotal_no_rubah[]"  readonly="" value="0"/>
+                            <input type="hidden" class="form-control input-sm subtotal_no" name="subtotal_no[]"  readonly="" value="0"/>
+                            <input class="form-control input-sm subtotal_no_rubah" name="subtotal_no_rubah[]"  readonly="" value="0"/>
                         </th>
                         <th>
-                            <input id="subtotal_ppn_rubah_<?php echo $no; ?>" type="hidden" class="form-control input-sm subtotal_ppn" name="subtotal_ppn[]"  readonly="" value="0"/>
-                            <input  class="form-control input-sm subtotal_ppn_rubah" name="subtotal_ppn_rubah[]"  readonly="" value="0"/>
+                            <input type="hidden" class="form-control input-sm subtotal_ppn" name="subtotal_ppn[]"  readonly="" value="0"/>
+                            <input class="form-control input-sm subtotal_ppn_rubah" name="subtotal_ppn_rubah[]"  readonly="" value="0"/>
                         </th>
                     </tr>
                     <?php
@@ -387,34 +347,12 @@
 </script>
 
 <script>
-    $("#kurs_rp, #kurs_usd").on("change paste keyup", function() {
-        cek=document.getElementById('kurs_usd').value; 
-        if(cek=="0"){
-             $(".usd_rubah").attr("readonly", false);
-             $(".harga_beli").attr("readonly", true);
-        }else{
-             $(".harga_beli").attr("readonly", false);
-             $(".usd_rubah").attr("readonly", true);
-        }
-    });
-    
-    function findall() {
-          var array = document.getElementsByName('harga_satuan');
-          var total = 0;
-          var jum = <?php echo count($itembarang)+1; ?>;
-          for (var i = 1; i < jum; i++) {
-              total += parseInt(document.getElementById("harga_beli_"+i).value);
-          }
-          //console.log(parseInt(total));
-        }
-</script>
-<script>
     $('.datepickerxx').datepicker({
       format: 'yyyy-mm-dd',
       autoclose: true
     })
     var jum = <?php echo count($itembarang); ?>;
-    $('.harga_beli,.qtyconfirm, #kurs_rp,#kurs_usd,.usd_rubah, .fiskal').on('keyup', function(){
+    $('.harga_beli,.qtyconfirm, #kurs_rp,#kurs_usd, .fiskal').on('keyup', function(){
         var total_qty = 0;
         var total_harga_beli = 0;
         var total_dollar = 0;
@@ -425,122 +363,48 @@
         ppn_cek=document.getElementById('ppnD').value;
         usdK=parseFloat(document.getElementById('kurs_usd').value);
         rpK=parseFloat(document.getElementById('kurs_rp').value);
-        cek=document.getElementById('kurs_usd').value; 
-        if(cek=="0"){
-           
-                for (var i = 0; i < jum; i++) {
-                    confirm = parseInt($('.qtyconfirm').eq(i).val());
-                    harga_beli = parseFloat($('.usd_rubah').eq(i).val());
-                    fiskal = parseFloat($('.fiskal').eq(i).val());
-                    noFiskal=100-fiskal;
-                    usd_s=confirm*harga_beli*rpK;
-                    rupiah_s=usd_s;
-                     //console.log($('.usd').eq(i).val());
-                    $('.usd').eq(i).val(harga_beli);
-                    $('.rupiah').eq(i).val(rupiah_s);
-                    $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
-                    $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
-                    
-                    $('.rupiah_rubah').eq(i).val(rubah(rupiah_s));
-                    $('.subtotal_rubah').eq(i).val(rubah(rupiah_s*fiskal/100));
-                    $('.subtotal_no_rubah').eq(i).val(rubah(rupiah_s*noFiskal/100));
-                    
-                    if(ppn_cek=="yes"){
-                        fiskalSubtotal = parseFloat($('.subtotal').eq(i).val());
-                        $('.subtotal_ppn').eq(i).val((fiskalSubtotal*10)/100);
-                        $('.subtotal_ppn_rubah').eq(i).val(rubah((fiskalSubtotal*10)/100));
-                    }
-                    
-                    $('#total_qty').text(rubah(total_qty += parseInt($('.qtyconfirm').eq(i).val())));
-                    $('#total_harga_beli').text(rubah(total_harga_beli += parseFloat($('.harga_beli').eq(i).val())));
-                    
-                    nomerzz=parseFloat(i)+1;
-                    total_dollar += parseFloat(document.getElementById("usd_rubah_"+nomerzz).value);
-                    total_rupiah += parseFloat(document.getElementById("rupiah_rubah_"+nomerzz).value);
-                    total_fiskal += parseFloat(document.getElementById("subtotal_rubah_"+nomerzz).value);
-                    total_nofiskal += parseFloat(document.getElementById("subtotal_no_rubah_"+nomerzz).value);
-                    //$('#total_dollar').text(rubah(total_dollar += parseFloat($('.usd').eq(i).val())));
-                    //$('#total_rupiah').val(total_rupiah += parseFloat($('.rupiah').eq(i).val()));
-                    //$('#total_fiskal').val(total_fiskal += parseFloat($('.subtotal').eq(i).val()));
-                    //$('#total_nofiskal').val(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val()));
-                    
-                    //$('#total_rupiah_rubah').val(rubah(total_rupiah += parseFloat($('.rupiah').eq(i).val())));
-                    //$('#total_fiskal_rubah').val(rubah(total_fiskal += parseFloat($('.subtotal').eq(i).val())));
-                    //$('#total_nofiskal_rubah').val(rubah(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val())));
-                    if(ppn_cek=="yes"){
-                        $('#total_ppn').val(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val()));
-                        $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
-                    }
-                    
-                    $('#total_dollar').text(rubah(total_dollar.toFixed(2)));
-                    $('#total_rupiah').val(total_rupiah);
-                    $('#total_fiskal').val(total_fiskal);
-                    $('#total_nofiskal').val(total_nofiskal);
-                    
-                    $('#total_rupiah_rubah').val(rubah(total_rupiah.toFixed(2)));
-                    $('#total_fiskal_rubah').val(rubah(total_fiskal.toFixed(2)));
-                    $('#total_nofiskal_rubah').val(rubah(total_nofiskal.toFixed(2)));
-                    
-                }
-            }else{
-                for (var i = 0; i < jum; i++) {
-                    confirm = parseInt($('.qtyconfirm').eq(i).val());
-                    harga_beli = parseFloat($('.harga_beli').eq(i).val());
-                    fiskal = parseFloat($('.fiskal').eq(i).val());
-                    noFiskal=100-fiskal;
-                    usd_s=(confirm*harga_beli)/usdK;
-                    rupiah_s=usd_s*rpK;
-                    $('.usd').eq(i).val(usd_s);
-                    $('.rupiah').eq(i).val(rupiah_s);
-                    $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
-                    $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
-                    
-                    
-                    $('.usd_rubah').eq(i).val(rubah(usd_s.toFixed(2)));
-                    $('.rupiah_rubah').eq(i).val(rubah(rupiah_s.toFixed(2)));
-                    $('.subtotal_rubah').eq(i).val(rubah(rupiah_s.toFixed(2)*fiskal/100));
-                    $('.subtotal_no_rubah').eq(i).val(rubah(rupiah_s.toFixed(2)*noFiskal/100));
-                    if(ppn_cek=="yes"){
-                        fiskalSubtotal = parseFloat($('.subtotal').eq(i).val());
-                        $('.subtotal_ppn').eq(i).val((fiskalSubtotal.toFixed(2)*10)/100);
-                        $('.subtotal_ppn_rubah').eq(i).val(rubah((fiskalSubtotal.toFixed(2)*10)/100));
-                    }
-                    nomerzz=parseFloat(i)+1;
-                    total_harga_beli += parseFloat(document.getElementById("harga_beli_"+nomerzz).value);
-                    total_dollar += parseFloat(document.getElementById("usd_rubah_"+nomerzz).value);
-                    total_rupiah += parseFloat(document.getElementById("rupiah_rubah_"+nomerzz).value);
-                    total_fiskal += parseFloat(document.getElementById("subtotal_rubah_"+nomerzz).value);
-                    total_nofiskal += parseFloat(document.getElementById("subtotal_no_rubah_"+nomerzz).value);
-                    //total_harga_beli += parseFloat($('.harga_beli').eq(i).val());
-                    //$('#total_fiskal').val(formatCurrency(total_fiskal += parseInt($('.subtotal').eq(i).val())));
-                    $('#total_qty').text(rubah(total_qty += parseInt($('.qtyconfirm').eq(i).val())));
-                    //$('#total_dollar').text(rubah(total_dollar += parseFloat($('.usd').eq(i).val())));
-                    //$('#total_rupiah').val(total_rupiah += parseFloat($('.rupiah').eq(i).val()));
-                    //$('#total_fiskal').val(total_fiskal += parseFloat($('.subtotal').eq(i).val()));
-                    //$('#total_nofiskal').val(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val()));
-                    
-                    //$('#total_rupiah_rubah').val(rubah(total_rupiah += parseFloat($('.rupiah').eq(i).val())));
-                    //$('#total_fiskal_rubah').val(rubah(total_fiskal += parseFloat($('.subtotal').eq(i).val())));
-                    //$('#total_nofiskal_rubah').val(rubah(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val())));
-                    if(ppn_cek=="yes"){
-                        $('#total_ppn').val(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val()));
-                        $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
-                    }
-                    
-                }
-                
-                $('#total_harga_beli').text(rubah(total_harga_beli.toFixed(2)));
-                $('#total_dollar').text(rubah(total_dollar.toFixed(2)));
-                $('#total_rupiah').val(total_rupiah);
-                $('#total_fiskal').val(total_fiskal);
-                $('#total_nofiskal').val(total_nofiskal);
-                
-                $('#total_rupiah_rubah').val(rubah(total_rupiah.toFixed(2)));
-                $('#total_fiskal_rubah').val(rubah(total_fiskal.toFixed(2)));
-                $('#total_nofiskal_rubah').val(rubah(total_nofiskal.toFixed(2)));
+       
+        for (var i = 0; i < jum; i++) {
+            confirm = parseInt($('.qtyconfirm').eq(i).val());
+            harga_beli = parseFloat($('.harga_beli').eq(i).val());
+            fiskal = parseFloat($('.fiskal').eq(i).val());
+            noFiskal=100-fiskal;
+            usd_s=(confirm*harga_beli)/usdK;
+            rupiah_s=usd_s*rpK;
+            $('.usd').eq(i).val(usd_s);
+            $('.rupiah').eq(i).val(rupiah_s);
+            $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
+            $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
+            
+            
+            $('.usd_rubah').eq(i).val(rubah(usd_s));
+            $('.rupiah_rubah').eq(i).val(rubah(rupiah_s));
+            $('.subtotal_rubah').eq(i).val(rubah(rupiah_s*fiskal/100));
+            $('.subtotal_no_rubah').eq(i).val(rubah(rupiah_s*noFiskal/100));
+            if(ppn_cek=="yes"){
+                fiskalSubtotal = parseFloat($('.subtotal').eq(i).val());
+                $('.subtotal_ppn').eq(i).val((fiskalSubtotal*10)/100);
+                $('.subtotal_ppn_rubah').eq(i).val(rubah((fiskalSubtotal*10)/100));
+            }
+            
+            
+            //$('#total_fiskal').val(formatCurrency(total_fiskal += parseInt($('.subtotal').eq(i).val())));
+            $('#total_qty').text(rubah(total_qty += parseInt($('.qtyconfirm').eq(i).val())));
+            $('#total_harga_beli').text(rubah(total_harga_beli += parseFloat($('.harga_beli').eq(i).val())));
+            $('#total_dollar').text(rubah(total_dollar += parseFloat($('.usd').eq(i).val())));
+            $('#total_rupiah').val(total_rupiah += parseFloat($('.rupiah').eq(i).val()));
+            $('#total_fiskal').val(total_fiskal += parseFloat($('.subtotal').eq(i).val()));
+            $('#total_nofiskal').val(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val()));
+            
+            $('#total_rupiah_rubah').val(rubah(total_rupiah += parseFloat($('.rupiah').eq(i).val())));
+            $('#total_fiskal_rubah').val(rubah(total_fiskal += parseFloat($('.subtotal').eq(i).val())));
+            $('#total_nofiskal_rubah').val(rubah(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val())));
+            if(ppn_cek=="yes"){
+                $('#total_ppn').val(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val()));
+                $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
+            }
+            
         }
-        
-        
     });
     
     function formatCurrency(c){
@@ -556,7 +420,8 @@
     }
     
     function rubah(angka){
-       var reverse = angka.toString().split('').reverse().join(''),
+        koma=angka.toFixed(2);
+       var reverse = koma.toString().split('').reverse().join(''),
        ribuan = reverse.match(/\d{1,3}/g);
        ribuan = ribuan.join('.').split('').reverse().join('');
        return ribuan;

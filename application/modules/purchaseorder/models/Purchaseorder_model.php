@@ -91,15 +91,15 @@ class Purchaseorder_model extends BF_Model
     }
 
     function generate_nopo($kdcab){
-        $query = "SELECT cabang.no_po 
-                  FROM 
-                  cabang WHERE cabang.kdcab='$kdcab'"; 
+        $query = "SELECT cabang.no_po
+                  FROM
+                  cabang WHERE cabang.kdcab='$kdcab'";
         $q = $this->db->query($query);
         $r = $q->row();
-        $kode = (int)$r->no_po+1; 
+        $kode = (int)$r->no_po+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
         $bln_now = date('m');

@@ -66,14 +66,14 @@ class Receiving_model extends BF_Model
 
     function generate_noreceive($kdcab){
         $query = "SELECT cabang.no_receive
-                  FROM 
-                  cabang WHERE cabang.kdcab='$kdcab'"; 
+                  FROM
+                  cabang WHERE cabang.kdcab='$kdcab'";
         $q = $this->db->query($query);
         $r = $q->row();
-        $kode = (int)$r->no_receive+1; 
+        $kode = (int)$r->no_receive+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
         $bln_now = date('m');
@@ -103,24 +103,24 @@ class Receiving_model extends BF_Model
         $query=$this->db->get($tabel);
         return $query->result();
     }
-    
+
     public function update_po_status($no_po, $status)
     {
         $this->db->where('no_po', $no_po);
         return $this->db->update('trans_po_header', array('status' => $status));
     }
-    
+
     public function update_po_detail($id, $data)
     {
         $this->db->where('id_detail_po', $id);
         return $this->db->update('trans_po_detail', $data);
     }
-    
+
     public function insert_receive_detail_koli($data)
     {
         return $this->db->insert('receive_detail_koli', $data);
     }
-    
+
     public function insert_receive_detail_barang($data)
     {
         return $this->db->insert('receive_detail_barang', $data);

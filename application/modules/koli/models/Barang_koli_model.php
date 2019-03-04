@@ -74,66 +74,12 @@ class Barang_koli_model extends BF_Model
       return $koli_barang;
     }
 
-    function get_id_anak($kode){
-      if ($kode == 'model') {
-        $query = $this->db->query("SELECT MAX(id_koli_model) as max_id FROM barang_koli_model");
-        $inisial = 'M';
-      }elseif ($kode == 'warna') {
-        $query = $this->db->query("SELECT MAX(id_koli_warna) as max_id FROM barang_koli_warna");
-        $inisial = 'W';
-      }else {
-        $query = $this->db->query("SELECT MAX(id_koli_varian) as max_id FROM barang_koli_varian");
-        $inisial = 'V';
-      }
-        $row = $query->row_array();
-        $max_id = $row['max_id'];
-        $max_id1 =(int) substr($max_id,1,3);
-        $counter = $max_id1 +1;
-        $idanak = $inisial.str_pad($counter, 3, "0", STR_PAD_LEFT);
-        return $idanak;
-    }
-
-    function get_data_anak($kode,$act){
-      if ($kode == 'model') {
-        return $query = $this->db->query("SELECT id_koli_model as id, koli_model as nama_koli FROM barang_koli_model WHERE id_koli_model = '$act'");
-      }elseif ($kode == 'warna') {
-        return $query = $this->db->query("SELECT id_koli_warna as id, koli_warna as nama_koli FROM barang_koli_warna WHERE id_koli_warna = '$act'");
-      }else {
-        return $query = $this->db->query("SELECT id_koli_varian as id, koli_varian as nama_koli FROM barang_koli_varian WHERE id_koli_varian = '$act'");
-      }
-
-    }
-
     public function pilih_koli(){
         $query="SELECT
                 barang_koli.id_koli,
                 barang_koli.nm_koli
                 FROM
                 barang_koli where sts_aktif='aktif'";
-        return $this->db->query($query);
-    }
-
-    public function koli_model(){
-        $query="SELECT
-                *
-                FROM
-                barang_koli_model where sts_aktif='aktif'";
-        return $this->db->query($query);
-    }
-
-    public function koli_warna(){
-        $query="SELECT
-                *
-                FROM
-                barang_koli_warna where sts_aktif='aktif'";
-        return $this->db->query($query);
-    }
-
-    public function koli_varian(){
-        $query="SELECT
-                *
-                FROM
-                barang_koli_varian where sts_aktif='aktif'";
         return $this->db->query($query);
     }
 

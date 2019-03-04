@@ -107,9 +107,14 @@ class Purchaseorder_pusat extends Admin_Controller
 
         for ($i = 0; $i < $jumlah; ++$i) {
             ++$no;
+            if ($this->input->post('kurs_usd') == 0) {
+                $hrg_satuan = $_POST['usd'][$i];
+            } else {
+                $hrg_satuan = $_POST['harga_satuan'][$i];
+            }
             $detil = array(
                         'qty_acc' => $_POST['qty_acc'][$i],
-                        'harga_satuan' => $_POST['harga_satuan'][$i],
+                        'harga_satuan' => $hrg_satuan,
                         'persen_fiskal' => $_POST['fiskal'][$i],
                         'fiskal' => $_POST['subtotal'][$i],
                         'non_fiskal' => $_POST['subtotal_no'][$i],

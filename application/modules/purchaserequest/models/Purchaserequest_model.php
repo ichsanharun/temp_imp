@@ -117,7 +117,7 @@ class Purchaserequest_model extends BF_Model
         $kode = (int)$r->no_pr+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
         $bln_now = date('m');
@@ -194,12 +194,12 @@ class Purchaserequest_model extends BF_Model
       $r = $this->db->query($q);
       return $r->result();
     }
-    
+
     function fetch_data_pr($like_value = NULL, $column_order = NULL, $column_dir = NULL, $limit_start = NULL, $limit_length = NULL)
     {
         $sql = "
-            SELECT 
-                (@row:=@row+1) AS nomor, 
+            SELECT
+                (@row:=@row+1) AS nomor,
                  a.no_pr,
                  a.tgl_pr,
                  a.kdcab,
@@ -207,62 +207,62 @@ class Purchaserequest_model extends BF_Model
                  a.plan_delivery_date,
                  a.id_supplier,
                  a.nm_supplier
-            FROM 
+            FROM
                 trans_pr_header as a
                 LEFT JOIN cabang b ON a.kdcab=b.kdcab,
-                (SELECT @row := 0) r 
-            WHERE 
-                1=1 
+                (SELECT @row := 0) r
+            WHERE
+                1=1
         ";
-        
+
         $data['totalData'] = $this->db->query($sql)->num_rows();
-        
+
         if( ! empty($like_value))
         {
-            $sql .= " AND ( ";    
+            $sql .= " AND ( ";
             $sql .= "
-                b.namacabang LIKE '%".$this->db->escape_like_str($like_value)."%' 
+                b.namacabang LIKE '%".$this->db->escape_like_str($like_value)."%'
                 OR a.nm_supplier LIKE '%".$this->db->escape_like_str($like_value)."%'
             ";
             $sql .= " ) ";
         }
-        
+
         $data['totalFiltered']  = $this->db->query($sql)->num_rows();
-        
-        $columns_order_by = array( 
+
+        $columns_order_by = array(
             0 => 'nomor'
         );
-        
+
         $sql .= " ORDER BY ".$columns_order_by[$column_order]." ".$column_dir.", nomor ";
         $sql .= " LIMIT ".$limit_start." ,".$limit_length." ";
-        
+
         $data['query'] = $this->db->query($sql);
         return $data;
     }
-    
+
     public function insert_trans_pr_tambahan($data)
     {
         return $this->db->insert('trans_pr_tambahan', $data);
     }
-    
+
     public function update_pr_header($id, $data)
     {
         $this->db->where('no_pr', $id);
         return $this->db->update('trans_pr_header', $data);
     }
-    
+
     public function delete_pr_detail($id)
     {
         $this->db->where('no_pr', $id);
         return $this->db->delete('trans_pr_detail');
     }
-    
+
     public function delete_pr_tambahan($id)
     {
         $this->db->where('no_pr', $id);
         return $this->db->delete('trans_pr_tambahan');
     }
-    
+
     public function delete_pr_header($id)
     {
         $this->db->where('no_pr', $id);

@@ -27,43 +27,40 @@
                 $query = $this->db->query("SELECT * FROM `trans_po_payment` as a, trans_po_header as b WHERE a.id='$id' AND a.no_po=b.no_po  ");
 
                 $row = $query->row();
-                
+
                 $querycek = $this->db->query("SELECT * FROM `trans_po_payment` WHERE no_po='$row->no_po'  ORDER BY `trans_po_payment`.`perkiraan_bayar`  ASC ");
                 if ($querycek->num_rows() > 1) {
                     $row_c = $querycek->row();
-                    if ($id==$row_c->id) {
+                    if ($id == $row_c->id) {
                         ?>
                         <input type="hidden" name="keterangan" value="Uang Muka" />
                         <?php
                     } else {
                         $querycek_re = $this->db->query("SELECT * FROM `trans_receive` WHERE po_no='$row->no_po'");
                         if ($querycek->num_rows() > 0) {
-                             ?>
+                            ?>
                                 <input type="hidden" name="keterangan" value="Hutang" />
                             <?php
-                        }else {
+                        } else {
                             ?>
                                 <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
                             <?php
                         }
-                       
                     }
-                    
-                    
                 } else {
                     ?>
                     <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
                     <?php
                 }
-                
+
                 ?>
-                <input type="hidden" name="id" value="<?= $id ?>" />
-                <input type="hidden" name="no_po" value="<?= $row->no_po ?>" />
+                <input type="hidden" name="id" value="<?= $id; ?>" />
+                <input type="hidden" name="no_po" value="<?= $row->no_po; ?>" />
                 <div class="form-group "> 
                     <label for="name_cbm" class="col-sm-2 control-label">KD Supplier<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control"  name="id_supplier" readonly="" value="<?= $row->id_supplier ?>"  >
+                        <input type="text" class="form-control"  name="id_supplier" readonly="" value="<?= $row->id_supplier; ?>"  >
                         </div>
                     </div>                                   
                 </div>
@@ -71,7 +68,7 @@
                     <label for="name_cbm" class="col-sm-2 control-label">Supplier<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control"  name="supplier" readonly="" value="<?= $row->nm_supplier ?>"  >
+                        <input type="text" class="form-control"  name="supplier" readonly="" value="<?= $row->nm_supplier; ?>"  >
                         </div>
                     </div>                                   
                 </div>
@@ -79,7 +76,7 @@
                     <label for="name_cbm" class="col-sm-2 control-label">No. Invoice<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control"  name="no_invoice" readonly="" value="<?= @get_invoice($row->no_po);  ?>"  >
+                        <input type="text" class="form-control"  name="no_invoice" readonly="" value="<?= @get_invoice($row->no_po); ?>"  >
                         </div>
                     </div>                                   
                 </div>
@@ -103,32 +100,24 @@
                         </div>
                     </div>                                   
                 </div>
-                <div class="form-group ">
-                    <?php $tgldosupp=date('Y-m-d')?>
-                    <label for="tgldosupp" class="col-sm-2 control-label">Tanggal :</label>
-                    <div class="col-sm-5">
-                        <div class="input-group">
-                            <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                            <input type="text" name="tgl_bayar" id="tgl_bayar" class="form-control datepicker" value="<?php echo $tgldosupp?>">
-                        </div>
-                    </div>
-                </div>
-                <script>
-                    $(document).ready(function(){
-                        $("#tgl_bayar").change(function (){
-                            var url = "<?php echo site_url('hutang/add_ajax_prodi');?>/"+$(this).val();
-                            $('#prodi').load(url);
-                            return false;
-                        })
-                    });
-                </script>
                 <div id="pilih_bank" class="form-group " style="display: none"> 
                     <label for="name_cbm" class="col-sm-2 control-label">Pilih Bank<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                            <select class="form-control" name="no_perkiraan" id="prodi">
-                                <option value=''>Pilih Bank</option>
-                            </select>
+                            <select class="form-control" name="no_perkiraan">
+                                <?php
+                                $bln = date('n');
+                                $thn = date('Y');
+                                $session = $this->session->userdata('app_session');
+                                $kdcab = $session['kdcab'];
+                                $query = $this->db->query("SELECT * FROM `coa` WHERE `kdcab` LIKE '%$kdcab-A%' AND `level` LIKE '%5%' AND `no_perkiraan` LIKE '%1102%' AND `bln` LIKE '%$bln%' AND `thn` LIKE '%$thn%' ");
+
+                                foreach ($query->result() as $row) {
+                                    ?>
+                                <option value="<?= $row->no_perkiraan; ?>"><?= $row->nama; ?></option>
+                                <?php
+                                } ?>
+                              </select>
                         </div>
                     </div>                                   
                 </div>
@@ -150,7 +139,7 @@
                 </div>
 
                 </div>
-            <?= form_close() ?>
+            <?= form_close(); ?>
             </div>
         <!-- Biodata Mitra -->
         <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
@@ -220,13 +209,4 @@
         
         
     }
-</script>
-<script>
-    $(document).ready(function(){
-        $(".datepicker").datepicker({
-            format : "yyyy-mm-dd",
-            showInputs: true,
-            autoclose:true
-        });
-    });
 </script>

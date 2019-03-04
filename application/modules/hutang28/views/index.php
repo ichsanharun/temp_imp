@@ -23,23 +23,21 @@
             <?php if ($results->num_rows() !== 0) {
     $num = 1;
     foreach ($results->result() as $row) :
-                $dolar = $row->rupiah_total / $row->rupiah;
-    $peresen_dolar = $row->persen * $dolar / 100;
-    $persen_rupiah = $row->persen * $row->rupiah_total / 100; ?>
-                
+                    if (!empty(@get_invoice($row->no_po))) {
+                        ?>
                 <tr>
-                    <td><?= $num; ?> </td>
+                    <td><?= $num; ?></td>
                     <td><?= $row->no_po; ?></td>
                     <td><?= @get_invoice($row->no_po); ?></td>
                     <td><?= $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
-                    <td style="text-align: right">$ <?= number_format($peresen_dolar, 2, ',', '.'); ?></td>
-                    <td style="text-align: right">Rp. <?= number_format($persen_rupiah, 2, ',', '.'); ?></td>
+                    <td style="text-align: right">$ <?= number_format($row->dollar, 2, ',', '.'); ?></td>
+                    <td style="text-align: right">Rp. <?= number_format($row->hutang, 2, ',', '.'); ?></td>
                     <td><center><?php echo date('d/m/Y', strtotime($row->perkiraan_bayar)); ?></center></td>
                     <td style="text-align: center">
                         <?php
-                        if ($row->st == 'open') {
+                        if ($row->status == 'open') {
                             ?>
-                            <a class="text-green" href="<?= base_url("hutang/bayar_form/$row->idsss"); ?>" >Bayar</a>
+                            <a class="text-green" href="<?= base_url("hutang/bayar_form/$row->id"); ?>" >Bayar</a>
                             <?php
                         } else {
                             echo 'close';
@@ -47,9 +45,8 @@
                         
                     </td>
                 </tr>
-            <?php 
-            ++$num;
-
+            <?php ++$num;
+                    }
     endforeach;
 } ?>
         </tbody>
@@ -62,7 +59,7 @@
 
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
-<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js'); ?>"></script>
+<script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js');?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">

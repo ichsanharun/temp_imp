@@ -107,6 +107,15 @@ class Invoice extends Admin_Controller {
         echo json_encode($customer);
     }
 
+	function jatuhtempo(){
+	$tglnow   = $_GET['idcus'];
+    $jangka_waktu = strtotime('+45 days', strtotime($tglnow));// jangka waktu + 365 hari
+	$jthtempo=date("Y-m-d",$jangka_waktu);//tanggal expired
+
+	 $expired[tgl]  = $jthtempo;
+     echo json_encode($expired);
+    }
+
     function saveheaderinvoice(){
 		if($this->input->post()){
 			$nd       		  	= $this->input->post('nd');
@@ -231,8 +240,8 @@ class Invoice extends Admin_Controller {
   					'piutang'			        => $this->input->post('hargajualtotal'),
   					'hargalandedtotal'     		=> $Total_landed,
   				);
-				
-				
+
+
 				## ACCOUNT RECEIVABLE ##
 				$Total_Inv				= $this->input->post('hargajualtotal');
 				$Bulan_Sekarang			= date('n');
@@ -242,11 +251,11 @@ class Invoice extends Admin_Controller {
 					$Beda_Bulan			= 0;
 				}
 				$dataAR					= array();
-				$intL					= 0;
-				$Saldo_Awal				= 0;
+				$intL				   	= 0;
+				$Saldo_Awal			= 0;
 				$Kredit					= 0;
 				$Debet					= $Total_Inv;
-				$Saldo_Akhir			= $Total_Inv;
+				$Saldo_Akhir		= $Total_Inv;
 				for($x=0;$x<=$Beda_Bulan;$x++){
 					$intL++;
 					$Bulan_Proses		= date('n',mktime(0,0,0,$Bulan_Invoice + $x,1,$Tahun_Invoice));
@@ -258,42 +267,42 @@ class Invoice extends Admin_Controller {
 					$dataAR[$x] 	= array(
 						'no_invoice' 		=> $no_invoice,
 						'tgl_invoice'		=> $Tgl_Invoice,
-						'customer_code'		=> $this->input->post('id_customer'),
+						'customer_code'	=> $this->input->post('id_customer'),
 						'customer' 			=> $this->input->post('nm_customer'),
-						'bln'				=> $Bulan_Proses,
-						'thn'				=> $Tahun_Invoice,
+						'bln'				    => $Bulan_Proses,
+						'thn'				    => $Tahun_Invoice,
 						'saldo_awal' 		=> $Saldo_Awal, //nilai invoice
-						'debet'				=> $Debet,
-						'kredit'			=> $Kredit,
+						'debet'				  => $Debet,
+						'kredit'			  => $Kredit,
 						'saldo_akhir'		=> $Saldo_Akhir, //nilai invoice
-						'kdcab'				=> $session['kdcab']
-  					);					
+						'kdcab'				  => $session['kdcab']
+  					);
 				}
-				
-				
-				
+
+
+
 				## NOMOR JV ##
 				$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Sales($session['kdcab'],$Tgl_Invoice);
-				
+
 				$Total_DPP				= $Total_Inv;
-				$Keterangan_INV			= 'PENJUALAN A/N '.$this->input->post('nm_customer').' INV NO. '.$no_invoice;
-				$COA_Sales				= '4102-01-01';
+				$Keterangan_INV		= 'PENJUALAN A/N '.$this->input->post('nm_customer').' INV NO. '.$no_invoice;
+				$COA_Sales				= '4201-01-01';
 				$dataJVhead = array(
   					'nomor' 	    	=> $Nomor_JV,
   					'tgl'	         	=> $this->input->post('tanggal_invoice'),
-  					'jml'	          	=> $Total_Inv,
+  					'jml'	          => $Total_Inv,
   					'koreksi_no'		=> '',
-  					'kdcab'				=> $session['kdcab'],
+  					'kdcab'				  => $session['kdcab'],
   					'jenis'			    => 'V',
   					'keterangan' 		=> $Keterangan_INV,
-					'bulan'				=> $Bulan_Invoice,
-  					'tahun'				=> $Tahun_Invoice,
-  					'user_id'			=> $session['id_user'],
+					'bulan'				    => $Bulan_Invoice,
+  					'tahun'				  => $Tahun_Invoice,
+  					'user_id'			  => $session['id_user'],
   					'memo'			    => '',
-  					'tgl_jvkoreksi'		=> $Tgl_Invoice,
+  					'tgl_jvkoreksi'	=> $Tgl_Invoice,
   					'ho_valid'			=> ''
   				);
-				
+
 				$det_Jurnal				= array();
 				$det_Jurnal[]			= array(
 					  'nomor'         => $Nomor_JV,
@@ -304,7 +313,7 @@ class Invoice extends Admin_Controller {
 					  'no_reff'       => $no_invoice,
 					  'debet'         => $Total_Inv,
 					  'kredit'        => 0
-				
+
 				);
 				if($this->input->post('n_ppn') > 0){
 					$Total_DPP				= $Total_Inv - $this->input->post('n_ppn');
@@ -318,10 +327,10 @@ class Invoice extends Admin_Controller {
 						  'no_reff'       => $no_invoice,
 						  'debet'         => 0,
 						  'kredit'        => $this->input->post('n_ppn')
-					
+
 					);
 				}
-				$det_Jurnal[]			= array(
+				$det_Jurnal[]			  = array(
 					  'nomor'         => $Nomor_JV,
 					  'tanggal'       => $Tgl_Invoice,
 					  'tipe'          => 'JV',
@@ -330,11 +339,11 @@ class Invoice extends Admin_Controller {
 					  'no_reff'       => $no_invoice,
 					  'debet'         => 0,
 					  'kredit'        => $Total_DPP
-				
+
 				);
-				
+
 				/*
-				
+
 				if($this->input->post('n_ppn') == 0){
 					$datajurnal_2 = array(
 					  'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
@@ -385,15 +394,15 @@ class Invoice extends Admin_Controller {
   				}
   				$this->db->insert_batch('trans_invoice_detail',$Arr_detail);
   				$this->db->insert('trans_invoice_header',$headerinv);
-  				
+
 
 				## INSERT JURNAL ##
 				$this->db->insert('javh',$dataJVhead);
 				$this->db->insert_batch('jurnal',$det_Jurnal);
-				
+
 				## INSERT ACCOUNT RECEIVABLE  ##
 				$this->db->insert_batch('ar',$dataAR);
-          
+
 				$Qry_Update_Cabang_acc	 = "UPDATE pastibisa_tb_cabang SET noJS=noJS + 1 WHERE nocab='".$session['kdcab']."'";
 				$this->db->query($Qry_Update_Cabang_acc);
 
@@ -603,7 +612,7 @@ class Invoice extends Admin_Controller {
 			 $session 		= $this->session->userdata('app_session');
 			 $Faktur		= $this->input->post('faktur_pajak');
 			 $Arr_Faktur	= array();
-			
+
 			$detail_INV 	= $this->Invoice_model->find_data('trans_invoice_header',$No_Inv,'no_invoice');
 			$Custid			= $detail_INV->id_customer;
 			$Custname		= $detail_INV->nm_customer;
@@ -614,8 +623,8 @@ class Invoice extends Admin_Controller {
 			$Bulan_Sekarang	= date('n');
 			$Tahun_Sekarang	= date('Y');
 			$Periode_Sekarang= date('Ym');
-			
-			$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($detail_INV->kdcab,date('Y-m-d'));				
+
+			$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($detail_INV->kdcab,date('Y-m-d'));
 			$Total_DPP				= $Harga_Total;
 			$Keterangan_INV			= 'PEMBT. PENJUALAN A/N '.$Custname.' INV NO. '.$No_Inv;
 			$COA_Sales				= '4102-01-01';
@@ -634,7 +643,7 @@ class Invoice extends Admin_Controller {
 				'tgl_jvkoreksi'		=> date('Y-m-d'),
 				'ho_valid'			=> ''
 			);
-			
+
 			$det_Jurnal				= array();
 			$det_Jurnal[]			= array(
 				  'nomor'         => $Nomor_JV,
@@ -645,7 +654,7 @@ class Invoice extends Admin_Controller {
 				  'no_reff'       => $No_Inv,
 				  'debet'         => 0,
 				  'kredit'        => $Harga_Total
-			
+
 			);
 			if($Inv_PPN > 0){
 				$Total_DPP				= $Harga_Total - $Inv_PPN;
@@ -659,7 +668,7 @@ class Invoice extends Admin_Controller {
 					  'no_reff'       => $No_Inv,
 					  'debet'         => $Inv_PPN,
 					  'kredit'        => 0
-				
+
 				);
 			}
 			$det_Jurnal[]			= array(
@@ -671,12 +680,12 @@ class Invoice extends Admin_Controller {
 				  'no_reff'       => $No_Inv,
 				  'debet'         => $Total_DPP,
 				  'kredit'        => 0
-			
+
 			);
-			
-			
-			
-			
+
+
+
+
 			 $Cek_Faktur	= $this->db->query("SELECT * FROM faktur_detail WHERE noinvoice='".$No_Inv."'")->num_rows();
 			 $Upd_Invoice	= array(
 				'hargajualbefdis'	=> 0,
@@ -723,15 +732,15 @@ class Invoice extends Admin_Controller {
 			}
 			//update Delivery
 			$this->db->update('trans_do_header',$Upd_Delivery,array('no_invoice'=>$No_Inv));
-			
+
 			## UPDATE AR ##
-			if($Periode_Invoice==$Periode_Sekarang){				
-				$this->db->update('ar',$Upd_Ar,array('no_invoice'=>$No_Inv)); 
+			if($Periode_Invoice==$Periode_Sekarang){
+				$this->db->update('ar',$Upd_Ar,array('no_invoice'=>$No_Inv));
 			}else{
 				$Qry_AR			= "UPDATE ar SET kredit=kredit + ".$Harga_Total.", saldo_akhir = saldo_akhir - ".$Harga_Total." WHERE no_invoice='$No_Inv' AND bln='$Bulan_Sekarang' AND thn='$Tahun_Sekarang'";
-				$this->db->query($Qry_AR); 
+				$this->db->query($Qry_AR);
 			}
-			
+
 
 			// Update Detail
 			$this->db->update('trans_invoice_detail',$Upd_Detail,array('no_invoice'=>$No_Inv));
@@ -742,8 +751,8 @@ class Invoice extends Admin_Controller {
 			## INSERT JURNAL ##
 			$this->db->insert('javh',$dataJVhead);
 			$this->db->insert_batch('jurnal',$det_Jurnal);
-				
-				
+
+
 			if($this->db->trans_status() === FALSE){
 				 $this->db->trans_rollback();
 				 $Arr_Return		= array(

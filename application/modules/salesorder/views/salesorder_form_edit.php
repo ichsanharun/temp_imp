@@ -541,6 +541,7 @@
 	var base_url			= '<?php echo base_url(); ?>';
 	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
     $(document).ready(function() {
+      $('.radio_disso_rp').hide();
         $('#salesorderitemnya').DataTable({
             "sDom": 'Bfrtip',
             "responsive": true,

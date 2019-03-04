@@ -86,9 +86,10 @@ $row = $query->row();
             <p style="font-size: 9px">
                 P.O#    &nbsp;&nbsp;&nbsp;&nbsp;: <?= @$po_data->no_po?><br />
                 DATE    &nbsp;&nbsp;&nbsp;: <?php echo date('d-M-Y',strtotime(@$po_data->tgl_po))?><br />
-                REF TO  :  <?= @$po_data->ref_to?><br />
+                REF TO  :  <?= @$po_data->no_pi?><br />
                 <br />
                 DELIVER TO <br />
+                SHIP TO :  <?= @$po_data->ref_to?>
                 IMPORTA JAYA ABADI, PERGUDANGAN TANRISE SQOUTH GATE BLOK A-33 JL. NANGKA KELURAHAN SRUNI KECAMATAN
                 GEDANGAN KABUPATEN SIDOARJO, JAWA TIMUR <br />
                 NO TELP / FAX  : +621-7329837<br />
@@ -205,7 +206,7 @@ $row = $query->row();
         <td></td>
     </tr>
     <?php
-    $query_cbm = $this->db->query("SELECT * FROM `supplier_cbm` WHERE id_supplier='$po_data->id_supplier' AND id_cbm='$po_data->id_cbm'");
+    $query_cbm = $this->db->query("SELECT * FROM `supplier_cbm` as a, cbm as b WHERE a.id_supplier='$po_data->id_supplier' AND a.id_cbm='$po_data->id_cbm' AND a.id_cbm=b.id_cbm");
     $row_cbm = $query_cbm->row();
     ?>
     <tr>
@@ -214,10 +215,9 @@ $row = $query->row();
             1. Send the Sales contract after receiving Purchase Order. <br />
             2. Shipper should grant 14 days free time of detention at destination. <br />
             3. Demurage and storage cost caused by late receiving original documents will be backcharged to the shipper. <br />
-            4. Maximun CBM is <?= $row_cbm->cbm ?> CBM / per container. <br />
-            5. Maximun Tonnase is  <?= $row_cbm->kgs ?> Tons / per container. <br>
-            6. The Seller shall be liable for any damage of the commodity due to improper packing and for any rust attributable to inadequate protective measures in regard to the packing. 
-            One full set of service and operation manual shall be enclosed in each case. 
+            4. Max capacity is <?= $row_cbm->cbm ?> CBM per shipping <?= $row_cbm->name_cbm ?>. <br />
+            5. Max weight is  <?= $row_cbm->kgs ?> Tons per shipping <?= $row_cbm->name_cbm ?>. <br>
+            6. The supplied materials must be guaranteed against bad workmanship detective materials, incorrectness of the parts, improper packing and unsatisfactory service. 
         </td>
         <td></td>
     </tr>
@@ -227,21 +227,25 @@ $row = $query->row();
     <tr>
         <td width="70%">
             <b>
-                ISSUED BY <br />
+                Seller <br />
                 <br />
                 <br />
                 <br />
-                PURCHASING DEPT
+                <b style="text-decoration: overline">
+                <?= @$row->nm_supplier ?>
+                </b>
             </b>
         </td>
         <td width="30%">
             <b>
-                APPROVED BY <br />
+                Buyer <br />
                 <br />
                 <br />
                 <br />
-                <u>Nizar Bawazier</u><br />
-                DIRECTOR
+                <b style="text-decoration: overline">
+                    PT. IMPORTA JAYA ABADI
+                </b>
+                
             </b>
         </td>
     </tr>
