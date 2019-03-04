@@ -288,7 +288,7 @@
                       </div><!-- /btn-group -->
                       <input type="text" class="form-control form_item_so" aria-label="" name="disso" id="disso" class="input-sm" value="0">
                     </div><!-- /input-group -->
-                    <div class="radio_disso_rp">
+                    <div class="radio_disso_rp" style="display:none">
                       <div class="radio-inline">
                         <label>
                           <input type="radio" value="tambah" name="radio_disso_rp">(+)
