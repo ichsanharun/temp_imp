@@ -42,7 +42,7 @@
                                 : <?= $rowc->alamat; ?>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Freight Condition</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
@@ -55,7 +55,7 @@
                                  </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="col-sm-4 control-label">Payment Term</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
@@ -108,11 +108,11 @@
                                 <select id="ppnD">
                                     <option value='yes' selected>Yes</option>
                                     <option value='no'>No</option>
-                                    
+
                                  </select>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="col-sm-4 control-label">REF TO</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
@@ -128,17 +128,23 @@
                                 <textarea class="form-control" rows="3" name="lead" ></textarea>
                             </div>
                         </div>
-						
-						 
-                        
+                        <div class="form-group">
+                            <label class="col-sm-4 control-label">Shipping</label>
+                            <div class="col-sm-8" style="padding-top: 11px;">
+                                <input type="text" name="shipping"  class="form-control input-sm" value="" required="" onkeyup="this.value = this.value.match(/^[0-9]+$/)">
+                            </div>
+                        </div>
+
+
+
                     </div>
-                    
+
                 </div>
                 </div>
                    <input id="cbm_tot" type="hidden" name="cbm_tot" value="<?= $pr_hader->total_cbm; ?>">
                     <input id="no_pr" type="hidden" name="no_pr" value="<?= $no_pr; ?>"/>
                     <input id="supplier" type="hidden" name="idsupplier" value="<?= $supplier; ?>"/>
-                
+
             </div>
         </div>
     </div>
@@ -233,7 +239,7 @@
                 </tr>
             </tbody>
         </table>
-        
+
      </form>
       <form id="form-payment" method="post">
         <div class="row">
@@ -242,8 +248,8 @@
              <div class="col-sm-8">
                 <b>Trem of payment</b>
                 <div class="input_fields_wrap">
-                    
-                    
+
+
                     <div class="row">
                         <div class="col-xs-1">
                           NO
@@ -275,16 +281,16 @@
                 </div>
              </div>
              <div class="col-sm-3">
-             
+
              </div>
          </div>
-           
+
          </form>
      </div>
-     
-     
+
+
      <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-            
+
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -301,10 +307,10 @@
 </div>
 
 <script>
-    
+
 
     function saveheaderpr(){
-            
+
                 var formdata = $("#form-header-pr, #form-payment").serialize();
                // console.log(formdata);
                 $.ajax({
@@ -340,29 +346,37 @@
                         alert(" Can't do because: " + error);
                     }
                 });
-          
-        
-        
+
+
+
+    }
+
+    function filterAngka(a){
+        if(!a.match(/^[0-9]+$/)){
+            return 0;
+        }else{
+            return 1;
+        }
     }
 </script>
 <script>
     $(document).ready(function() {
-        
-        
-        
-                
+
+
+
+
         var max_fields      = 10; //maximum input boxes allowed
         var wrapper         = $(".input_fields_wrap"); //Fields wrapper
         var add_button      = $(".add_field_button"); //Add button ID
-        
+
         var x = 1; //initlal text box count
         $(add_button).click(function(e){ //on add input button click
             e.preventDefault();
             if(x < max_fields){ //max input box allowed
                 x++; //text box increment
-                
-                
-                
+
+
+
                 $(wrapper).append('<div class="row">'+
                                         '<div class="col-xs-1">'+x+'</div>'+
                                         '<div class="col-xs-3">'+
@@ -377,18 +391,18 @@
                 });
             }
         });
-        
+
         $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
             e.preventDefault(); $(this).parent('div').remove(); x--;
         })
-        
-        
+
+
     });
 </script>
 
 <script>
     $("#kurs_rp, #kurs_usd").on("change paste keyup", function() {
-        cek=document.getElementById('kurs_usd').value; 
+        cek=document.getElementById('kurs_usd').value;
         if(cek=="0"){
              $(".usd_rubah").attr("readonly", false);
              $(".harga_beli").attr("readonly", true);
@@ -397,7 +411,7 @@
              $(".usd_rubah").attr("readonly", true);
         }
     });
-    
+
     function findall() {
           var array = document.getElementsByName('harga_satuan');
           var total = 0;
@@ -425,9 +439,9 @@
         ppn_cek=document.getElementById('ppnD').value;
         usdK=parseFloat(document.getElementById('kurs_usd').value);
         rpK=parseFloat(document.getElementById('kurs_rp').value);
-        cek=document.getElementById('kurs_usd').value; 
+        cek=document.getElementById('kurs_usd').value;
         if(cek=="0"){
-           
+
                 for (var i = 0; i < jum; i++) {
                     confirm = parseInt($('.qtyconfirm').eq(i).val());
                     harga_beli = parseFloat($('.usd_rubah').eq(i).val());
@@ -440,20 +454,20 @@
                     $('.rupiah').eq(i).val(rupiah_s);
                     $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
                     $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
-                    
+
                     $('.rupiah_rubah').eq(i).val(rubah(rupiah_s));
                     $('.subtotal_rubah').eq(i).val(rubah(rupiah_s*fiskal/100));
                     $('.subtotal_no_rubah').eq(i).val(rubah(rupiah_s*noFiskal/100));
-                    
+
                     if(ppn_cek=="yes"){
                         fiskalSubtotal = parseFloat($('.subtotal').eq(i).val());
                         $('.subtotal_ppn').eq(i).val((fiskalSubtotal*10)/100);
                         $('.subtotal_ppn_rubah').eq(i).val(rubah((fiskalSubtotal*10)/100));
                     }
-                    
+
                     $('#total_qty').text(rubah(total_qty += parseInt($('.qtyconfirm').eq(i).val())));
                     $('#total_harga_beli').text(rubah(total_harga_beli += parseFloat($('.harga_beli').eq(i).val())));
-                    
+
                     nomerzz=parseFloat(i)+1;
                     total_dollar += parseFloat(document.getElementById("usd_rubah_"+nomerzz).value);
                     total_rupiah += parseFloat(document.getElementById("rupiah_rubah_"+nomerzz).value);
@@ -463,7 +477,7 @@
                     //$('#total_rupiah').val(total_rupiah += parseFloat($('.rupiah').eq(i).val()));
                     //$('#total_fiskal').val(total_fiskal += parseFloat($('.subtotal').eq(i).val()));
                     //$('#total_nofiskal').val(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val()));
-                    
+
                     //$('#total_rupiah_rubah').val(rubah(total_rupiah += parseFloat($('.rupiah').eq(i).val())));
                     //$('#total_fiskal_rubah').val(rubah(total_fiskal += parseFloat($('.subtotal').eq(i).val())));
                     //$('#total_nofiskal_rubah').val(rubah(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val())));
@@ -471,16 +485,16 @@
                         $('#total_ppn').val(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val()));
                         $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
                     }
-                    
+
                     $('#total_dollar').text(rubah(total_dollar.toFixed(2)));
                     $('#total_rupiah').val(total_rupiah);
                     $('#total_fiskal').val(total_fiskal);
                     $('#total_nofiskal').val(total_nofiskal);
-                    
+
                     $('#total_rupiah_rubah').val(rubah(total_rupiah.toFixed(2)));
                     $('#total_fiskal_rubah').val(rubah(total_fiskal.toFixed(2)));
                     $('#total_nofiskal_rubah').val(rubah(total_nofiskal.toFixed(2)));
-                    
+
                 }
             }else{
                 for (var i = 0; i < jum; i++) {
@@ -494,8 +508,8 @@
                     $('.rupiah').eq(i).val(rupiah_s);
                     $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
                     $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
-                    
-                    
+
+
                     $('.usd_rubah').eq(i).val(rubah(usd_s.toFixed(2)));
                     $('.rupiah_rubah').eq(i).val(rubah(rupiah_s.toFixed(2)));
                     $('.subtotal_rubah').eq(i).val(rubah(rupiah_s.toFixed(2)*fiskal/100));
@@ -518,7 +532,7 @@
                     //$('#total_rupiah').val(total_rupiah += parseFloat($('.rupiah').eq(i).val()));
                     //$('#total_fiskal').val(total_fiskal += parseFloat($('.subtotal').eq(i).val()));
                     //$('#total_nofiskal').val(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val()));
-                    
+
                     //$('#total_rupiah_rubah').val(rubah(total_rupiah += parseFloat($('.rupiah').eq(i).val())));
                     //$('#total_fiskal_rubah').val(rubah(total_fiskal += parseFloat($('.subtotal').eq(i).val())));
                     //$('#total_nofiskal_rubah').val(rubah(total_nofiskal += parseFloat($('.subtotal_no').eq(i).val())));
@@ -526,23 +540,23 @@
                         $('#total_ppn').val(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val()));
                         $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
                     }
-                    
+
                 }
-                
+
                 $('#total_harga_beli').text(rubah(total_harga_beli.toFixed(2)));
                 $('#total_dollar').text(rubah(total_dollar.toFixed(2)));
                 $('#total_rupiah').val(total_rupiah);
                 $('#total_fiskal').val(total_fiskal);
                 $('#total_nofiskal').val(total_nofiskal);
-                
+
                 $('#total_rupiah_rubah').val(rubah(total_rupiah.toFixed(2)));
                 $('#total_fiskal_rubah').val(rubah(total_fiskal.toFixed(2)));
                 $('#total_nofiskal_rubah').val(rubah(total_nofiskal.toFixed(2)));
         }
-        
-        
+
+
     });
-    
+
     function formatCurrency(c){
       var   number_string = c.toString(),
         sisa    = number_string.length % 3,
@@ -554,14 +568,14 @@
         return rupiah += separator + ribuan.join(',');
       }
     }
-    
+
     function rubah(angka){
        var reverse = angka.toString().split('').reverse().join(''),
        ribuan = reverse.match(/\d{1,3}/g);
        ribuan = ribuan.join('.').split('').reverse().join('');
        return ribuan;
      }
-     
+
     function bersihPemisah(ini){
         a=ini.toString().replace(".","");
         return a;

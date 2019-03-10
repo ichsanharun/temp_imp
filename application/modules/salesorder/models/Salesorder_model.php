@@ -73,7 +73,7 @@ class Salesorder_model extends BF_Model
                 barang_stock.landed_cost,
                 barang_stock.kdcab
                 FROM
-                barang_stock WHERE kdcab='$kdcab'";
+                barang_stock WHERE kdcab='$kdcab' AND kategori = 'set'";
         return $this->db->query($query);
     }
 

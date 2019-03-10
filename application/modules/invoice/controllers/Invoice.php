@@ -453,6 +453,9 @@ class Invoice extends Admin_Controller {
         $show = $this->template->load_view('print_data_custom',$data);
 
         $tglprint = date("d-m-Y H:i:s");
+        $dt1 = new DateTime(@$inv_data->tanggal_invoice);
+        $dt2 = new DateTime(@$inv_data->tgljatuhtempo);
+        $telat = $dt1->diff($dt2);
         $header = '
         <div style="display: inline-block; position:relative;width:100%;display: none;">
           <div style="width:25%">
@@ -490,7 +493,7 @@ class Invoice extends Admin_Controller {
               <td width="5%">TOP</td>
 
               <td colspan="3">:
-                  45 HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime(@$inv_data->tgljatuhtempo)).'
+                  '.$telat->days.' HARI &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime(@$inv_data->tgljatuhtempo)).'
               </td>
               <td width="15%" colspan="3" style="font-size:9pt !important;">
                   '.@$inv_data->nm_customer.'
@@ -627,7 +630,7 @@ class Invoice extends Admin_Controller {
 			$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($detail_INV->kdcab,date('Y-m-d'));
 			$Total_DPP				= $Harga_Total;
 			$Keterangan_INV			= 'PEMBT. PENJUALAN A/N '.$Custname.' INV NO. '.$No_Inv;
-			$COA_Sales				= '4102-01-01';
+			$COA_Sales				= '4201-01-01';
 			$dataJVhead = array(
 				'nomor' 	    	=> $Nomor_JV,
 				'tgl'	         	=> date('Y-m-d'),

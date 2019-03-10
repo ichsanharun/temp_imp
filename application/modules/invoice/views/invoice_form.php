@@ -74,7 +74,8 @@
                             <div class="col-sm-8">
                               <div class="input-group">
                                 <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                <input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>">
+                                <!--input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="<?php echo $tglinv?>"-->
+                                <input type="text" name="tanggal_invoice" id="tgl_inv" class="form-control input-sm datepicker" value="">
                               </div>
                             </div>
                           </div>
@@ -104,7 +105,7 @@
                               <div class="input-group">
                               <span class="input-group-addon"><i class="fa fa-building"></i></span>
 
-                              <input type="text" name="npwp" class="form-control input-sm" id="npwp" value="<?php echo $records[0]['detail_data'][0]['top']; ?>" readonly>
+                              <input type="text" name="npwp" class="form-control input-sm" id="top" value="<?php echo $records[0]['detail_data'][0]['top']; ?>" readonly>
                               </div>
 
                             </div>
@@ -435,92 +436,105 @@
 
 		$('#proses_inv').click(function(e){
 			  e.preventDefault();
-			  swal({
-					  title: "Anda Yakin?",
-					  text: "You will not be able to process again this data!",
-					  type: "warning",
-					  showCancelButton: true,
-					  confirmButtonClass: "btn-danger",
-					  confirmButtonText: "Ya Lanjutkan",
-					  cancelButtonText: "Batal",
-					  closeOnConfirm: false,
-					  closeOnCancel: false,
-					  showLoaderOnConfirm: true
-					},
-					function(isConfirm) {
-					  if (isConfirm) {
+        if ($('#tgl_inv').val() == "") {
+          swal({
+            title	: "TANGGAL INVOICE TIDAK BOLEH KOSONG!",
+            text	: "ISI TANGGAL INVOICE!",
+            type	: "danger",
+            timer	: 10000,
+            showCancelButton	: false,
+            showConfirmButton	: false,
+            allowOutsideClick	: false
+          });
+        }else {
 
-							//var formData 	= $('#form_proses').serialize();
-							var formData 	=new FormData($('#form_proses')[0]);
-							//console.log(formData);return false;
-							var baseurl=base_url + active_controller +'/saveheaderinvoice';
-							//console.log(baseurl);return false;
-							$.ajax({
-								url			: baseurl,
-								type		: "POST",
-								data		: formData,
-								cache		: false,
-								dataType	: 'json',
-								processData	: false,
-								contentType	: false,
-								success		: function(data){
+          swal({
+            title: "Anda Yakin?",
+            text: "You will not be able to process again this data!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "Ya Lanjutkan",
+            cancelButtonText: "Batal",
+            closeOnConfirm: false,
+            closeOnCancel: false,
+            showLoaderOnConfirm: true
+          },
+          function(isConfirm) {
+            if (isConfirm) {
 
-									var kode_bast	= data.kode;
-									if(data.status == 1){
-										swal({
-											  title	: "Save Success!",
-											  text	: data.pesan,
-											  type	: "success",
-											  timer	: 15000,
-											  showCancelButton	: false,
-											  showConfirmButton	: false,
-											  allowOutsideClick	: false
-											});
-										window.location.href = base_url + active_controller;
-									}else{
+              //var formData 	= $('#form_proses').serialize();
+              var formData 	=new FormData($('#form_proses')[0]);
+              //console.log(formData);return false;
+              var baseurl=base_url + active_controller +'/saveheaderinvoice';
+              //console.log(baseurl);return false;
+              $.ajax({
+                url			: baseurl,
+                type		: "POST",
+                data		: formData,
+                cache		: false,
+                dataType	: 'json',
+                processData	: false,
+                contentType	: false,
+                success		: function(data){
 
-										if(data.status == 2){
-											swal({
-											  title	: "Save Failed!",
-											  text	: data.pesan,
-											  type	: "danger",
-											  timer	: 10000,
-											  showCancelButton	: false,
-											  showConfirmButton	: false,
-											  allowOutsideClick	: false
-											});
-										}else{
-											swal({
-											  title	: "Save Failed!",
-											  text	: data.pesan,
-											  type	: "warning",
-											  timer	: 10000,
-											  showCancelButton	: false,
-											  showConfirmButton	: false,
-											  allowOutsideClick	: false
-											});
-										}
+                  var kode_bast	= data.kode;
+                  if(data.status == 1){
+                    swal({
+                      title	: "Save Success!",
+                      text	: data.pesan,
+                      type	: "success",
+                      timer	: 15000,
+                      showCancelButton	: false,
+                      showConfirmButton	: false,
+                      allowOutsideClick	: false
+                    });
+                    window.location.href = base_url + active_controller;
+                  }else{
 
-									}
-								},
-								error: function() {
+                    if(data.status == 2){
+                      swal({
+                        title	: "Save Failed!",
+                        text	: data.pesan,
+                        type	: "danger",
+                        timer	: 10000,
+                        showCancelButton	: false,
+                        showConfirmButton	: false,
+                        allowOutsideClick	: false
+                      });
+                    }else{
+                      swal({
+                        title	: "Save Failed!",
+                        text	: data.pesan,
+                        type	: "warning",
+                        timer	: 10000,
+                        showCancelButton	: false,
+                        showConfirmButton	: false,
+                        allowOutsideClick	: false
+                      });
+                    }
 
-									swal({
-									  title				: "Error Message !",
-									  text				: 'An Error Occured During Process. Please try again..',
-									  type				: "warning",
-									  timer				: 7000,
-									  showCancelButton	: false,
-									  showConfirmButton	: false,
-									  allowOutsideClick	: false
-									});
-								}
-							});
-					  } else {
-						swal("Batal Proses", "Data bisa diproses nanti", "error");
-						return false;
-					  }
-				});
+                  }
+                },
+                error: function() {
+
+                  swal({
+                    title				: "Error Message !",
+                    text				: 'An Error Occured During Process. Please try again..',
+                    type				: "warning",
+                    timer				: 7000,
+                    showCancelButton	: false,
+                    showConfirmButton	: false,
+                    allowOutsideClick	: false
+                  });
+                }
+              });
+            } else {
+              swal("Batal Proses", "Data bisa diproses nanti", "error");
+              return false;
+            }
+          });
+        }
 		});
     });
     function pembulatan(x){
@@ -546,7 +560,7 @@
                     $('#nmcustomer_do').val(data.nm_customer);
                     //$('#diskontoko').text(formatCurrency(data.diskon_toko*parseInt($('#grandtotalso').val())/100,',','.',0));
                     $('#alamat').html(data.alamat);
-                    $('#npwp').val(data.npwp);
+                    $('#npwpcustomer').val(data.npwp);
                     $('#alamat_npwp').html(data.alamat_npwp);
                     //$('#persen_diskon_toko').val(data.diskon_toko*parseInt($('#grandtotalso').val())/100);
 
@@ -557,21 +571,20 @@
     function kembali_inv(){
         window.location.href = siteurl+"invoice";
     }
-	
+
  $("#tgl_inv").change(function() {
-	  
-   var idcus = $('#tgl_inv').val();
-        if(idcus != ''){
-           $.ajax({
-                type:"GET",
-                url:siteurl+"invoice/jatuhtempo",
-                data:"idcus="+idcus,
-                success:function(result){
-                    var data = JSON.parse(result);
-                    $('#tgljatuhtempo').val(data.tgl);
-                    //$('#diskontoko').text(formatCurrency(data.diskon_toko*parseInt($('#grandtotalso').val())/100,',','.',0));
-                }
-            });
-        }
+   var date = new Date($("#tgl_inv").val()),
+          days = parseInt($("#top").val());
+
+       if(!isNaN(date.getTime())){
+           date.setDate(date.getDate() + days);
+
+           var yyyy = date.getFullYear().toString();
+           var mm = (date.getMonth()+1).toString(); // getMonth() is zero-based
+           var dd  = date.getDate().toString();
+
+           $("#tgljatuhtempo").val(yyyy + "-" + (mm[1]?mm:"0"+mm[0]) + "-" + (dd[1]?dd:"0"+dd[0]));
+       }
+
   });
 </script>

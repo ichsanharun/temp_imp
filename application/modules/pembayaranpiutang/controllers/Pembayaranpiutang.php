@@ -54,6 +54,15 @@ class Pembayaranpiutang extends Admin_Controller {
         $kdcab = $session['kdcab'];
         //$kdcab = '102';
         $data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
+        /*$data = $this->db
+        ->select("ar.*,trans_invoice_header.nm_salesman as inv_sales,karyawan.nama_karyawan as sales")
+        ->from("ar")
+        ->where(array('ar.kdcab'=>$kdcab))
+        ->join("trans_invoice_header","ar.no_invoice = trans_invoice_header.no_invoice","left")
+        ->join("customer","ar.customer_code = customer.id_customer","left")
+        ->join("karyawan","customer.id_marketing = karyawan.id_karyawan","left")
+        ->get()->result();*/
+
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $this->template->title('Pembayaran Piutang');
         $this->template->set('cabang', $cabang);
@@ -153,12 +162,13 @@ class Pembayaranpiutang extends Admin_Controller {
     }
 
     function generatenomorjurnaljarh($kdcab){
-        $counter = $this->Invoice_model->get_data('1=1','jarh');
+        $counter = $this->Invoice_model->cek_data(array('nocab'=>$kdcab),'pastibisa_tb_cabang');
         $kode = 1;
         if(count($counter) > 0){
             $kode = count($counter)+1;
         }
-        $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+        $n_kode = $counter->nobum+1;
+        $next_kode = str_pad($n_kode, 5, "0", STR_PAD_LEFT);
         return $kdcab.'-A'.date('y').$next_kode;
     }
 
@@ -267,6 +277,13 @@ class Pembayaranpiutang extends Admin_Controller {
         $this->db->where(array('no_invoice'=>$this->input->post('no_invoice')));
         $this->db->update('ar',array('debet'=>$debetnow,'saldo_akhir'=>$newpiutang));
         //-----//
+
+        //UPDATE NOBUM
+       $pastibisa_tb_cabang = $this->Invoice_model->cek_data(array('nocab'=>$this->input->post('kdcab')),'pastibisa_tb_cabang');
+       $nobum = $pastibisa_tb_cabang->nobum+1;
+       $this->db->where(array('nocab'=>$this->input->post('kdcab')));
+       $this->db->update('pastibisa_tb_cabang',array('nobum'=>$nobum,'saldo_akhir'=>$newpiutang));
+       //-----//
 
         //UPDATE STATUS GIRO BERDASAR NOMOR GIRO
         if($this->input->post('jenis_bayar') == 'BG'){

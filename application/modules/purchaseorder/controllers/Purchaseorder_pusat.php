@@ -97,6 +97,7 @@ class Purchaseorder_pusat extends Admin_Controller
             'rupiah_total' => $this->input->post('total_rupiah'),
             'no_pi' => $this->input->post('no_pi'),
             'status' => 'PI',
+            'shipping' => $this->input->post('shipping')
         );
 
         $this->db->trans_begin();

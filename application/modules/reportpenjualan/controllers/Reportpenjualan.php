@@ -369,13 +369,26 @@ class Reportpenjualan extends Admin_Controller {
       ->join("barang_jenis", "LEFT(trans_invoice_detail.id_barang,2) = barang_jenis.id_jenis", "left")
       ->join("barang_group", "MID(trans_invoice_detail.id_barang,3,2) = barang_group.id_group", "left")
 
-      ->order_by('trans_invoice_header.no_invoice','DESC')
+      ->order_by('barang_jenis.id_jenis','DESC')
 
       ->find_all();
 
+      $data_jenis = $this->Detailinvoice_model
+
+      ->where("tanggal_invoice BETWEEN '".$this->uri->segment(3)."' AND '".$this->uri->segment(4)."' AND kdcab='".$kdcab."' ".$where)
+      ->join("trans_invoice_header", "trans_invoice_detail.no_invoice = trans_invoice_header.no_invoice", "left")
+      ->join("barang_jenis", "LEFT(trans_invoice_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+      ->join("barang_group", "MID(trans_invoice_detail.id_barang,3,2) = barang_group.id_group", "left")
+
+      ->group_by('LEFT(trans_invoice_detail.id_barang,2)')
+
+      ->find_all();
+
+
       $data = array(
-  			'title2'		=> 'Report',
-  			'results'	=> $dataexcel
+  			'title2'		     => 'Report',
+        'data_jenis'		 => $data_jenis,
+  			'results'	       => $dataexcel
   		);
       /*$this->template->set('results', $data_so);
       $this->template->set('head', $sts);

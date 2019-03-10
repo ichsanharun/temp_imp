@@ -85,7 +85,7 @@ class Cabang extends Admin_Controller {
         $gudang         = $this->input->post('gudang');
         $kota           = $this->input->post('kota');
         $no_so          = $this->input->post('no_so');
-        $no_do          = $this->input->post('no_do');
+        $no_suratjalan          = $this->input->post('no_suratjalan');
         $no_picking_list= $this->input->post('no_picking_list');
         $no_Invoice     = $this->input->post('no_Invoice');
         $biaya_logistik_lokal          = $this->input->post('biaya_logistik_lokal');
@@ -109,7 +109,7 @@ class Cabang extends Admin_Controller {
                                 'gudang'=>$gudang,
                                 'kota'=>$kota,
                                 'no_so'=>$no_so,
-                                'no_do'=>$no_do,
+                                'no_suratjalan'=>$no_suratjalan,
                                 'no_invoice'=>$no_invoice,
                                 'no_picking_list'=>$no_picking_list,
                                 'biaya_logistik_lokal'=>$biaya_logistik_lokal,
@@ -158,7 +158,7 @@ class Cabang extends Admin_Controller {
                         'gudang'=>$gudang,
                         'kota'=>$kota,
                         'no_so'=>$no_so,
-                        'no_do'=>$no_do,
+                        'no_suratjalan'=>$no_suratjalan,
                         'no_invoice'=>$no_invoice,
                         'no_picking_list'=>$no_picking_list,
                         'biaya_logistik_lokal'=>$biaya_logistik_lokal,

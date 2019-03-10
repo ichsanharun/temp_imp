@@ -15,7 +15,7 @@ thead input {
 
 <div class="box">
   <div class="col-lg-12">
-  
+
     <div class="box-header text-left">
       <div class="form-inline">
         <div class="form-group">
@@ -23,10 +23,10 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
               <select class="form-control input-sm" id="filtercabang" disabled="disabled">
                 <option value="">Pilih Cabang</option>
-                <?php 
+                <?php
                 $session = $this->session->userdata('app_session');
                 $kdcab = $session['kdcab'];
-                foreach(@$cabang as $k=>$v){ 
+                foreach(@$cabang as $k=>$v){
                   $selected = '';
                   if($this->uri->segment(3) == $v->kdcab){
                     $selected='selected="selected"';
@@ -126,7 +126,7 @@ thead input {
         <h4 class="modal-title" id="myModalLabelbayar">Pembayaran Piutang</h4>
       </div>
       <div class="modal-body" id="MyModalBodyPembayaran" style="background: #FFF !important;color:#000 !important;">
-      
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">
@@ -150,7 +150,7 @@ thead input {
     });
     /*
     $('#dialog-pembayaran').on('shown.bs.modal',function(){
-        
+
     });
     */
   });

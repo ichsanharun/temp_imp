@@ -97,10 +97,21 @@ class Barang extends Admin_Controller
         $suppl_barang = $this->Supplier_model->pilih_supplier()->result();
         $cp_barang = $this->Barang_cp_model->pilih_cp()->result();
 
+        $barang = $this->Barang_model->pilih_barang()->result();
+        $model = $this->Barang_koli_model->koli_model()->result();
+        $warna = $this->Barang_koli_model->koli_warna()->result();
+        $varian = $this->Barang_koli_model->koli_varian()->result();
+
+
         $this->template->set('cp_barang', $cp_barang);
         $this->template->set('jenis_barang', $jenis_barang);
         $this->template->set('group_barang', $group_barang);
         $this->template->set('suppl_barang', $suppl_barang);
+
+        $this->template->set('model', $model);
+        $this->template->set('warna', $warna);
+        $this->template->set('varian', $varian);
+
         $this->template->set('data', $this->Barang_model->find($id));
         $this->template->title('Produk Group');
         $this->template->render('barang_form');
@@ -335,8 +346,9 @@ class Barang extends Admin_Controller
         $id_barang = $this->input->post('barang');
         $nm_barang = $this->input->post('barang_nm');
         $qty = $this->input->post('qty_koli');
-        $id_colly_produk = $this->input->post('id_colly_produk');
-        $varian = strtoupper($this->input->post('variank'));
+        $id_koli_model   = $this->input->post("id_koli_model");
+        $id_koli_warna   = $this->input->post("id_koli_warna");
+        $id_koli_varian  = $this->input->post("id_koli_varian");
         $keterangan = $this->input->post('keterangan_kol');
         $sts_aktif = $this->input->post('sts_aktif');
         $netto_weight = $this->input->post('c_netto_weight');
@@ -365,8 +377,9 @@ class Barang extends Admin_Controller
                                 'id_barang' => $id_barang,
                                 'nm_barang' => $nm_barang,
                                 'qty' => $qty,
-                                'id_colly_produk' => $id_colly_produk,
-                                'varian' => $varian,
+                                'id_koli_model'=>$id_koli_model,
+                                'id_koli_warna'=>$id_koli_warna,
+                                'id_koli_varian'=>$id_koli_varian,
                                 'keterangan' => $keterangan,
                                 'sts_aktif' => $sts_aktif,
                                 'netto_weight' => $netto_weight,
@@ -415,8 +428,9 @@ class Barang extends Admin_Controller
                         'id_barang' => $id_barang,
                         'nm_barang' => $nm_barang,
                         'qty' => $qty,
-                        'id_colly_produk' => $id_colly_produk,
-                        'varian' => $varian,
+                        'id_koli_model'=>$id_koli_model,
+                        'id_koli_warna'=>$id_koli_warna,
+                        'id_koli_varian'=>$id_koli_varian,
                         'keterangan' => $keterangan,
                         'sts_aktif' => $sts_aktif,
                         'netto_weight' => $netto_weight,

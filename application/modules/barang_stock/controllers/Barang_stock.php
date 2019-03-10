@@ -38,7 +38,7 @@ class Barang_stock extends Admin_Controller {
     public function index(){
         $this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Barang_stock_model->find_all_by(array('kdcab'=>$session['kdcab'], 'deleted'=>0));
+        $data = $this->Barang_stock_model->find_all_by(array('kdcab'=>$session['kdcab'], 'deleted'=>0, 'kategori'=>'set'));
         $this->template->set('results', $data);
         $this->template->render('list');
     }

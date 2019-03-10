@@ -1015,7 +1015,7 @@
         $('#diskoncash').text(formatCurrency(dcc,',','.',0));
         $('#ppnview').text("(Include) "+npp+"%");
         $('#diskontoko').text(formatCurrency(dto,',','.',0));
-        $('#totalview').text(formatCurrency(pembulatan(dpp),',','.',0));
+        $('#totalview').text(formatCurrency(dpp,',','.',0));
     }
     function hitungcancel(){
         var avl = parseInt($('#qty_avl').val());
