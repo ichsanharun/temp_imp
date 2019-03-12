@@ -89,41 +89,17 @@ thead input {
         foreach(@$results as $kr=>$vr){
           $no = $n++;
           $total += $vr->hargajualtotal;
-					
-        ?>
-        <tr>
-          <td><center><?php echo $no?></center></td>
-          <td><center><?php echo $vr->no_invoice?></center></td>
-          <td><?php echo $vr->nm_customer?></td>
-          <td><center><?php echo date('d M Y',strtotime($vr->tanggal_invoice))?></center></td>
-          <!--<td><center><?php //echo date('d M Y',strtotime($vr->tgljatuhtempo))?></center></td>-->
-          <td><?php echo $vr->nm_salesman?></td>
-          <td class="text-right"><?php echo formatnomor($vr->hargajualtotal)?></td>
-		  <td class="text-center">
-			<?php
-				$OK		=1;
-				if($vr->flag_cancel == 'N'){
-					echo"<span class='badge bg-green'>TIDAK BATAL</span>";
-				}else{
-					$OK		= 0;
-					echo"<span class='badge bg-red'>BATAL</span>";
-				}
-			?>
-      <!--
-		  </td>
-          <td class="text-center">
-            <?php //if($OK==1){?>
-            <a href="#dialog-popup" data-toggle="modal" class="btn bg-primary" onclick="PreviewPdf('<?php //echo $vr->no_invoice?>')">
-                <span class="glyphicon glyphicon-print"></span>
-            </a>
-			&nbsp;&nbsp;
-			<a href="#" class="btn bg-red" onClick="return batalInvoice('<?php //echo $vr->no_invoice?>')"> <i class="fa fa-trash-o"></i></a>
 
-			<?php //} ?>
-          </td>-->
-        </tr>
-        <?php } ?>
-        <?php } ?>
+					if (!empty($vr->no_invoice)) {
+						$arr_nama[$vr->nm_jenis]['penjualan'] += $vr->jumlah;
+						$arr_nama[$vr->nm_jenis]['hpp'] += $vr->hargalanded*$vr->jumlah;
+					}else {
+						$arr_nama[$vr->nm_jenis]['penjualan'] += 0;
+						$arr_nama[$vr->nm_jenis]['hpp'] += 0;
+					}
+				}}
+        ?>
+
         </tbody>
         <tfoot>
           <tr>
@@ -133,6 +109,7 @@ thead input {
           </tr>
         </tfoot>
         </table>
+				<?=print_r($arr_nama)?>
 	</div>
 	<!-- /.box-body -->
 </div>

@@ -34,7 +34,7 @@ class Reportpembayaran extends Admin_Controller {
 
         date_default_timezone_set("Asia/Bangkok");
 
-        $this->template->title('Report AR');
+        $this->template->title('Report Pembayaran');
         $this->template->page_icon('fa fa-table');
     }
 
@@ -43,7 +43,9 @@ class Reportpembayaran extends Admin_Controller {
 
         $data = array();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
-        $data = $this->Reportpembayaran_model->order_by('nomor','ASC')->find_all_by(array('kd_pembayaran'=>'NOT NULL','kdcab'=>$this->auth->user_cab()));
+        $data = $this->Reportpembayaran_model
+        ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab()));
         $this->template->title('Report Pembayaran Piutang');
         $this->template->set('cabang', $cabang);
         $this->template->set('results', $data);
@@ -52,14 +54,14 @@ class Reportpembayaran extends Admin_Controller {
 
     public function filter()
       {
+        $data = $this->Reportpembayaran_model
+        ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$this->uri->segment(5)."-".$this->uri->segment(4)."%"));
 
-        $data = $this->Reportar_model
-        ->where("kdcab='".$this->uri->segment(3)."' AND bln='".$this->uri->segment(4)."' AND thn='".$this->uri->segment(5)."'")
-        ->order_by('no_invoice','DESC')->find_all();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
-        $this->template->set('results', $data);
+        $this->template->title('Report Pembayaran Piutang');
         $this->template->set('cabang', $cabang);
-        $this->template->title('Report AR');
+        $this->template->set('results', $data);
         $this->template->render('list');
       }
 
@@ -169,6 +171,37 @@ class Reportpembayaran extends Admin_Controller {
         header('Content-Disposition: attachment;filename="ExportLaporanAR'. date('Ymd') .'.xls"');
 
         $objWriter->save('php://output');
+
+    }
+
+    function downloadExcel_old()
+    {
+      $session = $this->session->userdata('app_session');
+      $kdcab = $session['kdcab'];
+      $filter = $this->input->get('filter');
+      $param = $this->input->get('param');
+      $where ='';
+      if(!empty($this->uri->segment(5))){
+        $data = $this->Reportpembayaran_model
+        ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$this->uri->segment(5)."-".$this->uri->segment(4)."%"));
+      }else {
+        $data = $this->Reportpembayaran_model
+        ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab()));
+      }
+
+
+
+      $data = array(
+  			'title2'		     => 'Report',
+  			'results'	       => $data
+  		);
+      /*$this->template->set('results', $data_so);
+      $this->template->set('head', $sts);
+      $this->template->title('Report SO');*/
+      $this->load->view('view_report',$data);
+
 
     }
 }

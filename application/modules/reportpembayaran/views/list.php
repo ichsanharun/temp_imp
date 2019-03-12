@@ -64,7 +64,7 @@ thead input {
         </div>
       </div>
       <span class="pull-right">
-      <?php echo anchor(site_url('reportar/downloadExcel').'?idcabang='.$this->uri->segment(3),'<i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+      <?php echo anchor(site_url('reportpembayaran/downloadExcel_old').'/'.$this->uri->segment(3).'/'.$this->uri->segment(4).'/'.$this->uri->segment(5),'<i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
       <!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>-->
     </span>
     </div>
@@ -88,25 +88,14 @@ thead input {
         if(@$results){
         foreach(@$results as $kr=>$vr){
           $no = $n++;
-          $debet=0;
-          if($vr->debet != 0){
-              $debet=formatnomor($vr->debet);
-          }
-          $kredit=0;
-          if($vr->kredit != 0){
-              $kredit=formatnomor($vr->kredit);
-          }
         ?>
         <tr>
           <td><center><?php echo $no?></center></td>
           <td><center><?php echo $vr->kd_pembayaran?></center></td>
           <td><?php echo $vr->no_invoice?></td>
+          <td><?php echo $vr->nm_customer?></td>
           <td><?php echo date("d M Y",strtotime($vr->tgl_pembayaran))?></td>
-          <td><?php echo $vr->thn?></td>
-          <td class="text-right"><?php echo formatnomor($vr->saldo_awal)?></td>
-          <td class="text-right"><?php echo $debet?></td>
-          <td class="text-right"><?php echo $kredit?></td>
-          <td class="text-right"><?php echo formatnomor($vr->saldo_akhir)?></td>
+          <td class="text-right"><?php echo formatnomor($vr->jumlah_pembayaran)?></td>
         </tr>
         <?php } ?>
         <?php } ?>
@@ -153,7 +142,7 @@ thead input {
           showConfirmButton: true
         });
       }else{
-        window.location.href = siteurl+"reportar/filter/"+cabang+"/"+bln+"/"+thn;
+        window.location.href = siteurl+"reportpembayaran/filter/"+cabang+"/"+bln+"/"+thn;
       }
     });
   });

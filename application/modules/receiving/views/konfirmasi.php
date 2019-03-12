@@ -12,7 +12,7 @@
                                ?>
                                <input type="hidden" name="kdcab" id="kdcab" class="form-control input-sm" value="<?php echo $caba->kdcab; ?>">
                               <input type="hidden" name="namacabang" id="namacabang" class="form-control input-sm" value="<?php echo $caba->namacabang; ?>">
-                    <?php 
+                    <?php
                     $querys = $this->db->query("SELECT * FROM `supplier` WHERE id_supplier='$supplier'");
 
                     $rows = $querys->row();
@@ -57,7 +57,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-sm-6">
                          <div class="form-group ">
                             <label for="tipekirim" class="col-sm-4 control-label">Container No :</label>
@@ -120,7 +120,7 @@
                     </div>
                 </div>
                 </div>
-                
+
             </div>
         </div>
     </div>
@@ -165,7 +165,7 @@
                         <td>
                         </td>
                     </tr>
-               <?php 
+               <?php
                     $query = $this->db->query("SELECT * FROM `barang_koli` WHERE id_barang='$datas->id_barang'");
 
                     if ($query->num_rows() > 0) {
@@ -185,7 +185,7 @@
                                     <input class="qty<?= $no; ?>" name="qty_pl[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
-                                    <input onblur="cek(<?= $no; ?>,<?= $query->num_rows(); ?>)" class="barang<?= $no; ?>" name="qty_bagus[]" value="<?= $datas->qty_acc; ?>" />
+                                    <input onkeyup="cek(<?= $no; ?>,<?= $query->num_rows(); ?>)" class="barang<?= $no; ?>" name="qty_bagus[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
                                     <input class="rusak<?= $no; ?>" name="qty_rusak[]" value="0"/>
@@ -203,7 +203,7 @@
     </div>
     </form>
         <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-            
+
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -220,7 +220,7 @@
 </div>
 <script>
     function saveheaderpr(){
-            
+
                 var formdata = $("#form-header-po").serialize();
                // console.log(formdata);
                 $.ajax({
@@ -261,9 +261,9 @@
                         });
                     }
                 });
-          
-        
-        
+
+
+
     }
 </script>
 <script>
@@ -277,24 +277,32 @@
         console.log(num);
         $('.qty'+num).val(val);
     }
-    
+
     function cek(num,jum){
         var valune = [];
         for (var i = 0; i < jum; i++) {
             valune.push(parseInt($('.barang'+num).eq(i).val()));
-            
+
         }
         hasilMin=Math.min.apply(Math, valune);
         qtyy=parseInt($('.qty'+num).val());
-        
+
         $('.qty_bagus'+num).val(hasilMin);
-        $('.qty_rusak'+num).val(qtyy-hasilMin);
+        if (qtyy<hasilMin) {
+          $('.qty_rusak'+num).val(0);
+        }else {
+          $('.qty_rusak'+num).val(qtyy-hasilMin);
+        }
         console.log($('.qty'+num).val());
-        
+
         for (var i = 0; i < jum; i++) {
             qty=parseInt($('.qty'+num).eq(i).val());
             bagus=parseInt($('.barang'+num).eq(i).val());
-            $('.rusak'+num).eq(i).val(qty-bagus);
+            if (qty<bagus) {
+              $('.rusak'+num).eq(i).val(0);
+            }else {
+              $('.rusak'+num).eq(i).val(qty-bagus);
+            }
         }
     }
 </script>

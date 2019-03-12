@@ -5,7 +5,7 @@
         <!-- Biodata Mitra -->
             <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;">
             </div>
-            
+
             <script>
                 var currentValue = 0;
                 function handleClick(myRadio) {
@@ -27,7 +27,7 @@
                 $query = $this->db->query("SELECT * FROM `trans_po_payment` as a, trans_po_header as b WHERE a.id='$id' AND a.no_po=b.no_po  ");
 
                 $row = $query->row();
-                
+
                 $querycek = $this->db->query("SELECT * FROM `trans_po_payment` WHERE no_po='$row->no_po'  ORDER BY `trans_po_payment`.`perkiraan_bayar`  ASC ");
                 if ($querycek->num_rows() > 1) {
                     $row_c = $querycek->row();
@@ -46,48 +46,45 @@
                                 <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
                             <?php
                         }
-                       
                     }
-                    
-                    
                 } else {
                     ?>
                     <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
                     <?php
                 }
-                
+
                 ?>
                 <input type="hidden" name="id" value="<?= $id ?>" />
                 <input type="hidden" name="no_po" value="<?= $row->no_po ?>" />
-                <div class="form-group "> 
+                <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">KD Supplier<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control"  name="id_supplier" readonly="" value="<?= $row->id_supplier ?>"  >
+                        <input type="text" class="form-control"  name="id_supplier" readonly="" value="<?= $row->id_supplier; ?>"  >
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
-                <div class="form-group "> 
+                <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">Supplier<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control"  name="supplier" readonly="" value="<?= $row->nm_supplier ?>"  >
+                        <input type="text" class="form-control"  name="supplier" readonly="" value="<?= $row->nm_supplier; ?>"  >
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
-                <div class="form-group "> 
+                <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">No. Invoice<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
                         <input type="text" class="form-control"  name="no_invoice" readonly="" value="<?= @get_invoice($row->no_po);  ?>"  >
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
-                <div class="form-group "> 
+                <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">Tipe Pembayaran<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                            
+
                             <div class="radio">
                                 <label>
                                   <input type="radio" name="myRadios" onclick="handleClick(this);"  value="1">
@@ -101,7 +98,7 @@
                                 </label>
                               </div>
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
                 <div class="form-group ">
                     <?php $tgldosupp=date('Y-m-d')?>
@@ -113,16 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <script>
-                    $(document).ready(function(){
-                        $("#tgl_bayar").change(function (){
-                            var url = "<?php echo site_url('hutang/add_ajax_prodi');?>/"+$(this).val();
-                            $('#prodi').load(url);
-                            return false;
-                        })
-                    });
-                </script>
-                <div id="pilih_bank" class="form-group " style="display: none"> 
+                <div id="pilih_bank" class="form-group " style="display: none">
                     <label for="name_cbm" class="col-sm-2 control-label">Pilih Bank<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
@@ -130,23 +118,29 @@
                                 <option value=''>Pilih Bank</option>
                             </select>
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
-                <div id="bukti" class="form-group " style="display: none"> 
+                <div id="bukti" class="form-group " style="display: none">
                     <label for="name_cbm" class="col-sm-2 control-label">Nomor bukti transfer<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
                         <input type="text" class="form-control"  name="bukti"  >
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
-                <div class="form-group "> 
+                <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">Jumlah<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
                         <div class="input-group">
-                        <input type="text" class="form-control" name="jumlah" maxlength="45" >
+                          <?php
+                          $kurs_usd = $this->Model_hutang->cek_data(array("kode"=>"USD"),'mata_uang');
+                          $jrp = $kurs_usd->kurs*$bayar_dollar;
+                           ?>
+                           <span class="input-group-addon">IDR</span>
+                        <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($jrp, 2, '.', '')?>" >
+                        <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$jrp?>" >
                         </div>
-                    </div>                                   
+                    </div>
                 </div>
 
                 </div>
@@ -154,7 +148,7 @@
             </div>
         <!-- Biodata Mitra -->
         <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-            
+
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -168,14 +162,43 @@
                 </tr>
             </tfoot>
         </table>
-        </div>                                    
-        
+        </div>
+
     </div>
     <!-- /.tab-content -->
 </div>
-<script>
+<script type="text/javascript">
+$(document).ready(function(){
+    $("#tgl_bayar").change(function (){
+        var url = "<?php echo site_url('hutang/add_ajax_prodi');?>/"+$(this).val();
+        console.log(url);
+        $('#prodi').load(url);
+        return false;
+    })
+    var url = "<?php echo site_url('hutang/add_ajax_prodi/'.date('Y-m-d'));?>/";
+    $('#prodi').load(url);
+});
+function formatNumber(num) {
+  var n = parseFloat(num);
+  return n.toFixed(2).replace('.', ',').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+}
+function filterAngka1(a){
+    document.getElementById(a).value = document.getElementById(a).value.replace(/[^\d]/g,"");
+}
+function formatCurrency(c){
+    n = c.replace(/,/g, "");
+  var s=n.split('.')[1];
+  (s) ? s="."+s : s="";
+  n=n.split('.')[0]
+  while(n.length>3){
+      s="."+n.substr(n.length-3,3)+s;
+      n=n.substr(0,n.length-3)
+  }
+  return n+s
+
+  }
     function save(){
-            
+
                 var formdata = $("#input").serialize();
                // console.log(formdata);
                 $.ajax({
@@ -216,9 +239,9 @@
                         });
                     }
                 });
-          
-        
-        
+
+
+
     }
 </script>
 <script>

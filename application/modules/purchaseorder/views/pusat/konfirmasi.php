@@ -75,6 +75,11 @@
                             <label class="col-sm-4 control-label">
                                 KURS
                             </label>
+                            <?php
+                            $kurs_rmb = $this->Purchaseorder_model->cek_data(array("kode"=>"RMB"),'mata_uang');
+                            $kurs_usd = $this->Purchaseorder_model->cek_data(array("kode"=>"USD"),'mata_uang');
+                            $usd_to_rmb = $kurs_usd->kurs/$kurs_rmb->kurs;
+                             ?>
                             <div class="col-sm-8" style="padding-top: 11px;">
                                 <table width="100%">
                                     <tr>
@@ -85,18 +90,21 @@
                                             to RMB
                                         </td>
                                         <td>
-                                            <input id="kurs_usd" name="kurs_usd" value="0" />
+                                            <input id="kurs_usd" name="kurs_usd" value="<?=$usd_to_rmb?>" readonly />
+                                        </td>
+                                        <td rowspan="2">
+                                          <a href="<?=base_url('kurs')?>" class="btn btn-sm">Change Kurs</a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            USD
+                                            USD 
                                         </td>
                                         <td>
                                             to Rupiah
                                         </td>
                                         <td>
-                                            <input id="kurs_rp" name="kurs_rp" value="0" />
+                                            <input id="kurs_rp" name="kurs_rp" value="<?=$kurs_usd->kurs?>" readonly />
                                         </td>
                                     </tr>
                                 </table>

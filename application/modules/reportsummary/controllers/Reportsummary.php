@@ -48,18 +48,18 @@ class Reportsummary extends Admin_Controller {
         $kdcab = $session['kdcab'];
 
         $data = $this->Invoice_model->where(array('kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
-        $data_jenis = $this->Barang_jenis_model->order_by('id_jenis','ASC')->find_all();
-
-        $cek_jenis = array();
-        foreach ($data_jenis as $key => $value) {
-          $cek_value = $this->Invoice_model->where(array('kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
-          foreach ($variable as $key => $value) {
-            // code...
-          }
-        }
+        $data_jenis = $this->Barang_jenis_model
+        ->join("trans_invoice_detail","LEFT(trans_invoice_detail.id_barang,2)=barang_jenis.id_jenis","left")
+        ->join("trans_invoice_header","trans_invoice_detail.no_invoice=trans_invoice_header.no_invoice","left")
+        ->where(array(
+          'LEFT(trans_invoice_detail.no_invoice,3)'=>$this->auth->user_cab()
+        ))
+        ->or_where('trans_invoice_detail.no_invoice IS NULL')
+        ->order_by('id_jenis','ASC')
+        ->find_all();
 
         $this->template->title('Report Penjualan');
-        $this->template->set('results', $data);
+        $this->template->set('results', $data_jenis);
         $this->template->set('data_jenis', $data_jenis);
         $this->template->render('list');
     }

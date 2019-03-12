@@ -20,9 +20,21 @@ class Model_hutang extends CI_Model
 		$this->db->where('id_detail_po', $id);
 		return $this->db->update('trans_po_detail', $data);
 	}
+  
+  public function cek_data($kunci,$tabel) {
+      $this->db->where($kunci);
+      $query=$this->db->get($tabel);
+      return $query->row();
+  }
+
+  public function get_data($kunci,$tabel) {
+      $this->db->where($kunci);
+      $query=$this->db->get($tabel);
+      return $query->result();
+  }
 
 
-	
-	
+
+
 
 }

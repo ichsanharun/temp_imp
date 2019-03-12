@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 <div class="box">
-    
+
     <div class="box-body">
         <table id="listpotorec" class="table table-bordered table-striped">
         <thead>
@@ -18,14 +18,25 @@
            if( !empty($results) ) {
            foreach(@$results as $kp => $vp){
             $no = $n++;
-           ?> 
+            $cek_open = $this->Receiving_model->cek_data(array('no_po'=>$vp->no_po,'status'=>'open'),'trans_po_payment');
+            if (count($cek_open)>0) {
+              $stat = "Belum Lunas";
+            }else {
+              $stat = 1;
+            }
+           ?>
            <tr>
              <td><center><?php echo $no?></center></td>
              <td><center><?php echo $vp->no_po?></center></td>
              <td><?php echo $vp->id_supplier?></td>
              <td><center><?php echo date('d/m/Y',strtotime($vp->tgl_po))?></center></td>
              <td style="text-align: center">
-                <a href="<?= base_url("receiving/konfrimasi/$vp->id_supplier/$vp->no_po") ?>">Confrim</a>
+               <?php if ($stat != 1) {
+                 echo $stat;
+               }else {
+                 echo'<a href="'.base_url("receiving/konfrimasi/$vp->id_supplier/$vp->no_po").'">Confrim</a>';
+               } ?>
+
             </td>
            </tr>
            <?php } }?>

@@ -155,7 +155,7 @@ class Invoice_model extends BF_Model
 		$Num_JM			= $Pros_JM->num_rows();
 		if($Num_JM > 0){
 			$det_JM		= $Pros_JM->result_array();
-			$Urut		= intval($det_JM[0]['kode']) + 1;
+			$Urut		= $det_JM[0]['kode'] + 1;
 		}
 
 		$Nomor_JM		= $Format.str_pad($Urut, 4, "0", STR_PAD_LEFT);

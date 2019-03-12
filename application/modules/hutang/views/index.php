@@ -2,7 +2,7 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 
 <div class="box">
-    
+
     <!-- /.box-header -->
     <div class="box-body">
         <table id="example1" class="table table-bordered table-striped">
@@ -26,7 +26,7 @@
                 $dolar = $row->rupiah_total / $row->rupiah;
     $peresen_dolar = $row->persen * $dolar / 100;
     $persen_rupiah = $row->persen * $row->rupiah_total / 100; ?>
-                
+
                 <tr>
                     <td><?= $num; ?> </td>
                     <td><?= $row->no_po; ?></td>
@@ -39,15 +39,15 @@
                         <?php
                         if ($row->st == 'open') {
                             ?>
-                            <a class="text-green" href="<?= base_url("hutang/bayar_form/$row->idsss"); ?>" >Bayar</a>
+                            <a class="text-green" href="<?= base_url("hutang/bayar_form/$row->idsss/$peresen_dolar"); ?>" >Bayar</a>
                             <?php
                         } else {
                             echo 'close';
                         } ?>
-                        
+
                     </td>
                 </tr>
-            <?php 
+            <?php
             ++$num;
 
     endforeach;
@@ -90,6 +90,6 @@
 
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="570" height="400"></iframe>');
     }
-    
-    
+
+
 </script>

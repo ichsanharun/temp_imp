@@ -7,7 +7,11 @@ class Hutang extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->model('Model_hutang', 'hutang');
+        //$this->load->model('Model_hutang', 'hutang');
+        $this->load->model(array('Hutang/Model_hutang',
+                                 'Cabang/Cabang_model',
+                                 'Aktifitas/aktifitas_model',
+                                ));
 
         $this->template->title('Manage Data Hutang');
         $this->template->page_icon('fa fa-table');
@@ -30,7 +34,7 @@ class Hutang extends Admin_Controller
         $thn = date('Y', strtotime($id_fak));
         $session = $this->session->userdata('app_session');
         $kdcab = $session['kdcab'];
-        $query = $this->db->query("SELECT * FROM `coa` WHERE `kdcab` LIKE '%$kdcab-A%' AND `level` LIKE '%5%' AND `no_perkiraan` LIKE '%1102%' AND `bln` LIKE '%$bln%' AND `thn` LIKE '%$thn%' ");
+        $query = $this->db->query("SELECT * FROM `COA` WHERE `kdcab` LIKE '%$kdcab-A%' AND `level` LIKE '%5%' AND `no_perkiraan` LIKE '%1102%' AND `bln` LIKE '%$bln%' AND `thn` LIKE '%$thn%' ");
 
         $data = "<option value=''>- Pilih Bank -</option>";
         foreach ($query->result() as $value) {
@@ -42,8 +46,10 @@ class Hutang extends Admin_Controller
     public function bayar_form()
     {
         $id = $this->uri->segment(3);
+        $dollar = $this->uri->segment(4);
 
         $this->template->set('id', $id);
+        $this->template->set('bayar_dollar', $dollar);
 
         $this->template->title('Bayar Pelunasan Pembelian');
         $this->template->render('bayar_form');

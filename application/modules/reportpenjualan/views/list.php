@@ -83,44 +83,70 @@ thead input {
         <?php
         $n=1;
         $total=0;
-        if(@$results){
-        foreach(@$results as $kr=>$vr){
-          $no = $n++;
-          $total += $vr->hargajualtotal;
-        ?>
-        <tr>
-          <td><center><?php echo $no?></center></td>
-          <td><center><?php echo $vr->no_invoice?></center></td>
-          <td><?php echo $vr->nm_customer?></td>
-          <td><center><?php echo date('d M Y',strtotime($vr->tanggal_invoice))?></center></td>
-          <!--<td><center><?php //echo date('d M Y',strtotime($vr->tgljatuhtempo))?></center></td>-->
-          <td><?php echo $vr->nm_salesman?></td>
-          <td class="text-right"><?php echo formatnomor($vr->hargajualtotal)?></td>
-		  <td class="text-center">
+				if(@$results){
+					$nos = '';
+					$jns = '';
+					$cjns = 0;
+					$arr_nama = array();
+					$tc = count($results);
+					$exe ='';
+				foreach(@$results as $kr=>$vr){
+					$so = $this->Salesorder_model->select('no_so')->cek_data(array('no_do'=>$vr->no_do),'trans_do_detail');
+					$no = $n++;
+					$total += $vr->hargajualtotal;
+					if ($jns != $vr->nm_jenis) {
+						//$exe .= 'PENJUALAN '.$jns.' = '.($cjns*100/$tc).'%<br>';
+						$cjns = 0;
+					}
+				?>
+				<tr>
+					<td><center><?php echo $no?></center></td>
+
+
+					<td><center><?php echo $vr->no_invoice?></center></td>
+					<td><center><?php echo $so->no_so?></center></td>
+					<td><?php echo $vr->nm_customer?></td>
+					<td><center><?php echo $vr->tanggal_invoice?></center></td>
+					<td><?php echo $vr->nm_salesman?></td>
+					<td class="text-right"><?php echo $vr->hargajualtotal?></td>
+
+					<td><?= $vr->nm_barang ?> </td>
+					<td><?= $vr->nm_jenis ?> </td>
+					<td><?= $vr->nm_group ?> </td>
+					<td><?= $vr->satuan ?> </td>
+					<td><?= $vr->jumlah ?> </td>
+
+					<td><?= $vr->hargajual ?> </td>
+					<td><?= $vr->persen_diskon_stdr ?> </td>
+					<td><?= $vr->harga_after_diskon_stdr ?> </td>
+					<td><?= $vr->diskon_promo_persen ?> </td>
+					<td><?php echo $vr->diskon_so."(".$vr->tipe_diskon_so.")" ?> </td>
+					<td><?= $vr->harga_nett ?> </td>
+					<td><?= $vr->ppn ?> </td>
+					<td><?= $vr->subtot_after_diskon ?> </td>
+			<td class="text-center">
 			<?php
 				$OK		=1;
 				if($vr->flag_cancel == 'N'){
-					echo"<span class='badge bg-green'>TIDAK BATAL</span>";
+					echo"TIDAK BATAL";
 				}else{
 					$OK		= 0;
-					echo"<span class='badge bg-red'>BATAL</span>";
+					echo"BATAL";
 				}
 			?>
-      <!--
-		  </td>
-          <td class="text-center">
-            <?php //if($OK==1){?>
-            <a href="#dialog-popup" data-toggle="modal" class="btn bg-primary" onclick="PreviewPdf('<?php //echo $vr->no_invoice?>')">
-                <span class="glyphicon glyphicon-print"></span>
-            </a>
-			&nbsp;&nbsp;
-			<a href="#" class="btn bg-red" onClick="return batalInvoice('<?php //echo $vr->no_invoice?>')"> <i class="fa fa-trash-o"></i></a>
+				</tr>
+				<?php
+				if (!empty($vr->no_invoice)) {
+					$arr_nama[$vr->nm_jenis]['penjualan'] += $vr->jumlah;
+					$arr_nama[$vr->nm_jenis]['hpp'] += $vr->hargalanded*$vr->jumlah;
+				}else {
+					$arr_nama[$vr->nm_jenis]['penjualan'] += 0;
+					$arr_nama[$vr->nm_jenis]['hpp'] += 0;
+				}
+				$exe = 'PENJUALAN '.$jns.' = '.($cjns*100/$tc).'%<br>';
+			 } ?>
+				<?php } ?>
 
-			<?php //} ?>
-          </td>-->
-        </tr>
-        <?php } ?>
-        <?php } ?>
         </tbody>
         <tfoot>
           <tr>

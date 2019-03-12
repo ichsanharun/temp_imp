@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<div class="box box-primary">
+<!--div class="box box-primary">
   <div class="box-body">
     <div class="col-sm-12">
       <button class="btn btn-sm btn-primary" type="button" onclick="edit(0)"><i class="fa fa-plus"></i> Coba Klik</button>
@@ -46,9 +46,9 @@
           </tr>
         </thead>
       </table>
-    </div> 
+    </div>
   </div>
-</div>
+</div-->
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
@@ -63,7 +63,7 @@ jQuery(function($) {
               "targets": 0,
               "orderable": false,
               "searchable": false
-                
+
             }],
             "oLanguage":{
               "sSearch" : "_INPUT_",

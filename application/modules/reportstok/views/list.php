@@ -38,7 +38,7 @@ thead input {
 		<?php if ($ENABLE_ADD) : ?>
 
 			<span class="pull-right">
-				<?php echo anchor(site_url('setup_stock/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+				<?php echo anchor(site_url('reportstok/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
 				<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>
 				<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekapGroup()"><i class="fa fa-print">&nbsp;</i>STOK GROUP</a>
 			</span>
@@ -61,6 +61,7 @@ thead input {
 			<th>Qty Rusak</th>
 			<th>Landed Cost</th>
 			<th>Harga</th>
+      <th>Persediaan</th>
 			<th>Status</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="50">Action</th>
@@ -93,6 +94,7 @@ thead input {
 			<td><?= $record->qty_rusak ?></td>
 			<td><?= number_format($record->landed_cost) ?></td>
 			<td><?= number_format($record->harga) ?></td>
+      <td><?= "Rp ".number_format($record->landed_cost*$record->qty_stock) ?></td>
 			<td>
 				<?php if($record->sts_aktif == 'aktif'){ ?>
 					<label class="label label-success">Aktif</label>
@@ -129,7 +131,8 @@ thead input {
 			<th>Qty Rusak</th>
 			<th>Landed Cost</th>
 			<th>Harga</th>
-			<th>Status</th>
+			<th>Persediaan</th>
+      <th>Status</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="50">Action</th>
 			<?php endif; ?>
