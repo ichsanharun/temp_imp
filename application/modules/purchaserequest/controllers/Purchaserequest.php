@@ -38,22 +38,139 @@ class Purchaserequest extends Admin_Controller
     public function index()
     {
         $this->auth->restrict($this->viewPermission);
-        $data = $this->Purchaserequest_model
-        ->select('*,trans_pr_header.no_pr AS nopr')
-        ->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')
-        ->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
-        ->order_by('trans_pr_header.no_pr', 'ASC')->find_all();
+        if ($this->auth->user_cab() == "100") {
+          $data = $this->Purchaserequest_model
+          ->select('*,trans_pr_header.no_pr AS nopr')
+          ->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')
+          ->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
+          ->order_by('trans_pr_header.no_pr', 'ASC')->find_all();
+        }else {
+          $data = $this->Purchaserequest_model
+          ->select('*,trans_pr_header.no_pr AS nopr')
+          ->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')
+          ->where(array('trans_pr_header.kdcab'=>$this->auth->user_cab()))
+          ->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
+          ->order_by('trans_pr_header.no_pr', 'ASC')->find_all();
+        }
         //$data = $this->db->query("SELECT * FROM trans_pr_header LEFT JOIN barang_master ON trans_pr_header.id_barang = barang_master.id_barang order by no_pr asc")->result();
         $this->template->set('results', $data);
         $this->template->title('Purchase Request');
-        $this->template->render('list_lama');
+        $this->template->render('index');
     }
 
-    public function indexvvv()
+    public function create_pr()
     {
-        $this->auth->restrict($this->viewPermission);
-        $this->template->title('Purchase Request');
-        $this->template->render('list');
+        $session = $this->session->userdata('app_session');
+        if ($this->uri->segment(3) == '') {
+            $itembarang = $this->Purchaserequest_model->pilih_item($session['kdcab'])->result();
+        } else {
+            $this->db->select('*');
+            $this->db->from('supplier_barang');
+            $this->db->join('barang_master', 'barang_master.id_barang = supplier_barang.id_barang', 'left');
+            $this->db->where('supplier_barang.id_supplier', $this->uri->segment(3));
+            $itembarang = $this->db->get()->result();
+        }
+
+        $this->db->select('*');
+        $this->db->from('supplier_cbm');
+        $this->db->join('cbm', 'cbm.id_cbm = supplier_cbm.id_cbm', 'left');
+        $this->db->where('supplier_cbm.id_supplier', $this->uri->segment(3));
+        $cbm_sup = $this->db->get()->result();
+
+        //$supplier = $this->Purchaserequest_model->get_data('1=1','supplier');
+        $supplier = $this->Purchaserequest_model->get_data('1=1', 'supplier');
+        $cabang = $this->Purchaserequest_model->find_all_by(array('kdcab' => $session['kdcab']));
+        $this->template->set('itembarang', $itembarang);
+        $this->template->set('supplier', $supplier);
+        $this->template->set('cabang', $cabang);
+        $this->template->set('cbm_sup', $cbm_sup);
+        $this->template->title('Input Purchase Request');
+        $this->template->render('pr_form_new');
+    }
+
+    public function save_new()
+    {
+        $session = $this->session->userdata('app_session');
+        $nopr = $this->Purchaserequest_model->generate_nopr($session['kdcab']);
+        $headerpr = array(
+            'no_pr' => $nopr,
+            'tgl_pr' => $this->input->post('tglpr'),
+            'kdcab' => $session['kdcab'],
+            'plan_delivery_date' => $this->input->post('tglpr'),
+            'id_cbm' => $this->input->post('radio-group'),
+            'id_supplier' => $this->input->post('idsupplier'),
+            'nm_supplier' => $this->input->post('nmsupplier'),
+            'total_cbm' => $this->input->post('cbm_tot'),
+            'proses_po' => 'Proses',
+            'created_on' => date('Y-m-d H:i:s'),
+            'created_by' => $session['id_user'],
+        );
+
+        $this->db->trans_begin();
+        $this->db->select('*');
+        $this->db->from('supplier_barang');
+        $this->db->join('barang_master', 'barang_master.id_barang = supplier_barang.id_barang', 'left');
+        $this->db->where('supplier_barang.id_supplier', $this->input->post('idsupplier'));
+        $itembarang = $this->db->get()->result();
+
+        $jumlah = count($_POST['qtyt']);
+
+        for ($i = 0; $i < $jumlah; ++$i) {
+            $komponen = $_POST['komponen'][$i];
+            $datasm = array(
+                                'no_pr' => $nopr,
+                                'id_barang' => $_POST['barang_t'][$i],
+                                'nm_komponen' => $_POST['komponen'][$i],
+                                'qty' => $_POST['qtyt'][$i],
+                            );
+
+            if (!empty($_POST['qtyt'][$i])) {
+                $this->Purchaserequest_model->insert_trans_pr_tambahan($datasm);
+            }
+        }
+
+        $noo = 0;
+        foreach ($itembarang as $kc => $val) {
+            ++$noo;
+            $detailpr = array(
+                    'no_pr' => $nopr,
+                    'id_barang' => $val->id_barang,
+                    'nm_barang' => $val->nm_barang,
+                    'satuan' => $val->satuan,
+                    'qty_pr' => $this->input->post("qty$noo"),
+                    'harga_satuan' => $val->harga,
+                    'sub_total_pr' => 0,
+                    'created_on' => date('Y-m-d H:i:s'),
+                    'created_by' => date('Y-m-d H:i:s'),
+                    );
+            if ($this->input->post("qty$noo") != 0) {
+                $this->db->insert('trans_pr_detail', $detailpr);
+            }
+        }
+
+        $this->db->insert('trans_pr_header', $headerpr);
+
+        //Update counter NO_pr
+        $counter = $this->Purchaserequest_model->cek_data(array('kdcab' => $session['kdcab']), 'cabang');
+        $this->db->where(array('kdcab' => $session['kdcab']));
+        $this->db->update('cabang', array('no_pr' => $counter->no_pr + 1));
+        //END Update counter NO_pr
+
+        if ($this->db->trans_status() === false) {
+            $this->db->trans_rollback();
+            $param = array(
+                'save' => 0,
+                'msg' => 'GAGAL, tambah item barang..!!!',
+                );
+        } else {
+            $this->db->trans_commit();
+            $param = array(
+                'save' => 1,
+                'msg' => 'SUKSES, tambah item barang..!!!',
+                );
+        }
+
+        echo json_encode($param);
     }
 
     public function revisi()
@@ -365,118 +482,9 @@ class Purchaserequest extends Admin_Controller
         echo json_encode($param);
     }
 
-    public function new_create()
-    {
-        $session = $this->session->userdata('app_session');
-        if ($this->uri->segment(3) == '') {
-            $itembarang = $this->Purchaserequest_model->pilih_item($session['kdcab'])->result();
-        } else {
-            $this->db->select('*');
-            $this->db->from('supplier_barang');
-            $this->db->join('barang_master', 'barang_master.id_barang = supplier_barang.id_barang', 'left');
-            $this->db->where('supplier_barang.id_supplier', $this->uri->segment(3));
-            $itembarang = $this->db->get()->result();
-        }
 
-        $this->db->select('*');
-        $this->db->from('supplier_cbm');
-        $this->db->join('cbm', 'cbm.id_cbm = supplier_cbm.id_cbm', 'left');
-        $this->db->where('supplier_cbm.id_supplier', $this->uri->segment(3));
-        $cbm_sup = $this->db->get()->result();
 
-        //$supplier = $this->Purchaserequest_model->get_data('1=1','supplier');
-        $supplier = $this->Purchaserequest_model->get_data('1=1', 'supplier');
-        $cabang = $this->Purchaserequest_model->find_all_by(array('kdcab' => $session['kdcab']));
-        $this->template->set('itembarang', $itembarang);
-        $this->template->set('supplier', $supplier);
-        $this->template->set('cabang', $cabang);
-        $this->template->set('cbm_sup', $cbm_sup);
-        $this->template->title('Input Purchase Request');
-        $this->template->render('pr_form_new');
-    }
 
-    public function save_new()
-    {
-        $session = $this->session->userdata('app_session');
-        $nopr = $this->Purchaserequest_model->generate_nopr($session['kdcab']);
-        $headerpr = array(
-            'no_pr' => $nopr,
-            'tgl_pr' => date('Y-m-d'),
-            'kdcab' => $session['kdcab'],
-            'plan_delivery_date' => date('Y-m-d'),
-            'id_cbm' => $this->input->post('radio-group'),
-            'id_supplier' => $this->input->post('idsupplier'),
-            'nm_supplier' => $this->input->post('nmsupplier'),
-            'total_cbm' => $this->input->post('cbm_tot'),
-            'proses_po' => 'Proses',
-            'created_on' => date('Y-m-d H:i:s'),
-            'created_by' => $session['id_user'],
-        );
-
-        $this->db->trans_begin();
-        $this->db->select('*');
-        $this->db->from('supplier_barang');
-        $this->db->join('barang_master', 'barang_master.id_barang = supplier_barang.id_barang', 'left');
-        $this->db->where('supplier_barang.id_supplier', $this->input->post('idsupplier'));
-        $itembarang = $this->db->get()->result();
-
-        $jumlah = count($_POST['qtyt']);
-
-        for ($i = 0; $i < $jumlah; ++$i) {
-            $komponen = $_POST['komponen'][$i];
-            $datasm = array(
-                                'no_pr' => $nopr,
-                                'id_barang' => $_POST['barang_t'][$i],
-                                'nm_komponen' => $_POST['komponen'][$i],
-                                'qty' => $_POST['qtyt'][$i],
-                            );
-
-            if (!empty($_POST['qtyt'][$i])) {
-                $this->Purchaserequest_model->insert_trans_pr_tambahan($datasm);
-            }
-        }
-
-        $noo = 0;
-        foreach ($itembarang as $kc => $val) {
-            ++$noo;
-            $detailpr = array(
-                    'no_pr' => $nopr,
-                    'id_barang' => $val->id_barang,
-                    'nm_barang' => $val->nm_barang,
-                    'satuan' => $val->satuan,
-                    'qty_pr' => $this->input->post("qty$noo"),
-                    'harga_satuan' => $val->harga,
-                    'sub_total_pr' => 0,
-                    'created_on' => date('Y-m-d H:i:s'),
-                    'created_by' => date('Y-m-d H:i:s'),
-                    );
-            if ($this->input->post("qty$noo") != 0) {
-                $this->db->insert('trans_pr_detail', $detailpr);
-            }
-        }
-
-        $this->db->insert('trans_pr_header', $headerpr);
-        //Update counter NO_pr
-        $counter = $this->Purchaserequest_model->cek_data(array('kdcab' => $session['kdcab']), 'cabang');
-        $this->db->where(array('kdcab' => $session['kdcab']));
-        $this->db->update('cabang', array('no_pr' => $counter->no_pr + 1));
-        //Update counter NO_pr
-        if ($this->db->trans_status() === false) {
-            $this->db->trans_rollback();
-            $param = array(
-                'save' => 0,
-                'msg' => 'GAGAL, tambah item barang..!!!',
-                );
-        } else {
-            $this->db->trans_commit();
-            $param = array(
-                'save' => 1,
-                'msg' => 'SUKSES, tambah item barang..!!!',
-                );
-        }
-
-        echo json_encode($param);
-    }
 
     public function save_new_create()
     {

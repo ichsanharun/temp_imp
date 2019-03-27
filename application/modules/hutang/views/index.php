@@ -23,7 +23,12 @@
             <?php if ($results->num_rows() !== 0) {
     $num = 1;
     foreach ($results->result() as $row) :
-                $dolar = $row->rupiah_total / $row->rupiah;
+      if ($row->rupiah_total == 0) {
+        $dolar = 0;
+      }else {
+        // code...
+        $dolar = $row->rupiah_total / $row->rupiah;
+      }
     $peresen_dolar = $row->persen * $dolar / 100;
     $persen_rupiah = $row->persen * $row->rupiah_total / 100; ?>
 

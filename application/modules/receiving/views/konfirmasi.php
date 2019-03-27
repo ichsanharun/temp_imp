@@ -29,9 +29,13 @@
                         </div>
                         <div class="form-group">
                             <label for="tglreceive" class="col-sm-4 control-label">Tanggal Receive :</font></label>
-                            <div class="col-sm-8" style="padding-top: 8px;">
-                            <?php echo date('d M Y'); ?>
-                            <input type="hidden" name="tglreceive" id="tglreceive" value="<?php echo date('Y-m-d'); ?>">
+                            <div class="col-sm-8">
+                              <div class="input-group">
+                                  <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+
+                                  <input type="text" name="tglreceive" id="tglreceive" class="form-control input-sm datepicker" value="<?php echo date('Y-m-d'); ?>">
+                              </div>
+
                             </div>
                         </div>
                     </div>

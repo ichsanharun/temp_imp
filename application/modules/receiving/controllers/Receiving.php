@@ -353,7 +353,7 @@ class Receiving extends Admin_Controller
   		## ALI 2019-03-09 ##
   		## JURNAL CABANG ##
   		$session 				= $this->session->userdata('app_session');
-  		$Tgl_Jurnal				= date('Y-m-d');
+  		$Tgl_Jurnal				= $this->input->post('tglreceive');
   		$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($Cabang_PO,$Tgl_Jurnal);
   		$Keterangan_JV			= 'Persediaan#PO '.$nopo.'#'.$this->input->post('nmsupplier');
 

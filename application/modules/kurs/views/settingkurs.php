@@ -5,7 +5,7 @@
       <form id="form-header-so" method="post">
           <div class="form-horizontal">
             <div class="form-group">
-              <label for="kursyuan" class="col-sm-4 control-label">1 - Yuan (MBR)</label>
+              <label for="kursyuan" class="col-sm-4 control-label" style="color:#000">1 - Yuan (MBR)</label>
               <div class="col-sm-4">
                   <div class="input-group">
                       <span class="input-group-addon">IDR</span>
@@ -14,7 +14,7 @@
               </div>
             </div>
             <div class="form-group">
-              <label for="kursusd" class="col-sm-4 control-label">1 - US Dollar (USD)</label>
+              <label for="kursusd" class="col-sm-4 control-label" style="color:#000">1 - US Dollar (USD)</label>
               <div class="col-sm-4">
                   <div class="input-group">
                       <span class="input-group-addon">IDR</span>

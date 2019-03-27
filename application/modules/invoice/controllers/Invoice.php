@@ -70,33 +70,33 @@ class Invoice extends Admin_Controller {
 
      //Create New Invoice
     public function proses(){
-  		if($this->input->post()){
-  			$customer		      	= $this->input->post('cekcustomer');
-  			$getparamdo 		  	= explode(";",$this->input->post('cekcus'));
-  			$data_customer			= $this->Customer_model->find_data('customer',$customer,'id_customer');
-			//$header		= $this->db->get_where('trans_do_header',array('no_do'=>$param))->result();
-  			$Arr_Data		      	= array();
-			$this->db->where_in('no_do',$getparamdo);
-  			$headerdo         		= $this->db->get('trans_do_header')->result_array();
-			$customer_all    		= $this->Customer_model->find_all_by(array('deleted'=>0));
-			$Faktur_header	  		= $this->Invoice_model->getFakturMaster();
+    	if($this->input->post()){
+    			$customer		      	= $this->input->post('cekcustomer');
+    			$getparamdo 		  	= explode(";",$this->input->post('cekcus'));
+    			$data_customer			= $this->Customer_model->find_data('customer',$customer,'id_customer');
+  			  //$header		= $this->db->get_where('trans_do_header',array('no_do'=>$param))->result();
+    			$Arr_Data		      	= array();
+  			$this->db->where_in('no_do',$getparamdo);
+    			$headerdo         		= $this->db->get('trans_do_header')->result_array();
+    			$customer_all    		= $this->Customer_model->find_all_by(array('deleted'=>0));
+    			$Faktur_header	  		= $this->Invoice_model->getFakturMaster();
 
-  			foreach($headerdo as $key=>$vals){
-  				$Arr_Data[$key]					= $vals;
-  				$details						= $this->db->join("trans_so_header","trans_so_header.no_so = trans_do_detail.no_so","left")->get_where('trans_do_detail',array('no_do'=>$vals['no_do'],'qty_supply != '=>0))->result_array();
-  				$Arr_Data[$key]['detail_data']	= $details;
-  			}
+    			foreach($headerdo as $key=>$vals){
+    				$Arr_Data[$key]					= $vals;
+    				$details						= $this->db->join("trans_so_header","trans_so_header.no_so = trans_do_detail.no_so","left")->get_where('trans_do_detail',array('no_do'=>$vals['no_do'],'qty_supply != '=>0))->result_array();
+    				$Arr_Data[$key]['detail_data']	= $details;
+    			}
 
-  			$this->template->set('data_cust', $data_customer);
-			$this->template->set('customer', $customer_all);
-  			$this->template->set('faktur', $Faktur_header);
-  			$this->template->set('records', $Arr_Data);
-			//$this->template->set('header', $header);
-  			$this->template->title('Input Invoice');
-  			$this->template->render('invoice_form');
-  		}else{
-  			 $this->template->render('list_do');
-		  }
+    			$this->template->set('data_cust', $data_customer);
+  			  $this->template->set('customer', $customer_all);
+    			$this->template->set('faktur', $Faktur_header);
+    			$this->template->set('records', $Arr_Data);
+  			  //$this->template->set('header', $header);
+    			$this->template->title('Input Invoice');
+    			$this->template->render('invoice_form');
+    	}else{
+    			$this->template->render('list_do');
+  		}
 
     }
 
@@ -107,13 +107,13 @@ class Invoice extends Admin_Controller {
         echo json_encode($customer);
     }
 
-	function jatuhtempo(){
-	$tglnow   = $_GET['idcus'];
-    $jangka_waktu = strtotime('+45 days', strtotime($tglnow));// jangka waktu + 365 hari
-	$jthtempo=date("Y-m-d",$jangka_waktu);//tanggal expired
+  	function jatuhtempo(){
+  	  $tglnow   = $_GET['idcus'];
+      $jangka_waktu = strtotime('+45 days', strtotime($tglnow));// jangka waktu + 365 hari
+  	  $jthtempo=date("Y-m-d",$jangka_waktu);//tanggal expired
 
-	 $expired[tgl]  = $jthtempo;
-     echo json_encode($expired);
+  	   $expired[tgl]  = $jthtempo;
+       echo json_encode($expired);
     }
 
     function saveheaderinvoice(){
@@ -205,7 +205,7 @@ class Invoice extends Admin_Controller {
 					$Arr_detail[$Awal]['no_do']					        = $this->input->post('no_do')[$i];
 					$Arr_detail[$Awal]['diskon_so']			            = $this->input->post('diskon_so')[$i];
 					$Arr_detail[$Awal]['tipe_diskon_so']       			= $this->input->post('tipe_diskon_so')[$i];
-					//$Arr_detail[$Awal]['hargalanded']				    = $this->input->post('hargalanded')[$i];
+					$Arr_detail[$Awal]['hargalanded']				    = $this->input->post('hargalanded')[$i];
 					//$Arr_detail[$Awal]['diskon']						= $discount_satuan;
 					//$Arr_detail[$Awal]['bonus']				        = $this->input->post('bonus')[$key];
 				}

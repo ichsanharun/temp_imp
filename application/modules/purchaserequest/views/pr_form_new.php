@@ -56,10 +56,16 @@
                             <?php //print_r($supp)?>
                         </div>
 
-
-                            <?php $tglpr = date('Y-m-d'); ?>
-                            <input type="hidden" name="tglpr" id="tglpr" class="form-control input-sm datepicker" value="<?php echo $tglpr; ?>">
-
+                        <div class="form-group ">
+                            <?php $tglpr=date('Y-m-d')?>
+                            <label for="tglpr" class="col-sm-4 control-label">Tanggal PR<font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" name="tglpr" id="tglpr" class="form-control input-sm datepicker" value="<?php echo $tglpr?>">
+                                </div>
+                            </div>
+                        </div>
 
                              <?php $plandeliverypr = date('Y-m-d'); ?>
                             <input type="hidden" name="plandeliverypr" id="plandeliverypr" class="form-control input-sm datepicker" value="<?php echo $plandeliverypr; ?>">
@@ -448,18 +454,26 @@
 <script type="text/javascript">
     var uri3 = '<?php echo $this->uri->segment(3); ?>';
     var uri4 = '<?php echo $this->uri->segment(4);?>';
+    $(document).ready(function() {
+        
+        $(".datepicker").datepicker({
+            format : "yyyy-mm-dd",
+            showInputs: true,
+            autoclose:true
+        });
 
+    });
     function kembali(){
         window.location.href = siteurl+'purchaserequest';
     }
 
     function setitembarang(){
         var idbarang = $('#item_brg_pr').val();
-        window.location.href = siteurl+'purchaserequest/new_create/'+uri3+'/'+idbarang;
+        window.location.href = siteurl+'purchaserequest/create_pr/'+uri3+'/'+idbarang;
     }
     function getsupplier(){
         var idsup = $('#idsupplier').val();
-        window.location.href = siteurl+'purchaserequest/new_create/'+idsup;
+        window.location.href = siteurl+'purchaserequest/create_pr/'+idsup;
     }
 
     function resetform(){

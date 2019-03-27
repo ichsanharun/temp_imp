@@ -5,7 +5,7 @@
     $ENABLE_DELETE  = has_permission('Invoice.Delete');
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
-<div class="box">
+<div class="box" style="overflow-x:auto">
 	 <div class="box-header">
         <?php if ($ENABLE_ADD) : ?>
             <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
@@ -58,14 +58,14 @@
 		  </td>
           <td class="text-center">
             <?php if($OK==1){?>
-            <a class="btn bg-primary" onclick="CustomePrint('<?php echo $vr->no_invoice?>')">
+            <a class="btn bg-primary btn-sm" onclick="CustomePrint('<?php echo $vr->no_invoice?>')">
                 <span class="glyphicon glyphicon-print"></span>
             </a>
             <!--<a href="#dialog-popup" data-toggle="modal" class="btn bg-primary" onclick="PreviewPdf('<?php //echo $vr->no_invoice?>')">
                 <span class="glyphicon glyphicon-print"></span>
             </a>-->
 			&nbsp;&nbsp;
-			<a href="#" class="btn bg-red" onClick="return batalInvoice('<?php echo $vr->no_invoice?>')"> <i class="fa fa-trash-o"></i></a>
+			<a href="#" class="btn bg-red btn-sm" onClick="return batalInvoice('<?php echo $vr->no_invoice?>')"> <i class="fa fa-trash-o"></i></a>
 
 			<?php } ?>
           </td>

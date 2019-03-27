@@ -275,14 +275,14 @@ class Pembayaranpiutang extends Admin_Controller {
         $debetold = $this->Invoice_model->cek_data(array('no_invoice'=>$this->input->post('no_invoice')),'ar');
         $debetnow = $debetold->debet+$this->input->post('jml_bayar');
         $this->db->where(array('no_invoice'=>$this->input->post('no_invoice')));
-        $this->db->update('ar',array('debet'=>$debetnow,'saldo_akhir'=>$newpiutang));
+        $this->db->update('ar',array('kredit'=>$debetnow,'saldo_akhir'=>$newpiutang));
         //-----//
 
         //UPDATE NOBUM
        $pastibisa_tb_cabang = $this->Invoice_model->cek_data(array('nocab'=>$this->input->post('kdcab')),'pastibisa_tb_cabang');
        $nobum = $pastibisa_tb_cabang->nobum+1;
        $this->db->where(array('nocab'=>$this->input->post('kdcab')));
-       $this->db->update('pastibisa_tb_cabang',array('nobum'=>$nobum,'saldo_akhir'=>$newpiutang));
+       $this->db->update('pastibisa_tb_cabang',array('nobum'=>$nobum));
        //-----//
 
         //UPDATE STATUS GIRO BERDASAR NOMOR GIRO

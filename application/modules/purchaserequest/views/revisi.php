@@ -19,7 +19,7 @@
                               <input type="hidden" name="namacabang" id="namacabang" class="form-control input-sm" value="<?php echo $caba->namacabang; ?>">
                           </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-sm-6">
@@ -29,7 +29,7 @@
                                 <?= $this->uri->segment(4); ?>
                             </div>
                         </div>
-                      
+
                     </div>
                     <div class="col-sm-12">
                         <div class="form-group">
@@ -38,7 +38,7 @@
                                 <?= $pr_hader->keterangan; ?>
                             </div>
                         </div>
-                      
+
                     </div>
                 </div>
                 </div>
@@ -134,7 +134,7 @@
                              document.getElementById("cbmTotal<?= $noor; ?>").innerHTML = result.toFixed(2);
                              document.getElementById("cbmTtl<?= $noor; ?>").value = result.toFixed(2);
                           }
-                          
+
                           var resultzz = parseInt(document.getElementById('qty<?= $noor; ?>').value) * parseFloat(document.getElementById('kgs<?= $noor; ?>').value);
                           if (!isNaN(resultzz)) {
                              document.getElementById("kgsTotal<?= $noor; ?>").innerHTML = resultzz.toFixed(2);
@@ -145,7 +145,7 @@
                 <?php
             }
             ?>
-            
+
             </tbody>
             <tr>
                 <td></td>
@@ -160,7 +160,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div class="box-body">
     <div class="col-sm-12">
         <center><b>PILIH CONTAINER</b></center>
@@ -176,7 +176,7 @@
                             <input type="radio" value="<?= $data_cbm->id_cbm; ?>" id="test<?= $ncb; ?>" name="radio-group" <?= $pr_hader->id_cbm == $data_cbm->id_cbm ? 'checked' : ''; ?>  >
                             <label for="test<?= $ncb; ?>"><?= $data_cbm->name_cbm; ?></label>
                           </p>
-                        
+
                     </th>
                     <?php
                     } ?>
@@ -187,15 +187,15 @@
                     foreach (@$cbm_sup as $data => $data_cbm) {
                         ++$nxg; ?>
                     <script>
-                    
+
                         function losefocus<?= $nxg; ?>($id, tkgs) {
-                            
+
                             $cbmmm=parseFloat($id)/<?= $data_cbm->cbm; ?>;
                             document.getElementById("hasilctn<?= $nxg; ?>").innerHTML =$cbmmm.toFixed(2);
-                            
+
                             ckgs=parseFloat(tkgs)/1000;
                             document.getElementById("hasilckgs<?= $nxg; ?>").innerHTML =ckgs.toFixed(2);
-                           
+
                         }
                     </script>
                     <th style="text-align: center">
@@ -208,7 +208,7 @@
                     } ?>
                 </tr>
             </thead>
-            
+
             <tbody>
                 <tr>
                     <?php
@@ -243,14 +243,14 @@
         </table>
     </div>
 </div>
-        
 
-<div class="box-body">
+
+<!--div class="box-body">
     <div class="col-sm-12">
         <center><b>PR (Purchase Request) Tambahan</b></center>
         <div class="input_fields_wrap">
-            
-            
+
+
             <div class="row">
                 <div class="col-xs-3">
                   Nama Komponen
@@ -276,7 +276,7 @@
                 </div>
                 <div class="col-xs-5">
                     <select id="idbarangmx" name="barang_t[]" class="form-control input-sm" style="width: 100%;" tabindex="-1" >
-                       
+
                         <?php
                             foreach (@$itembarang as $rowxx) {
                                 ?>
@@ -294,13 +294,13 @@
             ?>
         </div>
     </div>
-    </div>
-        
-        
+</div-->
+
+
     </form>
-    
+
     <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-            
+
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -318,10 +318,10 @@
 
 <br>
 <script>
-            
+
 function HitungTotal(id)
 {
-    
+
     sumKgs      = 0;
     $('#dtazz tr').each(function(){
         SubTotalKgs = parseFloat($(this).find("td:eq(8)").text());
@@ -331,28 +331,28 @@ function HitungTotal(id)
           } else {
             datasKgs  =SubTotalKgs;
           }
-          
+
           sumKgs += parseFloat(datasKgs);
     });
     document.getElementById("totalKgs").innerHTML = sumKgs.toFixed(2);
-    
-    
+
+
     var Total   = 0;
     sum         = 0;
     qtytotal    =0;
     $('#dtazz tr').each(function(){
-        
+
         SubTotal = parseFloat($(this).find("td:eq(6)").text());
         if (isNaN(SubTotal)) {
             datass  =0;
           } else {
             datass  =SubTotal;
           }
-          
+
           sum += parseFloat(datass);
     });
     //console.log($('#dtazz tr').length);
-    
+
     document.getElementById("totalCbmsuub").innerHTML = sum.toFixed(2);
     document.getElementById("cbm_tot").value = sum;
      <?php
@@ -362,28 +362,28 @@ function HitungTotal(id)
     losefocus<?= $nxg; ?>(sum.toFixed(2), sumKgs.toFixed(2));
     <?php
     } ?>
-    
-      
+
+
         var i;
         for (i=1;i<=<?= count($itembarang); ?>;i++)
         {
-            
+
             SubQtys = parseInt(document.getElementById('qty'+i).value);
             if (isNaN(SubQtys)) {
                 datassQ  =0;
               } else {
                 datassQ  =SubQtys;
               }
-              
+
               qtytotal += parseInt(datassQ);
         }
-        
+
         document.getElementById("totalQtyy").innerHTML =qtytotal;
     }
-    
-    
+
+
     function saveheaderpr(){
-            
+
                 var formdata = $("#form-header-pr").serialize();
                // console.log(formdata);
                 $.ajax({
@@ -424,8 +424,8 @@ function HitungTotal(id)
                         });
                     }
                 });
-          
-        
-        
+
+
+
     }
 </script>

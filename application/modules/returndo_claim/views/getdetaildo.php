@@ -3,26 +3,19 @@
   <tr>
     <th colspan="4"><?php echo @$header->nm_customer?></th>
     <th colspan="2" class="text-center">
-      <input type="hidden" name="no_do_konfirm" id="no_do_konfirm" class="form-control" value="<?php echo @$header->no_do?>">
-      <?php echo "NO. DO : ".@$header->no_do?>
+      <input type="hidden" name="no_do_konfirm" id="no_do_konfirm" class="form-control" value="<?php echo @$detail[0]->no_do?>">
+      <?php echo "NO. DO : ".@$detail[0]->no_do?>
     </th>
   </tr>
   <tr>
-    <th rowspan="2" width="2%">NO</th>
-    <th rowspan="2" width="30%">NAMA PRODUK</th>
-    <th rowspan="2" width="7%"><center>QTY</center></th>
-    <th rowspan="2" width="5%"><center>SATUAN</center></th>
-    <th rowspan="2" width="15%">STATUS RETURN:</th>
-    <th colspan="2" width="10%">CLAIM RETURN</th>
+    <th width="2%">NO</th>
+    <th width="30%">NAMA PRODUK</th>
+    <th width="7%"><center>QTY</center></th>
+    <th width="5%"><center>SATUAN</center></th>
+    <th width="15%">STATUS RETURN:</th>
+    <th width="10%">CLAIM RETURN</th>
   </tr>
-  <tr>
-    <th>
-      SCRAP
-    </th>
-    <th>
-      LOST
-    </th>
-  </tr>
+
   <?php
   $n=1;
   $total = 0;
@@ -33,13 +26,14 @@
       <tr>
         <td rowspan="<?php echo $rs?>"><center><?php echo $no?></center></td>
         <td rowspan="<?php echo $rs?>"><?php echo $vd->nm_barang?></td>
-        <td rowspan="<?php echo $rs?>"><center><?php echo $vd->qty_supply?></center></td>
+        <td rowspan="<?php echo $rs?>"><center><?php echo $vd->jumlah?></center></td>
         <td rowspan="<?php echo $rs?>"><center><?php echo $vd->satuan?></center></td>
         <td>
-          <strong><?php echo $vd->konfirm_do_detail?></strong><br>
-          GOOD: <?php echo $vd->return_do?><br>
-          SCRAP: <?php echo $vd->return_do_rusak?><br>
-          LOST: <?php echo $vd->return_do_hilang?><br>
+          <?php $cr = $this->db->query("SELECT * FROM trans_do_detail WHERE no_do = '$vd->no_do' AND id_barang = '$vd->id_barang'")->result(); ?>
+          <strong><?php echo $cr[0]->konfirm_do_detail?></strong><br>
+          GOOD: <?php echo $cr[0]->return_do?><br>
+          SCRAP: <?php echo $cr[0]->return_do_rusak?><br>
+          LOST: <?php echo $cr[0]->return_do_hilang?><br>
           <!--<select class="form-control" name="konfirm_do[]" id="konfirm_do<?php echo $no?>" onchange="setclose('<?php echo $no?>')">
             <option value="">Pilih Konfirmasi</option>
             <option value="CLOSE">CLOSE</option>
@@ -49,11 +43,11 @@
         <td>
           <input type="text" name="return_do_rusak[]" id="return_do_rusak<?php echo $no?>" class="form-control return_do" onkeyup="cekreturn('<?php echo $no?>')">
           <input type="hidden" name="id_barang_do_konfirm[]" class="form-control" value="<?php echo $vd->id_barang?>">
-          <input type="hidden" name="qty_supply_do[]" id="qty_supply_do<?php echo $no?>" class="form-control" value="<?php echo $vd->qty_supply?>">
+          <input type="hidden" name="qty_supply_do[]" id="qty_supply_do<?php echo $no?>" class="form-control" value="<?php echo $vd->jumlah?>">
         </td>
-        <td>
+        <!--td>
           <input type="text" name="return_do_hilang[]" id="return_do_hilang<?php echo $no?>" class="form-control return_do" onkeyup="cekreturn('<?php echo $no?>')">
-        </td>
+        </td-->
       </tr>
     <?php }} ?>
 

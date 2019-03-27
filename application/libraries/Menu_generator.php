@@ -10,7 +10,7 @@ class Menu_generator
 
 	public function __construct(){
 		$this->ci =& get_instance();
-		
+
 		$this->x = $this->ci->db->dbprefix;
 		$this->uri = '/'.$this->ci->uri->uri_string().'/';
 
@@ -24,6 +24,8 @@ class Menu_generator
 	public function build_menus($type=1)
 	{
 		$auth = $this->get_auth_permission($this->user_id);
+		//$pst = $this->get_auth_permission($this->user_cab);
+		//$session = $this->session->userdata('app_session');
 		if(!$auth)
 		{
 			$auth = array(NULL);
@@ -36,12 +38,15 @@ class Menu_generator
 							->join("{$this->x}menus as t2","t1.id = t2.parent_id","left")
 							->where("t1.parent_id",0)
 							->where("t1.group_menu",$type)
-							->where("t1.status",1)
-							->group_by("t1.id")
+							->where("t1.status",1);
+							if ($this->ci->auth->user_cab() != '100') {
+								$menu = $menu->where("t1.pusat",0);
+							}
+							$menu = $menu->group_by("t1.id")
 							->order_by("t1.order","ASC")
 							->get()
 							->result();
-							
+
 			$html = "<ul class='sidebar-menu'>
 							<li class='header'></li>
 	                        <li class='".check_class('dashboard', TRUE)."'>
@@ -52,7 +57,7 @@ class Menu_generator
 
 			if(is_array($menu) && count($menu))
 			{
-				
+
 	            foreach ($menu as $rw) {
 	            	$id 		= $rw->id;
 	            	$title 		= $rw->title;
@@ -65,11 +70,13 @@ class Menu_generator
 								->where("t1.parent_id",$id)
 								->where("t1.group_menu",$type)
 								->where("t1.status",1);
+
 					if(!$this->is_admin)
 					{
 						$submenu = $submenu->where_in("t1.permission_id", $auth);
+
 					}
-						$submenu = $submenu->group_by("t1.id")			
+						$submenu = $submenu->group_by("t1.id")
 										->group_by("t1.id")
 										->order_by("t1.order","ASC")
 										->get()
@@ -88,7 +95,7 @@ class Menu_generator
 							$active = "";
 
 							if(strpos($this->uri, '/'.$link.'/')!==FALSE)
-							{							
+							{
 								$active = "active";
 							}
 
@@ -101,14 +108,14 @@ class Menu_generator
 					$active = "";
 
 					foreach ($submenu as $sub) {
-						
+
 						if(strpos($this->uri, '/'.$sub->link.'/')!==FALSE)
-						{							
+						{
 							$active = "active";
 							break;
 						}
 					}
-					
+
 	            	$html .= "
             			    <li class='treeview {$active}'>
                                 <a href='#'>
@@ -150,7 +157,7 @@ class Menu_generator
 	                				<li class='".$active."'><a href='".($sublink == '#' ? '#' : site_url($sublink))."'"." ".$subtarget."><i class='".$subicon."'></i>".ucwords($subtitle)."</a></li>";
 	                }
 
-	                $html .="		
+	                $html .="
                 				</ul>
                 			</li>";
 
@@ -164,7 +171,7 @@ class Menu_generator
 		}else{
 			//other menu
 		}
-		
+
 		return $html;
 	}
 

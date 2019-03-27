@@ -85,9 +85,13 @@ class Cabang extends Admin_Controller {
         $gudang         = $this->input->post('gudang');
         $kota           = $this->input->post('kota');
         $no_so          = $this->input->post('no_so');
-        $no_suratjalan          = $this->input->post('no_suratjalan');
+        $no_suratjalan  = $this->input->post('no_suratjalan');
         $no_picking_list= $this->input->post('no_picking_list');
-        $no_Invoice     = $this->input->post('no_Invoice');
+        $no_invoice     = $this->input->post('no_invoice');
+        $no_pr          = $this->input->post('no_pr');
+        $no_po          = $this->input->post('no_po');
+        $no_receive     = $this->input->post('no_receive');
+        $th_picking_list= $this->input->post('th_picking_list');
         $biaya_logistik_lokal          = $this->input->post('biaya_logistik_lokal');
         $sts_aktif      = $this->input->post('sts_aktif');
 
@@ -112,6 +116,10 @@ class Cabang extends Admin_Controller {
                                 'no_suratjalan'=>$no_suratjalan,
                                 'no_invoice'=>$no_invoice,
                                 'no_picking_list'=>$no_picking_list,
+                                'no_pr'=>$no_pr,
+                                'no_po'=>$no_po,
+                                'no_receive'=>$no_receive,
+                                'th_picking_list'=>$th_picking_list,
                                 'biaya_logistik_lokal'=>$biaya_logistik_lokal,
                                 'sts_aktif'=>$sts_aktif,
                             )
@@ -161,6 +169,10 @@ class Cabang extends Admin_Controller {
                         'no_suratjalan'=>$no_suratjalan,
                         'no_invoice'=>$no_invoice,
                         'no_picking_list'=>$no_picking_list,
+                        'no_pr'=>$no_pr,
+                        'no_po'=>$no_po,
+                        'no_receive'=>$no_receive,
+                        'th_picking_list'=>$th_picking_list,
                         'biaya_logistik_lokal'=>$biaya_logistik_lokal,
                         'sts_aktif'=>$sts_aktif,
                         );

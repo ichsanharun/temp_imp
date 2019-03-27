@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="<?php echo base_url('assets/css/radiobutton.css'); ?>">
+<!--link rel="stylesheet" href="<?php echo base_url('assets/css/radiobutton.css'); ?>"-->
 <link href="<?= base_url(); ?>assets/css/switch.css" rel="stylesheet" />
 <div class="nav-tabs-pr">
     <div class="tab-content">
@@ -81,30 +81,28 @@
                             $usd_to_rmb = $kurs_usd->kurs/$kurs_rmb->kurs;
                              ?>
                             <div class="col-sm-8" style="padding-top: 11px;">
-                                <table width="100%">
+                                <table width="100%" class="table-bordered">
                                     <tr>
-                                        <td>
-                                            USD
+                                        <td style="border-bottom:2px solid #000 !important">
+                                            <strong>USD</strong>
+
+                                            to <strong>RMB</strong>
                                         </td>
-                                        <td>
-                                            to RMB
-                                        </td>
-                                        <td>
-                                            <input id="kurs_usd" name="kurs_usd" value="<?=$usd_to_rmb?>" readonly />
+                                        <td style="border-bottom:2px solid #000 !important">
+                                            <input id="kurs_usd" name="kurs_usd" value="<?=$usd_to_rmb?>"  />
                                         </td>
                                         <td rowspan="2">
-                                          <a href="<?=base_url('kurs')?>" class="btn btn-sm">Change Kurs</a>
+                                          <a href="#modals-kurs" data-toggle="modal" class="btn btn-sm" onclick="change_kurs()"><span class="badge bg-primary">Change Kurs</span></a>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            USD 
+                                            <strong>USD</strong>
+
+                                            to <strong>Rupiah</strong>
                                         </td>
                                         <td>
-                                            to Rupiah
-                                        </td>
-                                        <td>
-                                            <input id="kurs_rp" name="kurs_rp" value="<?=$kurs_usd->kurs?>" readonly />
+                                            <input id="kurs_rp" name="kurs_rp" value="<?=$kurs_usd->kurs?>"  />
                                         </td>
                                     </tr>
                                 </table>
@@ -137,9 +135,12 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="col-sm-4 control-label">Shipping</label>
-                            <div class="col-sm-8" style="padding-top: 11px;">
+                            <label class="col-sm-4 control-label">Ocean Freight</label>
+                            <div class="col-sm-8" style="">
+                              <div class="input-group">
+                                <span class="input-group-addon">$</span>
                                 <input type="text" name="shipping"  class="form-control input-sm" value="" required="" onkeyup="this.value = this.value.match(/^[0-9]+$/)">
+                              </div>
                             </div>
                         </div>
 
@@ -262,8 +263,20 @@
                         <div class="col-xs-1">
                           NO
                         </div>
-                        <div class="col-xs-3">
-                          Persen
+                        <div class="col-sm-3">
+                          <div class="form-group ">
+                            <div class="radio-inline">
+                              <label>
+                                <input type="radio" class="radio_logo" name="opsi_top" value="persen" onclick="get_logo(this.value)">Persen
+                              </label>
+                            </div>
+                            <div class="radio-inline">
+                              <label>
+                                <input type="radio" class="radio_logo" name="opsi_top" value="nominal" onclick="get_logo(this.value)">Nominal
+                              </label>
+                            </div>
+                          </div>
+
                         </div>
                         <div class="col-xs-4">
                           Tgl Bayar
@@ -277,7 +290,25 @@
                           1
                         </div>
                         <div class="col-xs-3">
-                          <input type="text" name="pembayaran[]" class="form-control" value="100" >
+                          <div class="input-group">
+                            <span class="input-group-addon logo_currency">$</span>
+                            <input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\d*[.]?\d*$/)">
+                          </div>
+                          <script>
+                            function get_logo(a){
+                              if (a == 'persen') {
+                                b = '%';
+                              }else {
+                                b = '$';
+                              }
+                              var x = document.getElementsByClassName("logo_currency");
+                              console.log(x);
+                              var i;
+                              for (i = 0; i < x.length; i++) {
+                                  x[i].innerHTML= b;
+                              }
+                            }
+                          </script>
                         </div>
                         <div class="col-xs-4">
                             <input type="text" name="perkiraan_bayar[]" class="form-control pull-right datepickerxx"  value="<?= date('Y-m-d'); ?>">
@@ -314,8 +345,37 @@
         </table>
 </div>
 
+<div class="modal modal-primary" id="modals-kurs" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file-pdf-o"></span>&nbsp;Purchase Order (PO)</h4>
+      </div>
+      <div class="modal-body" id="MyModalBody">
+    ...
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+        <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
+        </div>
+    </div>
+  </div>
+</div>
 <script>
+function change_kurs_()
+{
+  tujuan = '<?=base_url('kurs/views/settingkurs.php')?>';
 
+    $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+}
+
+function change_kurs(){
+  url = siteurl+'kurs';
+  $.post(url,{'id':'1'},function(result){
+    $("#MyModalBody").html(result);
+  });
+}
 
     function saveheaderpr(){
 
@@ -376,6 +436,13 @@
         var max_fields      = 10; //maximum input boxes allowed
         var wrapper         = $(".input_fields_wrap"); //Fields wrapper
         var add_button      = $(".add_field_button"); //Add button ID
+        var persen          = $("input:radio.radio_logo:checked").val();
+        if (persen == "persen") {
+          var logo = "%";
+        }else {
+          var logo = "$";
+        }
+        //console.log(persen);
 
         var x = 1; //initlal text box count
         $(add_button).click(function(e){ //on add input button click
@@ -388,7 +455,10 @@
                 $(wrapper).append('<div class="row">'+
                                         '<div class="col-xs-1">'+x+'</div>'+
                                         '<div class="col-xs-3">'+
-                                          '<input type="text" name="pembayaran[]" class="form-control" value="0" >'+
+                                          '<div class="input-group">'+
+                                            '<span class="input-group-addon logo_currency">'+logo+'</span>'+
+                                            '<input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\\\d*[.]?\\\d*$/)">'+
+                                          '</div>'+
                                         '</div>'+
                                         '<div class="col-xs-4"><input type="text" name="perkiraan_bayar[]" class="form-control pull-right "  id="datepickerxxr'+x+'"  value="<?= date('Y-m-d'); ?>"></div>'+
                                         '<a href="#" class="remove_field">Remove</a>'+

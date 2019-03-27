@@ -6,8 +6,8 @@
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 <div class="box">
-    
-    <div class="box-body">
+
+    <div class="box-body" style="overflow-x:auto !important">
         <table id="example1" class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -16,7 +16,7 @@
                 <th>Cabang</th>
                 <th>Tanggal PR</th>
                 <th> Supplier</th>
-                <th width="50px">Aksi</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -37,10 +37,13 @@
                     <?php
                     if ($vp->proses_po == 'Proses' || $vp->proses_po == 'REVISI') {
                         ?>
-                        <a href="<?= base_url("purchaserequest/Pusat_purchaserequest/konfirmasi/$vp->id_supplier/$vp->nopr"); ?>">Confrim</a> &nbsp;
+
+                        <a href="<?= base_url("purchaserequest/Pusat_purchaserequest/konfirmasi/$vp->id_supplier/$vp->nopr"); ?>">
+                          <span class="badge bg-orange">CONFIRM</span>
+                        </a> &nbsp;
                         <?php
                     } ?>
-                
+
                 <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vp->nopr; ?>')">
                     <span class="glyphicon glyphicon-print"></span>
                 </a>
@@ -89,7 +92,7 @@
     function add_data(){
         window.location.href = siteurl+"purchaserequest/new_create";
     }
-    
+
     function edit_data(id, pr){
         if(id!=""){
             var url = 'purchaserequest/edit/'+id+'/'+pr;
@@ -99,7 +102,7 @@
             $("#title").focus();
         }
     }
-    
+
     function delete_data(id){
         //alert(id);
         swal({
@@ -120,7 +123,7 @@
                     dataType : "json",
                     type: 'POST',
                     success: function(msg){
-                        if(msg['delete']=='1'){                         
+                        if(msg['delete']=='1'){
                             swal({
                               title: "Terhapus!",
                               text: "Data berhasil dihapus",
@@ -154,7 +157,7 @@
           }
         });
     }
-    
+
     function PreviewPdf(nopr)
     {
       tujuan = 'purchaserequest/print_request/2/'+nopr;

@@ -97,7 +97,7 @@ class Deliveryorder_2 extends Admin_Controller {
 
           $and = " proses_do IS NULL ";
           $getitemso = $this->Detailsalesorder_model->get_where_in_and('no_so',$getparam,$and,'trans_so_detail');
-		  
+
           $driver    = $this->Deliveryorder_model->pilih_driver($session['kdcab'])->result();
   		$Arr_Driver	= array();
   		if($driver){
@@ -644,7 +644,7 @@ class Deliveryorder_2 extends Admin_Controller {
                         <td colspan="2"></td>
                         <td></td>
                         <td width="15%">'.@$cabang->namacabang.',</td>
-                        <td>'.date('d-M-Y').'</td>
+                        <td>'.date('d-M-Y',strtotime(@$do_data->tgl_do)).'</td>
                     </tr>
                     <tr>
                         <td width="10%">SALES</td>
@@ -905,7 +905,7 @@ class Deliveryorder_2 extends Admin_Controller {
                 <td width="5%">TOP</td>
 
                 <td colspan="3">:
-                    '.@$header_so->top.' HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime('+'.@$header_so->top.' days', strtotime(date('Y-m-d')))).'
+                    '.@$header_so->top.' HARI  &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime('+'.@$header_so->top.' days', strtotime(@$do_data->tgl_do))).'
                 </td>
                 <td width="15%" colspan="3" style="font-size:9pt !important;">
                     '.@$do_data->nm_customer.'

@@ -259,7 +259,7 @@
               $grand_ppn += $ppn_all;
               $grand_setelah_toko += $harga_setelah_diskon_toko*$qty_supply;
               $grand 				+= $dpp_barang;
-              //$grand = ceil($grand);
+              $grand = ceil($grand);
               $hargalandedtotal += $detaillanded->landed_cost*$qty_supply;
 
 							echo"<tr>";
@@ -304,7 +304,6 @@
                   <input type="hidden" name="ppn[]" value="<?php echo $headerso->ppn?>">
                   <input type="hidden" name="tgljual[]" value="<?php echo $headerso->tanggal?>">
                   <input type="hidden" name="no_do[]" value="<?php echo $values['no_do']?>">
-                  <input type="hidden" name="hargalanded[]" value="<?php echo $values['no_do']?>">
 
                 <?php
 							echo"</tr>";
@@ -324,15 +323,15 @@
             <input type="hidden" name="nm_salesman" value="<?php echo $values['nm_salesman']?>">
             <input type="hidden" name="diskon_toko_persen" value="<?php echo $diskon_toko?>">
             <input type="hidden" name="diskon_cash_persen" value="<?php echo $diskon_cash?>">
-            <input type="hidden" name="hargajualbefdis" value="<?php echo round($hargajualbefdis,2)?>">
-            <input type="hidden" name="hargajualafterdis" value="<?php echo round($dpp_sebelum,2)?>">
-            <input type="hidden" name="hargajualafterdistoko" value="<?php echo round($hargajualafterdistoko,2)?>">
-            <input type="hidden" name="hargajualafterdiscash" value="<?php echo round($grand,2)?>">
-            <input type="hidden" name="diskon_stdr_rp" value="<?php echo round($diskon_std_rp*$qty_supply,2)?>">
-            <input type="hidden" name="dpp" value="<?php echo round($dpp,2)?>">
+            <input type="hidden" name="hargajualbefdis" value="<?php echo ceil($hargajualbefdis)?>">
+            <input type="hidden" name="hargajualafterdis" value="<?php echo ceil($dpp_sebelum)?>">
+            <input type="hidden" name="hargajualafterdistoko" value="<?php echo ceil($hargajualafterdistoko)?>">
+            <input type="hidden" name="hargajualafterdiscash" value="<?php echo ceil($grand)?>">
+            <input type="hidden" name="diskon_stdr_rp" value="<?php echo ceil($diskon_std_rp*$qty_supply)?>">
+            <input type="hidden" name="dpp" value="<?php echo ceil($dpp)?>">
             <input type="hidden" name="n_ppn" id="n_ppn" value="<?php echo (Int)$pn?>">
-            <input type="hidden" name="hargajualtotal" id="n_grand" value="<?php echo round($grand,2)?>">
-            <input type="hidden" name="hargalandedtotal" id="n_landed" value="<?php echo round($hargalandedtotal,2)?>">
+            <input type="hidden" name="hargajualtotal" id="n_grand" value="<?php echo ceil($grand)?>">
+            <input type="hidden" name="hargalandedtotal" id="n_landed" value="<?php echo ceil($hargalandedtotal)?>">
             <tfoot>
                 <tr>
                     <td colspan="8" class="text-right"><b>SubTotal :</b></td>

@@ -19,7 +19,7 @@
                               <input type="hidden" name="namacabang" id="namacabang" class="form-control input-sm" value="<?php echo $caba->namacabang?>">
                           </div>
                         </div>
-                        
+
                     </div>
 
                     <div class="col-sm-6">
@@ -29,7 +29,18 @@
                                 <?= $this->uri->segment(4) ?>
                             </div>
                         </div>
-                      
+
+                        <div class="form-group ">
+                            <?php $tglpo=date('Y-m-d', strtotime($pr_hader->tgl_pr))?>
+                            <label for="tglpo" class="col-sm-4 control-label">Tanggal PO<font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" name="tglpo" id="tglpo" class="form-control input-sm" value="<?= $tglpo?>">
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
                 </div>
@@ -68,7 +79,7 @@
                     $qtyx=$row_det->qty_pr;
                     $cbmx=$datas->cbm_each*$qtyx;
                     $kgsx=$datas->gross_weight*$qtyx;
-                    
+
                 } else {
                     $qtyx=0;
                     $cbmx=0;
@@ -117,7 +128,7 @@
                              document.getElementById("cbmTotal<?= $noor ?>").innerHTML = result.toFixed(2);
                              document.getElementById("cbmTtl<?= $noor ?>").value = result.toFixed(2);
                           }
-                          
+
                           var resultzz = parseInt(document.getElementById('qty<?= $noor ?>').value) * parseFloat(document.getElementById('kgs<?= $noor ?>').value);
                           if (!isNaN(resultzz)) {
                              document.getElementById("kgsTotal<?= $noor ?>").innerHTML = resultzz.toFixed(2);
@@ -128,7 +139,7 @@
                 <?php
             }
             ?>
-            
+
             </tbody>
             <tr>
                 <td></td>
@@ -158,7 +169,7 @@
                             <input type="radio" value="<?= $data_cbm->id_cbm  ?>" id="test<?= $ncb ?>" name="radio-group" <?= $pr_hader->id_cbm==$data_cbm->id_cbm ? "checked":"" ?>  >
                             <label for="test<?= $ncb ?>"><?= $data_cbm->name_cbm  ?></label>
                           </p>
-                        
+
                     </th>
                     <?php } ?>
                 </tr>
@@ -169,15 +180,15 @@
                         $nxg++;
                     ?>
                     <script>
-                    
+
                         function losefocus<?= $nxg ?>($id, tkgs) {
-                            
+
                             $cbmmm=parseFloat($id)/<?= $data_cbm->cbm ?>;
                             document.getElementById("hasilctn<?= $nxg ?>").innerHTML =$cbmmm.toFixed(2);
-                            
+
                             ckgs=parseFloat(tkgs)/1000;
                             document.getElementById("hasilckgs<?= $nxg ?>").innerHTML =ckgs.toFixed(2);
-                           
+
                         }
                     </script>
                     <th style="text-align: center">
@@ -189,7 +200,7 @@
                     <?php } ?>
                 </tr>
             </thead>
-            
+
             <tbody>
                 <tr>
                     <?php
@@ -210,13 +221,13 @@
                         $bgh++;
                     ?>
                     <td  style="text-align: center">
-                        Total Container 
-                        <b id="hasilctn<?= $bgh ?>"> = 
+                        Total Container
+                        <b id="hasilctn<?= $bgh ?>"> =
                             <?php
                             echo number_format($total_cbmx/$data_cbm->cbm,2)
                             ?>
                         </b>
-                        
+
                     </td>
                     <td id="hasilckgs<?= $bgh ?>" style="text-align: center">
                          <?php
@@ -229,16 +240,16 @@
         </table>
     </div>
 </div>
-        
+
     </form>
-    
+
     <form id="tambahaan" method="post" >
 <div class="box-body">
     <div class="col-sm-12">
         <center><b>PR (Purchase Request) Tambahan</b></center>
         <div class="input_fields_wrap">
-            
-            
+
+
             <div class="row">
                 <div class="col-xs-3">
                   Nama Komponen
@@ -270,7 +281,7 @@
                 </div>
                 <div class="col-xs-5">
                     <select id="idbarangmx" name="barang_t[]" class="form-control input-sm" style="width: 100%;" tabindex="-1" >
-                       
+
                         <?php
                             foreach (@$itembarang as $rowxx)
                             {
@@ -292,9 +303,9 @@
         </div>
     </div>
     </div>
-        
+
     </form>
-    
+
 
 </div>
 
@@ -325,13 +336,13 @@
                         </center>
                         <br />
                     </div>
-                </div> 
+                </div>
             </div>
         </div>
     </div>
 </form>
 <table id="prdetailitem" class="table table-bordered table-striped" width="100%">
-            
+
             <tfoot>
                 <tr>
                     <th class="text-right" colspan="13">
@@ -346,8 +357,8 @@
             </tfoot>
         </table>
 
- <script type="text/javascript">
-// Toggles the passed button from OFF to ON and vice-versa. 
+<script type="text/javascript">
+// Toggles the passed button from OFF to ON and vice-versa.
         function toggle(button) {
             switch (button.value) {
                 case "ACC":
@@ -364,86 +375,79 @@
                     break;
             }
         }
-    </script>
-<script>
-    function asdas(){
-       data=$(this).data('checked');
-        console.log(data);
-    }
-</script>
-
-
-
-<script>
-    function divHapus(id){
-        console.log(id);
-       document.getElementById(id).remove();
-    }
-
-</script>
-<script>
-    $(document).ready(function() {
-        $("#idbarangmx").select2({
+        function divHapus(id){
+          console.log(id);
+          document.getElementById(id).remove();
+        }
+        $(document).ready(function() {
+          $("#idbarangmx").select2({
             placeholder: "Pilih",
             allowClear: true
-        });
-        
-        $('.my-select').select2({
+          });
+
+          $("#tglpo").datepicker({
+              format : "yyyy-mm-dd",
+              showInputs: true,
+              autoclose:true
+          });
+
+          $('.my-select').select2({
             placeholder: "Pilih",
             allowClear: true
-        });
-        
-        
-                
-        var max_fields      = 10; //maximum input boxes allowed
-        var wrapper         = $(".input_fields_wrap"); //Fields wrapper
-        var add_button      = $(".add_field_button"); //Add button ID
-        
-        var x = 1; //initlal text box count
-        $(add_button).click(function(e){ //on add input button click
+          });
+
+
+
+          var max_fields      = 10; //maximum input boxes allowed
+          var wrapper         = $(".input_fields_wrap"); //Fields wrapper
+          var add_button      = $(".add_field_button"); //Add button ID
+
+          var x = 1; //initlal text box count
+          $(add_button).click(function(e){ //on add input button click
             e.preventDefault();
             if(x < max_fields){ //max input box allowed
-                x++; //text box increment
-                
-                
-                
-                $(wrapper).append('<div class="row">'+
-                                        '<div class="col-xs-3">'+
-                                          '<input type="text" name="komponen[]" class="form-control" placeholder="komponen">'+
-                                        '</div>'+
-                                        '<div class="col-xs-2">'+
-                                          '<input type="text" name="qtyt[]" class="form-control" placeholder="qty">'+
-                                        '</div>'+
-                                        '<div class="col-xs-5">'+
-                                            '<select id="select2" name="barang_t[]"  class="my-select form-control input-sm " style="width: 100%;" tabindex="-1" >'+
-                                                '<option value=""></option>'+
-                                                <?php
-                                                    foreach (@$itembarang as $rowxx)
-                                                    {
-                                                ?>
-                                                '<option value="<?php echo $rowxx->id_barang; ?>">'+
-                                                    '<?php echo $rowxx->nm_barang ?>'+
-                                                '</option>'+
-                                                <?php } ?>
-                                            '</select>'+
-                                        '</div>'+
-                                        '<a href="#" class="remove_field">Remove</a>'+
-                                   '</div>'); //add input box
-            }
-        });
-        
-        $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
-            e.preventDefault(); $(this).parent('div').remove(); x--;
-        })
-        
-        
-    });
+              x++; //text box increment
+
+
+
+              $(wrapper).append('<div class="row">'+
+              '<div class="col-xs-3">'+
+              '<input type="text" name="komponen[]" class="form-control" placeholder="komponen">'+
+              '</div>'+
+              '<div class="col-xs-2">'+
+              '<input type="text" name="qtyt[]" class="form-control" placeholder="qty">'+
+              '</div>'+
+              '<div class="col-xs-5">'+
+              '<select id="select2" name="barang_t[]"  class="my-select form-control input-sm " style="width: 100%;" tabindex="-1" >'+
+              '<option value=""></option>'+
+              <?php
+              foreach (@$itembarang as $rowxx)
+              {
+                ?>
+                '<option value="<?php echo $rowxx->id_barang; ?>">'+
+                '<?php echo $rowxx->nm_barang ?>'+
+                '</option>'+
+                <?php } ?>
+                '</select>'+
+                '</div>'+
+                '<a href="#" class="remove_field">Remove</a>'+
+                '</div>'); //add input box
+              }
+            });
+
+            $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+              e.preventDefault(); $(this).parent('div').remove(); x--;
+            })
+
+
+          });
 </script>
+
 <script>
-            
+
 function HitungTotal(id)
 {
-    
+
     sumKgs      = 0;
     $('#dtazz tr').each(function(){
         SubTotalKgs = parseFloat($(this).find("td:eq(7)").text());
@@ -455,24 +459,24 @@ function HitungTotal(id)
           sumKgs += parseFloat(datasKgs);
     });
     document.getElementById("skgs").innerHTML = rubah(sumKgs.toFixed(2));
-    
-    
+
+
     var Total   = 0;
     sum         = 0;
-    qtytotal    =0;
+    qtytotal    = 0;
     $('#dtazz tr').each(function(){
-        
+
         SubTotal = parseFloat($(this).find("td:eq(5)").text());
         if (isNaN(SubTotal)) {
             datass  =0;
           } else {
             datass  =SubTotal;
           }
-          
+
           sum += parseFloat(datass);
     });
     //console.log($('#dtazz tr').length);
-    
+
     document.getElementById("ttlCBMsub").innerHTML = sum.toFixed(2);
     document.getElementById("cbm_tot").value = sum;
      <?php
@@ -482,86 +486,72 @@ function HitungTotal(id)
     ?>
     losefocus<?= $nxg ?>(sum.toFixed(2), sumKgs.toFixed(2));
     <?php } ?>
-    
-      
+
+
     var i;
     for (i=1;i<=<?= count($itembarang) ?>;i++)
     {
-        
+
         SubQtys = parseInt(document.getElementById('qty'+i).value);
         if (isNaN(SubQtys)) {
             datassQ  =0;
           } else {
             datassQ  =SubQtys;
           }
-          
+
           qtytotal += parseInt(datassQ);
     }
-    
+
     document.getElementById("totalQtyy").innerHTML =qtytotal;
-        
-        
-        
-    }
-    
-   
-   
-   function saveheaderpr(){
-            
-                var formdata = $("#form-header-pr, #tambahaan, #konfirmasi").serialize();
-               // console.log(formdata);
-                $.ajax({
-                    url: siteurl+"purchaserequest/Pusat_purchaserequest/konfirmasi_save",
-                    dataType : "json",
-                    type: 'POST',
-                    data: formdata,
-                    success: function(result){
-                        //console.log(result['msg']);
-                        if(result.save=='1'){
-                            swal({
-                                title: "Sukses!",
-                                text: result['msg'],
-                                type: "success",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-                            setTimeout(function(){
-                                window.location.href=siteurl+'purchaserequest/Pusat_purchaserequest';
-                            },1600);
-                        } else {
-                            swal({
-                                title: "Gagal!",
-                                text: result['msg'],
-                                type: "error",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-                        };
-                    },
-                    error: function(){
-                        swal({
-                            title: "Gagal!",
-                            text: "Ajax Data Gagal Di Proses",
-                            type: "error",
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                    }
+}
+function saveheaderpr(){
+  var formdata = $("#form-header-pr, #tambahaan, #konfirmasi").serialize();
+ // console.log(formdata);
+  $.ajax({
+      url: siteurl+"purchaserequest/Pusat_purchaserequest/konfirmasi_save",
+      dataType : "json",
+      type: 'POST',
+      data: formdata,
+      success: function(result){
+          //console.log(result['msg']);
+          if(result.save=='1'){
+              swal({
+                title: "Sukses!",
+                text: result['msg'],
+                type: "success",
+                timer: 1500,
+                showConfirmButton: false
                 });
-          
-        
-        
-    }
-    
+                setTimeout(function(){
+                    window.location.href=siteurl+'purchaserequest/Pusat_purchaserequest';
+                },1600);
+          } else {
+              swal({
+                  title: "Gagal!",
+                  text: result['msg'],
+                  type: "error",
+                  timer: 1500,
+                  showConfirmButton: false
+              });
+          };
+      },
+      error: function(){
+        swal({
+          title: "Gagal!",
+          text: "Ajax Data Gagal Di Proses",
+          type: "error",
+          timer: 1500,
+          showConfirmButton: false
+        });
+      }
+    });
+}
+
    function rubah(angka){
        var reverse = angka.toString().split('').reverse().join(''),
        ribuan = reverse.match(/\d{1,3}/g);
        ribuan = ribuan.join('.').split('').reverse().join('');
        return ribuan;
      }
-     
-    function bersihPemisah(ini){
-        a=ini.toString().replace(".","");
-        return a;
-    }
+
 </script>

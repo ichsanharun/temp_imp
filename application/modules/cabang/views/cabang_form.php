@@ -138,6 +138,44 @@
                 </div>
 
                 <div class="form-group ">
+                    <label for="no_pr" class="col-sm-2 control-label">Number PR<font size="4" color="red"><B>*</B></font></label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control" id="no_pr" name="no_pr" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_pr', isset($data->no_pr) ? $data->no_pr : '0'); ?>" placeholder="No Purchase Request" required>
+                        </div>
+                    </div>
+
+                    <label for="no_po" class="col-sm-2 control-label">Number PO<font size="4" color="red"><B>*</B></font></label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control" id="no_po" name="no_po" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_po', isset($data->no_po) ? $data->no_po : '0'); ?>" placeholder="No PUrchase Order" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group ">
+                    <label for="no_receive" class="col-sm-2 control-label">Number Receive<font size="4" color="red"><B>*</B></font></label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control" id="no_receive" name="no_receive" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('no_receive', isset($data->no_receive) ? $data->no_receive : '0'); ?>" placeholder="No Receive" required>
+                        </div>
+                    </div>
+
+                    <label for="th_picking_list" class="col-sm-2 control-label">Tahun PL<font size="4" color="red"><B>*</B></font></label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                        <input type="text" class="form-control" id="th_picking_list" name="th_picking_list" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" value="<?php echo set_value('th_picking_list', isset($data->th_picking_list) ? $data->th_picking_list : '0'); ?>" placeholder="Tahun Picking List" required>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="form-group ">
                     <label for="sts_aktif" class="col-sm-2 control-label">Status</label>
                     <div class="col-sm-3">
                         <select id="sts_aktif" name="sts_aktif" class="form-control">

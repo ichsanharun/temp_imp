@@ -24,38 +24,13 @@
             <form id="input" method="post" class="form-horizontal">
                 <div class="box-body">
                 <?php
-                $query = $this->db->query("SELECT * FROM `trans_po_payment` as a, trans_po_header as b WHERE a.id='$id' AND a.no_po=b.no_po  ");
 
-                $row = $query->row();
-
-                $querycek = $this->db->query("SELECT * FROM `trans_po_payment` WHERE no_po='$row->no_po'  ORDER BY `trans_po_payment`.`perkiraan_bayar`  ASC ");
-                if ($querycek->num_rows() > 1) {
-                    $row_c = $querycek->row();
-                    if ($id==$row_c->id) {
-                        ?>
-                        <input type="hidden" name="keterangan" value="Uang Muka" />
-                        <?php
-                    } else {
-                        $querycek_re = $this->db->query("SELECT * FROM `trans_receive` WHERE po_no='$row->no_po'");
-                        if ($querycek->num_rows() > 0) {
-                             ?>
-                                <input type="hidden" name="keterangan" value="Hutang" />
-                            <?php
-                        }else {
-                            ?>
-                                <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
-                            <?php
-                        }
-                    }
-                } else {
+                $querycek = $this->db->query("SELECT * FROM `trans_po_header` WHERE no_po='$id' ORDER BY no_po ASC ");
+                $row = $querycek->row();
                     ?>
                     <input type="hidden" name="keterangan" value="Pelunasan Uang Muka" />
-                    <?php
-                }
 
-                ?>
-                <input type="hidden" name="id" value="<?= $id ?>" />
-                <input type="hidden" name="no_po" value="<?= $row->no_po ?>" />
+                <input type="hidden" name="no_po" value="<?= $id ?>" />
                 <div class="form-group ">
                     <label for="name_cbm" class="col-sm-2 control-label">KD Supplier<font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-5">
@@ -140,8 +115,8 @@
                           $jrp = $row->rupiah*$bayar_dollar;
                            ?>
                            <span class="input-group-addon">IDR</span>
-                        <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($jrp, 2, '.', '')?>" >
-                        <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$jrp?>" >
+                        <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($cek_po[0]->rupiah_total, 2, '.', '')?>" >
+                        <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$cek_po[0]->rupiah_total?>" >
                         </div>
                     </div>
                 </div>
@@ -173,12 +148,12 @@
 <script type="text/javascript">
 $(document).ready(function(){
     $("#tgl_bayar").change(function (){
-        var url = "<?php echo site_url('hutang/add_ajax_prodi');?>/"+$(this).val();
+        var url = "<?php echo site_url('hutangcabang/add_ajax_prodi');?>/"+$(this).val();
         console.log(url);
         $('#prodi').load(url);
         return false;
     })
-    var url = "<?php echo site_url('hutang/add_ajax_prodi/'.date('Y-m-d'));?>/";
+    var url = "<?php echo site_url('hutangcabang/add_ajax_prodi/'.date('Y-m-d'));?>/";
     $('#prodi').load(url);
 });
 function formatNumber(num) {
@@ -205,7 +180,7 @@ function formatCurrency(c){
                 var formdata = $("#input").serialize();
                // console.log(formdata);
                 $.ajax({
-                    url: siteurl+"hutang/bayar_save",
+                    url: siteurl+"hutangcabang/bayar_save",
                     dataType : "json",
                     type: 'POST',
                     data: formdata,

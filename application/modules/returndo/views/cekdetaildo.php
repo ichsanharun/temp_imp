@@ -17,13 +17,13 @@
   </tr>
   <tr>
     <th>
-      GOOD
+      BAGUS
     </th>
     <th>
-      SCRAP
+      RUSAK
     </th>
     <th>
-      LOST
+      HILANG
     </th>
   </tr>
   <?php

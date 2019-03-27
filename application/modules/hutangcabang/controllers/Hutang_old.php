@@ -22,8 +22,7 @@ class Hutang extends Admin_Controller
 
     public function index()
     {
-
-        $pi = $this->db->query('SELECT a.id as idsss, a.`status` as st, a.*, b.*  FROM `trans_po_payment` as a, trans_po_header as b WHERE a.no_po=b.no_po AND b.kdcab = '.$this->auth->user_cab());
+        $pi = $this->db->query('SELECT a.id as idsss, a.status as st, a.*, b.*  FROM `trans_po_payment` as a, trans_po_header as b WHERE a.no_po=b.no_po AND b.kdcab = '.$this->auth->user_cab());
 
         $this->template->set('results', $pi);
         $this->template->title('Data Pelunasan Pembelian');
@@ -36,31 +35,29 @@ class Hutang extends Admin_Controller
         $Tahun_Now 		= date('Y', strtotime($id_fak));
         $session 		= $this->session->userdata('app_session');
         $kdcab 			= $session['kdcab'];
-  		$Bulan_Lalu		= 1;
-  		$Tahun_Lalu		= date('Y');
-  		if($Bulan_Now==1){
-  			$Bulan_Lalu	= 12;
-  			$Tahun_Lalu	= date('Y')-1;
-  		}
-  		$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Now."' AND `thn`='".$Tahun_Now."'";
-  		$Num_Bank	= $this->db->query($Query_Bank)->num_rows();
-  		if($Num_Bank > 0){
-  			$det_Bank		= $this->db->query($Query_Bank)->result();
-  		}else{
-  			$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Lalu."' AND `thn`='".$Tahun_Lalu."'";
-  			$det_Bank	= $this->db->query($Query_Bank)->result();
-  		}
-  		//echo"<pre>"; print_r($det_Bank);exit;
+		$Bulan_Lalu		= 1;
+		$Tahun_Lalu		= date('Y');
+		if($Bulan_Now==1){
+			$Bulan_Lalu	= 12;
+			$Tahun_Lalu	= date('Y')-1;
+		}
+		$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Now."' AND `thn`='".$Tahun_Now."'";
+		$Num_Bank	= $this->db->query($Query_Bank)->num_rows();
+		if($Num_Bank > 0){
+			$det_Bank		= $this->db->query($Query_Bank)->result();
+		}else{
+			$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Lalu."' AND `thn`='".$Tahun_Lalu."'";
+			$det_Bank	= $this->db->query($Query_Bank)->result();
+		}
+		if($det_Bank){
+			$data	= "<option value=''>-- Pilih Bank --";
+			foreach($det_Bank as $key=>$vals){
+				 $data .= "<option value='".$vals->no_perkiraan."'>".$vals->nama;
+			}
+		}else{
+			$data	= "<option value=''>Empty List</option>";
+		}
 
-  		if($det_Bank){
-  			$data	= "<option value=''>-- Pilih Bank --</option>";
-  			foreach($det_Bank as $key=>$vals){
-  				 $data .= "<option value='".$vals->no_perkiraan."'>".$vals->nama."</option>";
-  			}
-  		}else{
-  			$data	= "<option value=''>Empty List</option>";
-  		}
-		    //echo $data;
         echo json_encode($data);
     }
 
@@ -86,7 +83,7 @@ class Hutang extends Admin_Controller
         $kdcab 		= $session['kdcab'];
         $tgl 		= date('Y-m-d');
         $thb 		= date('m').substr(date('Y'), 2, 2);
-		$dataHeader	= $this->db->get_where('trans_po_payment',array('id'=>$id))->result();
+		$dataHeader	= $this->db->get_where('trans_po_payment',array('id'=>$id))->row();
 
 		/*
 		if ($this->input->post('myRadios') == '1') {
@@ -168,16 +165,21 @@ class Hutang extends Admin_Controller
             'tahun' => date('Y'),
             'user_id' => $session['id_user'],
         );
-*/
 
-
-
+		*/
+    //print_r($dataHeader);
 		## ALI 2019-03-11 ##
+    $querycek_ap = $this->db->query("SELECT * FROM `ap` WHERE no_po='$nopo' ");
+    $row_ap = $querycek_ap->row();
+    $debit = $this->input->post('jumlah') + $row_ap->debet;
+
+    $saldo_akhir = $row_ap->saldo_awal - $debit;
 		$Cabang_Pusat	= '100';
 		$Jumlah_Bayar	= $this->input->post('jumlah');
-		$Persen_Bayar	= $dataHeader[0]->persen;
+		$Persen_Bayar	= $dataHeader->persen;
 		$Jenis_Bayar	= $this->input->post('myRadios');
-		$Tgl_Jurnal		= $this->input->post('tgl_bayar');
+		//$Tgl_Jurnal		= date('Y-m-d');
+    $Tgl_Jurnal		= $this->input->post('tgl_bayar');
 		if($Jenis_Bayar==1){
 			$Jenis_Pay	= 'KAS';
 			$Tipe_Bayar	= 'Cash';
@@ -232,10 +234,13 @@ class Hutang extends Admin_Controller
 			if($det_Hutang){
 				$Total_Hutang	= $det_Hutang[0]->total_hutang;
 				$Total_PO		= $det_Hutang[0]->hutang_po;
-			}
+			}else {
+        $Total_Hutang	= 0;
+				$Total_PO		= 0;
+      }
 		}
-		$this->db->trans_begin();
-		if($Persen_Bayar >= 100 && $Num_Receive > 0){
+
+		if($Persen_Bayar >= 100){
 			$Coa_Hutang			= '2101-01-01';
 			$Keterangan_BUK		= 'Pelunasan#'.$inv.'#'.$nopo;
 			$Sisa_Hutang		= $Total_PO - $Jumlah_Bayar;
@@ -251,8 +256,8 @@ class Hutang extends Admin_Controller
 				'kdcab'				=> $Cabang_Pusat,
 				'jenis'			    => 'V',
 				'keterangan' 		=> $Keterangan_CN,
-				'bulan'				=> date('n',strtotime($Tgl_Jurnal)),
-				'tahun'				=> date('Y',strtotime($Tgl_Jurnal)),
+				'bulan'				=> date('n'),
+				'tahun'				=> date('Y'),
 				'user_id'			=> $session['id_user'],
 				'memo'			    => '',
 				'tgl_jvkoreksi'		=> $Tgl_Jurnal,
@@ -323,12 +328,12 @@ class Hutang extends Admin_Controller
 		$Nomor_BUK		= $this->Jurnal_model->get_Nomor_Jurnal_BUK($Cabang_Pusat,$Tgl_Jurnal,$Jenis_Pay);
 		$Header_BUK		= array(
 			'nomor'			=> $Nomor_BUK,
-			'tgl'		    => $Tgl_Jurnal,
-			'jml'			  => $Jumlah_Bayar,
+			'tgl'		=> $Tgl_Jurnal,
+			'jml'			=> $Jumlah_Bayar,
 			'kdcab'			=> $Cabang_Pusat,
-			'jenis_reff'=> $Tipe_Bayar,
+			'jenis_reff'	=> $Tipe_Bayar,
 			'no_reff'		=> $nopo,
-			'bayar_kepada'=> $supp,
+			'bayar_kepada'	=> $supp,
 			'jenis_ap'		=> 'V'
 		);
 
@@ -363,7 +368,7 @@ class Hutang extends Admin_Controller
 		## END ALI ##
 
 
-
+        $this->db->trans_begin();
 		/*
         $this->db->insert('javh', $javh);
 
@@ -371,11 +376,7 @@ class Hutang extends Admin_Controller
 
         $this->db->insert('jurnal', $jurnal_k);
 		*/
-		$querycek_ap = $this->db->query("SELECT * FROM `ap` WHERE no_po='$nopo' ");
-		$row_ap = $querycek_ap->row();
-		$debit = $jumlah + $row_ap->debet;
 
-		$saldo_akhir = $row_ap->saldo_awal - $debit;
         $this->db->query("UPDATE `trans_po_payment` SET `status` = 'close',tgl_bayar='$tgl', bayar='$jumlah' WHERE id='$id';");
 
         $this->db->query("UPDATE `ap` SET `debet` = '$debit',saldo_akhir='$saldo_akhir' WHERE no_po='$nopo';");

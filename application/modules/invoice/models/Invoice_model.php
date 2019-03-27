@@ -65,25 +65,36 @@ class Invoice_model extends BF_Model
     }
 
     function generate_noinv($kdcab){
-        $query = "SELECT cabang.no_invoice
-                  FROM
-                  cabang WHERE cabang.kdcab='$kdcab'";
-        $q = $this->db->query($query);
-        $r = $q->row();
-        $kode = (int)$r->no_invoice+1;
-        $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+      $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+                       7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
+                      );
+      $bln_now = date('m');
+      $kode_bln = '';
+      foreach($arr_tgl as $k=>$v){
+          if($k == $bln_now){
+              $kode_bln = $v;
+          }
+      }
+      $cek = $kdcab.'-IV-'.date('y').$kode_bln;
+      /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
+      WHERE no_so LIKE '%$cek%'")->num_rows();*/
+      $this->db->select("MAX(no_invoice) as max_id");
+      $this->db->like('no_invoice', $cek);
+      $this->db->from('trans_invoice_header');
+      $query_cek = $this->db->count_all_results();
+      if ($query_cek == 0) {
+        $this->db->where(array('kdcab'=>$kdcab))
+        ->update("cabang",array('no_invoice'=>0));
+      }
+      $query = "SELECT cabang.no_invoice
+                FROM
+                cabang WHERE cabang.kdcab='$kdcab'";
+      $q = $this->db->query($query);
+      $r = $q->row();
+      $kode = (int)$r->no_invoice+1;
+      $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
-                         7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
-                        );
-        $bln_now = date('m');
-        $kode_bln = '';
-        foreach($arr_tgl as $k=>$v){
-            if($k == $bln_now){
-                $kode_bln = $v;
-            }
-        }
-        return $kdcab.'-IV-'.date('y').$kode_bln.$next_kode;
+      return $kdcab.'-IV-'.date('y').$kode_bln.$next_kode;
     }
     function generate_noinv_baru($kdcab,$nd){
 
