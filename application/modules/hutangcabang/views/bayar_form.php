@@ -113,10 +113,11 @@
                           $bayar_dollar = $cek_po[0]->rupiah_total/$cek_po[0]->rupiah*$row->persen/100;
                           $kurs_usd = $this->Model_hutang->cek_data(array("kode"=>"USD"),'mata_uang');
                           $jrp = $row->rupiah*$bayar_dollar;
+                          $bayar_fix = 1.25 * $cek_po[0]->rupiah_total;
                            ?>
                            <span class="input-group-addon">IDR</span>
-                        <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($cek_po[0]->rupiah_total, 2, '.', '')?>" >
-                        <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$cek_po[0]->rupiah_total?>" >
+                        <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($bayar_fix, 2, '.', '')?>" >
+                        <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$bayar_fix?>" >
                         </div>
                     </div>
                 </div>

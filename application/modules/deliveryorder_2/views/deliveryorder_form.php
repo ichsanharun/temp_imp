@@ -183,6 +183,10 @@
         <button class="btn btn-primary" type="submit" id="submit_do" onclick="saveheaderdo()" >
             <i class="fa fa-save"></i><b> Simpan Data DO</b>
         </button>
+        <button class="btn btn-primary" type="button" onclick="TEST()">
+            <i class="fa fa-save"></i><b> TEST</b>
+        </button>
+    </th>
     </div>
   </div>
 </div>
@@ -211,63 +215,57 @@
     var kode_driver     =<?php echo json_encode($arr_driver);?>;
 	var kendaraan		=<?php echo json_encode($kendaraan);?>;
     $(document).ready(function(){
-		$('#tipekirim').change(function(){
-			 var kirim	= $('#tipekirim').val();
-			 if(kirim=='' || kirim==null){
-                 $('#list_supir').empty();
-				 $('#list_kendaraan').empty();
-			 }else{
-                 var Template   ='<span class="input-group-addon"><i class="fa fa-user"></i></span>';
-				 var Kendaraan	='<span class="input-group-addon"><i class="fa fa-car"></i></span>';
-				 if(kirim=='SENDIRI'){
-					 Template	+='<select class="form-control input-sm select2" name="supir_do" id="supir_do">';
-						Template	+='<option value="">Pilih</option>';
-						if(!$.isEmptyObject(kode_driver)){
-							$.each(kode_driver,function(key,value){
-								Template	+='<option value="'+key+'^_^'+value+'">'+value+'</option>';
-							});
-						}
-					 Template	+='</select>';
-					 $('#list_supir').html(Template);
-					 $("#supir_do").select2({
-						placeholder: "Pilih",
-						allowClear: true
-					 });
+  		$('#tipekirim').change(function(){
+  			 var kirim	= $('#tipekirim').val();
+  			 if(kirim=='' || kirim==null){
+                   $('#list_supir').empty();
+  				 $('#list_kendaraan').empty();
+  			 }else{
+                   var Template   ='<span class="input-group-addon"><i class="fa fa-user"></i></span>';
+  				 var Kendaraan	='<span class="input-group-addon"><i class="fa fa-car"></i></span>';
+  				 if(kirim=='SENDIRI'){
+  					 Template	+='<select class="form-control input-sm select2" name="supir_do" id="supir_do">';
+  						Template	+='<option value="">Pilih</option>';
+  						if(!$.isEmptyObject(kode_driver)){
+  							$.each(kode_driver,function(key,value){
+  								Template	+='<option value="'+key+'^_^'+value+'">'+value+'</option>';
+  							});
+  						}
+  					 Template	+='</select>';
+  					 $('#list_supir').html(Template);
+  					 $("#supir_do").select2({
+  						placeholder: "Pilih",
+  						allowClear: true
+  					 });
 
-                     Kendaraan   +='<select class="form-control input-sm select2" name="kendaraan_do" id="kendaraan_do">';
-                        Kendaraan    +='<option value="">Pilih</option>';
-                        if(!$.isEmptyObject(kode_driver)){
-                            $.each(kendaraan,function(key,value){
-                                Kendaraan    +='<option value="'+key+'^_^'+value+'">'+value+'</option>';
-                            });
-                        }
-                     Kendaraan   +='</select>';
-                     $('#list_kendaraan').html(Kendaraan);
-                     $("#kendaraan_do").select2({
-                        placeholder: "Pilih",
-                        allowClear: true
-                     });
-				 }else{
-					 Template	+='<input type="text" name="supir_do" id="supir_do" class="form-control input-sm">';
-					 $('#list_supir').html(Template);
+                       Kendaraan   +='<select class="form-control input-sm select2" name="kendaraan_do" id="kendaraan_do">';
+                          Kendaraan    +='<option value="">Pilih</option>';
+                          if(!$.isEmptyObject(kode_driver)){
+                              $.each(kendaraan,function(key,value){
+                                  Kendaraan    +='<option value="'+key+'^_^'+value+'">'+value+'</option>';
+                              });
+                          }
+                       Kendaraan   +='</select>';
+                       $('#list_kendaraan').html(Kendaraan);
+                       $("#kendaraan_do").select2({
+                          placeholder: "Pilih",
+                          allowClear: true
+                       });
+  				 }else{
+  					 Template	+='<input type="text" name="supir_do" id="supir_do" class="form-control input-sm">';
+  					 $('#list_supir').html(Template);
 
-                     Kendaraan   +='<input type="text" name="kendaraan_do" id="kendaraan_do" class="form-control input-sm">';
-                     $('#list_kendaraan').html(Kendaraan);
-				 }
+                       Kendaraan   +='<input type="text" name="kendaraan_do" id="kendaraan_do" class="form-control input-sm">';
+                       $('#list_kendaraan').html(Kendaraan);
+  				 }
 
-			 }
-		});
+  			 }
+  		});
         $("#kendaraan_do").select2({
             placeholder: "Pilih",
             allowClear: true
         });
-        /*
-        $(".datepicker").datepicker({
-            format : "yyyy-mm-dd",
-            showInputs: true,
-            autoclose:true
-        });
-        */
+
         var dataTableItem = $('#deliveryorderitem').DataTable({
             "sDom": 'Bfrtip',
             "responsive": true,
@@ -291,6 +289,18 @@
          }
 
     });
+    function TEST(){
+      $("form#form-header-do :input").each(function(){
+       var input = $(this); // This is the jquery object of the input, do what you will
+       console.log($(this).attr('name') + " = " + $(this).val());
+      });
+      console.log("----------------------------------");
+      $("form#form-detail-do :input").each(function(){
+       var input = $(this); // This is the jquery object of the input, do what you will
+       console.log($(this).attr('name') + " = " + $(this).val());
+      });
+
+    }
     function saveheaderdo(){
         var kirim = $('#tipekirim').val();
         var supir = $('#supir_do').val();

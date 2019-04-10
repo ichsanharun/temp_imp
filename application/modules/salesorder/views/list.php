@@ -26,57 +26,21 @@
               </div>
             <?php endif; ?>
 
-            <div class="form-group col-md-10 pull-right" style="padding-left:0">
-              <?php
-              $periode_th = $this->Salesorder_model->select('LEFT(tanggal,4) as tgl')->group_by('LEFT(tanggal,4)')->find_all();
-
-              //print_r($periode_th);
-               ?>
-              <div class="input-group col-md-4 input-sm" style="padding:0">
+          <div class="form-group pull-right">
+            <div class="" style="float:right;right:0;">
+              <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                  <select id="periode_th" name="periode_th" class="form-control input-sm" tabindex="-1" required onchange="gettahun(this.value)">
-                      <option value=""></option>
-
-                      change="gettahun(this.value)">
-                          <option value=""></option>
-                          <?php
-
-                        foreach($periode_th as $kso=>$vso){
-                          $selected = '';
-                          ?>
-                          <option value="<?php echo $vso->tgl; ?>" <?php echo $selected?>>
-                        <?php echo $vso->tgl ?>
-                      </option>
-                      <?php } ?>
-                  </select>
+                  <input type="text" id="periode_awal" name="periode_awal" class="form-control input-sm datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
+              </div>
+              s.d
+              <div class="input-group">
                   <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                  <select id="periode_bl" name="periode_bl" class="form-control input-sm" tabindex="-1" required onchange="getdata(this.value)">
-                      <option value=""></option>
-                      <?php
-
-                        foreach($periode_th as $kso=>$vso){
-                          $selected = '';
-                          ?>
-                          <option value="<?php echo $vso->tgl; ?>" <?php echo $selected?>>
-                        <?php echo $vso->tgl ?>
-                      </option>
-                      <?php } ?>
-                  </select>
+                  <input type="text" id="periode_akhir" name="periode_akhir" class="form-control input-sm datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
               </div>
-              <div class="" style="float:right;right:0;">
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    <input type="text" id="periode_awal" name="periode_awal" class="form-control datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
-                </div>
-                s.d
-                <div class="input-group">
-                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                    <input type="text" id="periode_akhir" name="periode_akhir" class="form-control datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
-                </div>
-                <input type="button" id="submit_cari" class="btn btn-sm btn-warning" value="Cari">
-                <button type="button" id="refresh" class="btn btn-sm btn-info">Refresh</button>
-              </div>
+              <input type="button" id="submit_cari" class="btn btn-sm btn-warning" value="Cari">
+              <button type="button" id="refresh" class="btn btn-sm btn-info">Refresh</button>
             </div>
+          </div>
         </div>
     </div>
     <div class="box-body">
@@ -86,6 +50,7 @@
             <tr>
                 <th width="2%">#</th>
                 <th>NO. SO</th>
+                <th>NO. SO LAMA</th>
                 <th>Nama Customer</th>
                 <th>Tanggal</th>
                 <th>Nama Salesman</th>
@@ -128,6 +93,7 @@
             <tr>
                 <td class="text-center"><?php echo $no?></td>
                 <td class="text-center"><?php echo $vso->no_so?></td>
+                <td class="text-center"><?php echo $vso->ns?></td>
                 <td><?php echo $vso->nm_customer?></td>
                 <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tanggal))?></td>
                 <td><?php echo $vso->nm_salesman?></td>
@@ -176,14 +142,9 @@
                       </a>
                     <?php }} ?>
                     <?php if($ENABLE_VIEW) { ?>
-                    <!--a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')" target="output">
-                    <span class="glyphicon glyphicon-print"></span>
-                    </a-->
-                    <a href="salesorder/print_request/<?php echo $vso->no_so?>" target="output">
+                    <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
                     <span class="glyphicon glyphicon-print"></span>
                     </a>
-
-                    
                     <?php } ?>
 
                     <?php //if($ENABLE_DELETE) { ?>
@@ -244,97 +205,6 @@
 
 <!-- page script -->
 <script type="text/javascript">
-$(document).ready(function(){
-  $("#periode_th").select2({
-      placeholder: "Tahun",
-      allowClear: true,
-      width: 'element'
-  });
-  $("#periode_bl").select2({
-      placeholder: "Bulan",
-      allowClear: true
-  });
-
-});
-function gettahun(th){
-  $.ajax({
-      type:"POST",
-      url:siteurl+"salesorder/get_bulan",
-      data:"tahun="+th,
-      success:function(result){
-        //alert(result);
-          //var data = JSON.parse(result);
-          var dt = $('#example1').DataTable();
-          //dt.rows().remove();
-          //console.log(data);
-          //alert(result);
-
-          $('#periode_bl').html(result);
-
-      }
-  });
-}
-function getdata(per){
-  $.ajax({
-      type:"POST",
-      url:siteurl+"salesorder/get_list",
-      data:"per="+per,
-      success:function(result){
-        var data = JSON.parse(result);
-        var dt = $('#example1').DataTable();
-        dt.rows().remove();
-        //console.log(data);
-        //alert(result);
-        for (var i = 0; i < data.length; i++) {
-          if (data[i].stsorder == "CLOSE") {
-            var disbtn = 'style="cursor: not-allowed;';
-            var badge = "bg-red";
-          }else if (data[i].stsorder == "CANCEL") {
-            var badge = "bg-orange";
-          }else if (data[i].stsorder == "PENDING") {
-            var badge = "bg-yellow";
-          }else if (data[i].stsorder == "CLS PENDING") {
-            var badge = "bg-red";
-          }else if (data[i].stsorder == "OPEN") {
-            var badge = "bg-green";
-          }
-
-          if (data[i].stsorder != "CANCEL") {
-            var pl = '';
-            if (data[i].stsorder =="PENDING") {
-              var sts = '<center><a onclick="create_pending_so(\''+data[i].no_so+'\')" href="javascript:void(0)"><span class="badge bg-green" id="cso" title="Create SO" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-arrow-circle-right"></i> SO</span></a></center>';
-            }else if (data[i].stsorder == "CLS PENDING") {
-              var sts = '';
-            }else{
-              var sts = '<center><a href="#dialog-popup" data-toggle="modal" onclick="PickingList(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-file"></span></center>'
-            }
-
-            if (data[i].stsorder != "CLOSE") {
-
-              var pl = '<a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-edit"></span>'
-            }
-          }
-          var aksi = '<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-print"></span>'+
-          '<a class="text-red" href="javascript:void(0)" title="Cancel SO" onclick="setcancelso(\''+data[i].no_so+'\')"><i class="fa fa-times"></i></a>'
-          dt.row.add([
-            i+1,
-            data[i].no_so,
-            data[i].nm_customer,
-            data[i].tanggal,
-            data[i].nm_salesman,
-            data[i].total,
-            '<span class="badge '+badge+'">'+data[i].stsorder+'</span>',
-            sts,
-            pl+aksi
-
-
-          ]).draw(false);
-
-        }
-
-      }
-  });
-}
     $(function() {
         $("#example1").DataTable();
         $("#form-area").hide();
@@ -347,69 +217,7 @@ function getdata(per){
     $("#submit_cari").on('click', function(){
       var pawal = $("#periode_awal").val();
       var pakhir = $("#periode_akhir").val();
-      $.ajax({
-          type:"POST",
-          url:siteurl+"salesorder/get_filter",
-          data:{"pawal":pawal,"pakhir":pakhir},
-          success:function(result){
-            var data = JSON.parse(result);
-            var dt = $('#example1').DataTable();
-            dt.rows().remove();
-            //console.log(data);
-            //alert(result);
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].stsorder == "CLOSE") {
-                var disbtn = 'style="cursor: not-allowed;';
-                var badge = "bg-red";
-              }else if (data[i].stsorder == "CANCEL") {
-                var badge = "bg-orange";
-              }else if (data[i].stsorder == "PENDING") {
-                var badge = "bg-yellow";
-              }else if (data[i].stsorder == "CLS PENDING") {
-                var badge = "bg-red";
-              }else if (data[i].stsorder == "OPEN") {
-                var badge = "bg-green";
-              }
-
-              if (data[i].stsorder != "CANCEL") {
-                var pl = '';
-                if (data[i].stsorder =="PENDING") {
-                  var sts = '<center><a onclick="create_pending_so(\''+data[i].no_so+'\')" href="javascript:void(0)"><span class="badge bg-green" id="cso" title="Create SO" data-toggle="tooltip" data-placement="bottom"><i class="fa fa-arrow-circle-right"></i> SO</span></a></center>';
-                }else if (data[i].stsorder == "CLS PENDING") {
-                  var sts = '';
-                }else{
-                  var sts = '<center><a href="#dialog-popup" data-toggle="modal" onclick="PickingList(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-file"></span></center>'
-                }
-
-                if (data[i].stsorder != "CLOSE") {
-
-                  var pl = '<a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-edit"></span>'
-                }
-              }
-              var aksi = '<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-print"></span>'+
-              '<a class="text-red" href="javascript:void(0)" title="Cancel SO" onclick="setcancelso(\''+data[i].no_so+'\')"><i class="fa fa-times"></i></a>';
-              if (data[i].stsorder == "CLOSE") {
-                var aksi = '<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf(\''+data[i].no_so+'\')"><span class="glyphicon glyphicon-print"></span>';
-              }
-              dt.row.add([
-                i+1,
-                data[i].no_so,
-                data[i].nm_customer,
-                data[i].tanggal,
-                data[i].nm_salesman,
-                formatCurrency(data[i].total,',','.',0),
-                '<span class="badge '+badge+'">'+data[i].stsorder+'</span>',
-                sts,
-                pl+aksi
-
-
-              ]).draw(false);
-
-            }
-
-          }
-      });
-    //  window.location.href = siteurl+"salesorder/filter/"+pawal+"/"+pakhir;
+      window.location.href = siteurl+"salesorder/filter/"+pawal+"/"+pakhir;
     });
     $("#refresh").on('click', function(){
       window.location.href = siteurl+"salesorder/";
@@ -419,7 +227,7 @@ function getdata(per){
         window.location.href = siteurl+"salesorder/create";
     }
     function edit_data(noso){
-        window.location.href = siteurl+"salesorder/edit/"+noso+"/start";
+        window.location.href = siteurl+"salesorder/editso/"+noso+"/start";
     }
     function create_pending_so(noso){
         window.location.href = siteurl+"salesorder/create_pso/"+noso;
@@ -550,18 +358,5 @@ function getdata(per){
       tujuan = 'salesorder/print_picking_list/'+param;
 
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-    }
-    function formatCurrency(amount, decimalSeparator, thousandsSeparator, nDecimalDigits){
-        var num = parseInt( amount );
-        decimalSeparator = decimalSeparator || '.';
-        thousandsSeparator = thousandsSeparator || ',';
-        nDecimalDigits = nDecimalDigits == null? 2 : nDecimalDigits;
-        var fixed = num.toFixed(nDecimalDigits);
-        var parts = new RegExp('^(-?\\d{1,3})((?:\\d{3})+)(\\.(\\d{' + nDecimalDigits + '}))?$').exec(fixed);
-        if(parts){
-            return parts[1] + parts[2].replace(/\d{3}/g, thousandsSeparator + '$&') + (parts[4] ? decimalSeparator + parts[4] : '');
-        }else{
-            return fixed.replace('.', decimalSeparator);
-        }
     }
 </script>

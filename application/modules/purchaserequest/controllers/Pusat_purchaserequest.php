@@ -194,8 +194,8 @@ class Pusat_purchaserequest extends Admin_Controller {
             $this->db->query("UPDATE `trans_pr_header` SET `proses_po` = 'REVISI' WHERE `trans_pr_header`.`id` = '$row->id';");
 
         }else {
-
-            $nopo = $this->Purchaseorder_model->generate_nopo($session['kdcab']);
+          $tgl = $this->input->post('tglpo');
+            $nopo = $this->Purchaseorder_model->generate_nopo($session['kdcab'],$tgl);
             $query_pr = $this->db->query("SELECT * FROM `trans_pr_header` WHERE no_pr='$nopr'");
             $rowx = $query_pr->row();
             $headerprx   = array(

@@ -9,32 +9,30 @@
 
 
   <div class="col-lg-12">
-    <div class="box-header text-left"><b>Pilih Periode : </b>
-      <?php
-      if (!empty($this->uri->segment(3)) AND !empty($this->uri->segment(4))) {
-        $pawal = $this->uri->segment(3);
-        $pakhir = $this->uri->segment(4);
-      }
-      else {
-        $pawal = "";
-        $pakhir = "";
-      }
-       ?>
-      <div class="form-inline">
-        <div class="form-group">
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-              <input type="text" id="periode_awal" name="periode_awal" class="form-control input-sm datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
-          </div>
-          s.d
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-              <input type="text" id="periode_akhir" name="periode_akhir" class="form-control input-sm datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
-          </div>
-          <input type="button" id="submit" class="btn btn-sm btn-warning" value="Cari">
-        </div>
-      </div>
-    </div>
+
+       <div class="box-header text-left"><b>Pilih Periode : </b>
+         <?php
+         $periode_th = $this->Deliveryorder_model->select('LEFT(tgl_do,7) as tgl')->group_by('LEFT(tgl_do,7)')->find_all();
+          ?>
+         <select id="periode" name="periode" class="form-control input-sm" style="width: 25%;" tabindex="-1" required>
+             <option value=""></option>
+             <?php
+             foreach($periode_th as $kso=>$vso){
+               $selected = '';
+               ?>
+               <option value="<?php echo date("m/Y", strtotime($vso->tgl)); ?>" <?php echo $selected?>>
+             <?php echo date("M Y", strtotime($vso->tgl)); ?>
+             <?php } ?>
+             <option value="All">All</option>
+         </select>
+         <?php if ($ENABLE_VIEW) : ?>
+     			<span class="pull-right">
+
+             <a class="btn btn-primary btn-sm" title="Excel" onclick="getexcel()"><i class="fa fa-download">&nbsp;</i>Excel  </a>
+     			</span>
+     		<?php endif; ?>
+       </div>
+
   </div>
     <div class="box-body">
         <table id="example1" class="table table-bordered table-striped">
@@ -128,7 +126,39 @@ $(document).ready(function() {
     var pakhir = $("#periode_akhir").val();
     window.location.href = siteurl+"reportdo/filter/"+pawal+"/"+pakhir;
   });
+  var table = $('#example1').DataTable();
+  $('#periode').on( 'change', function () {
+    if (this.value == "All") {
+      var value = "";
+    }else {
+      var value = this.value;
+    }
+  table.search( value ).draw();
+  } );
+  $("#periode").select2({
+      placeholder: "Pilih",
+      allowClear: true
+  });
 });
+
+
+function getexcel(){
+      var tgl = $('#periode').val();
+      console.log(tgl);
+      if (tgl == "All") {
+        var tglso = "All";
+      }else {
+        var explode = tgl.split('/');
+        var tglso = explode[1].concat('-',explode[0]);
+
+      }
+      var uri3 = '<?php echo $this->uri->segment(3)?>';
+      var uri4 = '<?php echo $this->uri->segment(4)?>';
+      window.location.href= siteurl+"reportdo/downloadExcel_old/"+tglso;
+
+    }
+
+
     $(function() {
       var dataTable = $("#example1").DataTable().draw();
     });

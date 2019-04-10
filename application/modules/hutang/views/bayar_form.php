@@ -134,10 +134,14 @@
                         <div class="input-group">
                           <?php
                           //print_r($row);
-                          $cek_po = $this->db->query("SELECT * FROM trans_po_header WHERE no_po = '$row->no_po'")->result();
-                          $bayar_dollar = $cek_po[0]->rupiah_total/$cek_po[0]->rupiah*$row->persen/100;
-                          $kurs_usd = $this->Model_hutang->cek_data(array("kode"=>"USD"),'mata_uang');
-                          $jrp = $row->rupiah*$bayar_dollar;
+                          if ($row->tipe_payment == "persen") {
+                            $cek_po = $this->db->query("SELECT * FROM trans_po_header WHERE no_po = '$row->no_po'")->result();
+                            $bayar_dollar = $cek_po[0]->rupiah_total/$cek_po[0]->rupiah*$row->persen/100;
+                            $kurs_usd = $this->Model_hutang->cek_data(array("kode"=>"USD"),'mata_uang');
+                            $jrp = $row->rupiah*$bayar_dollar;
+                          }else {
+                            $jrp = $row->nominal*$row->rupiah;
+                          }
                            ?>
                            <span class="input-group-addon">IDR</span>
                         <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($jrp, 2, '.', '')?>" >

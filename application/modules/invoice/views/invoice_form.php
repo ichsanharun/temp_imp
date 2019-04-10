@@ -304,7 +304,7 @@
                   <input type="hidden" name="ppn[]" value="<?php echo $headerso->ppn?>">
                   <input type="hidden" name="tgljual[]" value="<?php echo $headerso->tanggal?>">
                   <input type="hidden" name="no_do[]" value="<?php echo $values['no_do']?>">
-                  <input type="hidden" name="hargalanded[]" value="<?php echo $values['no_do']?>">
+                  <input type="hidden" name="hargalanded[]" value="<?php echo $detaillanded->landed_cost?>">
 
                 <?php
 							echo"</tr>";

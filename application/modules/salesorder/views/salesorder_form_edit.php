@@ -41,7 +41,6 @@
                               <?php } ?>
                               </select>
                               <input type="hidden" name="nmcustomer" id="nmcustomer" value="<?php echo @$data->nm_customer?>">
-                              <input type="hidden" name="total_lc" id="total_lc" value="<?php echo @$data->total_lc?>">
                               </div>
                           </div>
                       </div>
@@ -212,151 +211,14 @@
 <div class="box box-default ">
     <div class="box-body">
         <form id="form-detail-so" method="post">
-          <table class="table table-bordered" width="100%">
-              <tr>
-                  <th class="text-center" colspan="8">FORM ITEM DETAIL</th>
-              </tr>
-              <tr>
-                  <td width="9%"><b>PRODUCT SET</b></td>
-                  <td colspan="2" width="20%">
-                    <span id="ket_item" data-toggle="popover" data-placement="bottom" data-content="Silahkan pilih customer terlebih dahulu!">
-                      <select onchange="setitembarang()" id="item_brg_so" name="item_brg_so" class="form-control input-xs form_item_so" style="width: 100%;" tabindex="-1" required>
-                              <option value=""></option>
-                              <?php
-                              foreach(@$itembarang as $k=>$v){
-                              ?>
-                              <option value="<?php echo $v->id_barang; ?>" <?php echo set_select('nm_barang', $v->id_barang, isset($data->nm_barang) && $data->id_barang == $v->id_barang) ?>>
-                                  <?php echo $v->id_barang.' , '.$v->nm_barang.' , '.$v->kdcab ?>
-                              </option>
-                              <?php } ?>
-                          </select>
-                    </span>
-                  </td>
-                  <td width="5%" class="text-right"><b>HARGA NORMAL</b></td>
-                    <td width="10%">
-                      <input type="text" name="harga_normal" id="harga_normal" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Harga Normal sebelum diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
-                    </td>
-                  <td width="5%" class="text-right"><b>HARGA SETELAH DISKON</b></td>
-                    <td width="10%">
-                      <input type="hidden" name="harga_sebelum_ppn" id="harga_sebelum_ppn" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
-                      <input type="text" name="harga" id="harga" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
-                    </td>
-              </tr>
-              <tr>
-                  <td width="5%" class="text-center"><b>QTY ORDER</b></td>
-                  <td width="5%" class="text-center"><b>QTY BONUS</b></td>
-                  <td width="5%" class="text-center"><b>QTY AVL</b></td>
-                  <td width="5%" class="text-center"><b>QTY CONFIRM</b></td>
-                  <td width="5%" class="text-center"><b>QTY PENDING</b></td>
-                  <td width="5%" class="text-center"><b>QTY CANCEL</b></td>
-                  <td class="text-center" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
-                      Diskon SO
-                  </td>
-              </tr>
-              <tr>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_order" id="qty_order" class="form-control input-sm form_item_so" required="required">
-                  </td>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_bonus" id="qty_bonus" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Qty didapat dari diskon bonus" readonly>
-                  </td>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_avl" id="qty_avl" class="form-control input-sm form_item_so" readonly="readonly">
-                  </td>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_supply" id="qty_supply" class="form-control input-sm form_item_so" onkeyup="hitungso()" required="required">
-                  </td>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_pending" id="qty_pending" class="form-control input-sm form_item_so" onkeyup="hitungcancel()" required="required">
-                  </td>
-                  <td width="10%" class="text-center">
-                      <input type="text" name="qty_cancel" id="qty_cancel" class="form-control input-sm form_item_so" readonly="readonly">
-                      <input type="hidden" name="nama_barang" id="nama_barang" class="form-control input-sm">
-                      <input type="hidden" name="satuan" id="satuan" class="form-control input-sm">
-                      <input type="hidden" name="jenis" id="jenis" class="form-control input-sm">
-                      <input type="hidden" name="total" id="total" class="form-control input-sm">
-
-                  </td>
-                  <td width="10%" class="text-center" rowspan="2">
-                    <div class="input-group">
-                      <div class="input-group-btn">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso" name="tipe_disso" value="%">%<span class="caret"></span></button>
-                        <ul class="dropdown-menu bg-dark">
-                          <li><a href="javascript:void(0)" onclick="getdisso('%')">Persen (%)</a></li>
-                          <li><a href="javascript:void(0)" onclick="getdisso('Rp')">Rupiah (Rp)</a></li>
-                        </ul>
-                      </div><!-- /btn-group -->
-                      <input type="text" class="form-control form_item_so" aria-label="" name="disso" id="disso" class="input-sm" value="0">
-                    </div><!-- /input-group -->
-                    <div class="radio_disso_rp" style="display:none">
-                      <div class="radio-inline">
-                        <label>
-                          <input type="radio" value="tambah" name="radio_disso_rp">(+)
-                        </label>
-                      </div>
-                      <div class="radio-inline">
-                        <label>
-                          <input type="radio" value="kurang" name="radio_disso_rp">(-)
-                        </label>
-                      </div>
-                    </div>
-                  </td>
-              </tr>
-              <tr>
-                  <td class="text-center"><b>POIN @1</b></td>
-                  <td width="5%" class="text-center"><b>Diskon Std.</b></td>
-                  <td width="5%" class="text-center" colspan="2"><b>Diskon Promo</b></td>
-                  <td width="5%" class="text-center" colspan="2" style="border-right:1px solid #f4f4f4"><b>Diskon QTY</b></td>
-
-              </tr>
-              <tr>
-                  <td class="text-center">
-                    <center><b>Nilai Per 1 POIN</b></center>
-                    <div class="input-group">
-                      <span class="input-group-addon">Rp</span>
-                      <input type="text" name="poin_per_item" id="poin_per_item" class="form-control input-sm form_item_so" readonly>
-                      <input type="hidden" name="jumlah_poin" id="jumlah_poin" class="form-control input-sm form_item_so" readonly>
-                    </div>
-                  </td>
-                  <td width="10%" class="text-center">
-                    <b>Persen</b>
-                    <div class="input-group">
-                      <input type="text" name="diskon_standar_persen" id="diskon_standar_persen" class="form-control input-sm form_item_so" readonly>
-                      <span class="input-group-addon"><i class="fa fa-percent"></i></span>
-                    </div>
-                  </td>
-                  <td width="10%" class="text-center">
-                    <b>Persen</b>
-                    <div class="input-group">
-                      <input type="text" name="diskon_promo_persen" id="diskon_promo_persen" class="form-control input-sm form_item_so" readonly>
-                      <span class="input-group-addon"><i class="fa fa-percent"></i></span>
-                    </div>
-                  </td>
-                  <td width="10%" class="text-center">
-                    <b>Rupiah</b>
-                    <div class="input-group">
-                      <span class="input-group-addon">Rp</span>
-                      <input type="text" name="diskon_promo_rp" id="diskon_promo_rp" class="form-control input-sm form_item_so" readonly>
-                    </div>
-                  </td>
-                  <td width="10%" class="text-center">
-                    <b>Ketentuan</b>
-                      <input type="text" name="diskon_jika_qty" id="diskon_jika_qty" class="form-control input-sm form_item_so" readonly>
-                  </td>
-                  <td width="10%" class="text-center">
-                    <b>Bonus</b>
-                      <input type="text" name="diskon_qty_gratis" id="diskon_qty_gratis" class="form-control input-sm form_item_so" readonly>
-                  </td>
-                  <td class="text-center" colspan="2" rowspan="2" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
-                      <button class="btn btn-success btn-sm" type="submit" id="submit" name="save"><i class="fa fa-plus"></i> Tambah</button>
-                  </td>
-              </tr>
-              <tr>
-                  <td></td>
-                  <td width="5%" class="text-center" colspan="2"><b>PRODUCT SET BONUS :</b></td>
-                  <td width="5%" class="text-center" colspan="2">
-                    <div class="form-group form-inline">
-                    <select onchange="setitembarang_bonus()" id="item_brg_so_bonus" name="item_brg_so_bonus" class="form-control input-xs" style="width: 70%;" tabindex="-1" disabled>
+        <table class="table table-bordered" width="100%">
+            <tr>
+                <th class="text-center" colspan="8">FORM ITEM DETAIL</th>
+            </tr>
+            <tr>
+                <td width="13%"><b>PRODUCT SEAT</b></td>
+                <td colspan="3" width="40%">
+                    <select onchange="setitembarang()" id="item_brg_so" name="item_brg_so" class="form-control input-xs" style="width: 100%;" tabindex="-1" required>
                             <option value=""></option>
                             <?php
                             foreach(@$itembarang as $k=>$v){
@@ -365,65 +227,153 @@
                                 <?php echo $v->id_barang.' , '.$v->nm_barang ?>
                             </option>
                             <?php } ?>
-                    </select>
+                        </select>
+                </td>
+                <td width="5%" class="text-right"><b>HARGA NORMAL</b></td>
+                <td width="10%"><input type="text" name="harga_normal" id="harga_normal" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga Normal sebelum diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly"></td>
+                <td width="5%" class="text-right"><b>HARGA SETELAH DISKON</b></td>
+                <td width="10%">
+                  <input type="hidden" name="harga_sebelum_ppn" id="harga_sebelum_ppn" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                  <input type="text" name="harga" id="harga" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                </td>
+            </tr>
+            <tr>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_order" id="qty_order" class="form-control input-sm" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_bonus" id="qty_bonus" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Qty didapat dari diskon bonus" readonly>
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_avl" id="qty_avl" class="form-control input-sm" readonly="readonly">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_supply" id="qty_supply" class="form-control input-sm" onkeyup="hitungso()" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_pending" id="qty_pending" class="form-control input-sm" onkeyup="hitungcancel()" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_cancel" id="qty_cancel" class="form-control input-sm" readonly="readonly">
+                    <input type="hidden" name="nama_barang" id="nama_barang" class="form-control input-sm">
+                    <input type="hidden" name="satuan" id="satuan" class="form-control input-sm">
+                    <input type="hidden" name="jenis" id="jenis" class="form-control input-sm">
+                    <input type="hidden" name="total" id="total" class="form-control input-sm">
 
-                    <input type="hidden" name="nama_barang_bonus" id="nama_barang_bonus" class="form-control input-sm">
-                    <input type="hidden" name="satuan_bonus" id="satuan_bonus" class="form-control input-sm">
-                    <input type="hidden" name="jenis_bonus" id="jenis_bonus" class="form-control input-sm">
+                </td>
+                <td class="text-center" colspan="2" rowspan="4" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
+                    <button class="btn btn-success btn-sm" type="submit" id="submit" name="save"><i class="fa fa-plus"></i> Tambah</button>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center"><b>POIN @1</b></td>
+                <td width="5%" class="text-center"><b>Diskon Std.</b></td>
+                <td width="5%" class="text-center" colspan="2"><b>Diskon Promo</b></td>
+                <td width="5%" class="text-center" colspan="2"><b>Diskon QTY</b></td>
+            </tr>
+            <tr>
+                <td class="text-center">
+                  <center><b>Nilai Per 1 POIN</b></center>
+                  <div class="input-group">
+                    <span class="input-group-addon">Rp</span>
+                    <input type="text" name="poin_per_item" id="poin_per_item" class="form-control input-sm" readonly>
+                    <input type="hidden" name="jumlah_poin" id="jumlah_poin" class="form-control input-sm" readonly>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Persen</b>
+                  <div class="input-group">
+                    <input type="text" name="diskon_standar_persen" id="diskon_standar_persen" class="form-control input-sm" readonly>
+                    <span class="input-group-addon"><i class="fa fa-percent"></i></span>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Persen</b>
+                  <div class="input-group">
+                    <input type="text" name="diskon_promo_persen" id="diskon_promo_persen" class="form-control input-sm" readonly>
+                    <span class="input-group-addon"><i class="fa fa-percent"></i></span>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Rupiah</b>
+                  <div class="input-group">
+                    <span class="input-group-addon">Rp</span>
+                    <input type="text" name="diskon_promo_rp" id="diskon_promo_rp" class="form-control input-sm" readonly>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Ketentuan</b>
+                    <input type="text" name="diskon_jika_qty" id="diskon_jika_qty" class="form-control input-sm" readonly>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Bonus</b>
+                    <input type="text" name="diskon_qty_gratis" id="diskon_qty_gratis" class="form-control input-sm" readonly>
+                </td>
 
-                    <button class="btn btn-warning btn-sm" type="submit" id="submit_bonus" name="save_bonus" disabled ><i class="fa fa-plus"></i> OK</button>
-                    </div>
-                  </td>
-                  <td>
-                    <center><b>Available:</b></center>
-                    <input type="text" name="qty_avl_bonus" id="qty_avl_bonus" class="form-control input-sm" readonly="readonly">
-                  </td>
-              </tr>
-          </table>
-          <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
+            </tr>
+            <tr>
+                <td></td>
+                <td width="5%" class="text-center" colspan="2"><b>PRODUCT SET BONUS :</b></td>
+                <td width="5%" class="text-center" colspan="2">
+                  <div class="form-group form-inline">
+                  <select onchange="setitembarang_bonus()" id="item_brg_so_bonus" name="item_brg_so_bonus" class="form-control input-xs" style="width: 70%;" tabindex="-1" disabled>
+                          <option value=""></option>
+                          <?php
+                          foreach(@$itembarang as $k=>$v){
+                          ?>
+                          <option value="<?php echo $v->id_barang; ?>" <?php echo set_select('nm_barang', $v->id_barang, isset($data->nm_barang) && $data->id_barang == $v->id_barang) ?>>
+                              <?php echo $v->id_barang.' , '.$v->nm_barang ?>
+                          </option>
+                          <?php } ?>
+                  </select>
+
+                  <input type="hidden" name="nama_barang_bonus" id="nama_barang_bonus" class="form-control input-sm">
+                  <input type="hidden" name="satuan_bonus" id="satuan_bonus" class="form-control input-sm">
+                  <input type="hidden" name="jenis_bonus" id="jenis_bonus" class="form-control input-sm">
+
+                  <button class="btn btn-warning btn-sm" type="submit" id="submit_bonus" name="save_bonus" disabled ><i class="fa fa-plus"></i> OK</button>
+                  </div>
+                </td>
+                <td>
+                  <center><b>Available:</b></center>
+                  <input type="text" name="qty_avl_bonus" id="qty_avl_bonus" class="form-control input-sm" readonly="readonly">
+                </td>
+            </tr>
+        </table>
+        </form>
+        <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
             <thead>
-              <tr>
-                <th width="2%">
-                  #
+                <tr>
+                    <th width="2%">
+                      #
 
-                </th>
-                <th>Item Barang</th>
-                <th>Satuan</th>
-                <th>Stok Avl</th>
-                <th>Qty Order</th>
-                <th>Qty Confirm</th>
-                <th>Qty Pending</th>
-                <th>Qty Cancel</th>
-                <th>Harga</th>
-                <th>Subtotal Diskon (%)</th>
-                <th>Total</th>
-                <th>Aksi</th>
-              </tr>
+                    </th>
+                    <th>Item Barang</th>
+                    <th>Satuan</th>
+                    <th>Stok Avl</th>
+                    <th>Qty Order</th>
+                    <th>Qty Confirm</th>
+                    <th>Qty Pending</th>
+                    <th>Qty Cancel</th>
+                    <th>Harga</th>
+                    <th>Subtotal Diskon (%)</th>
+                    <th>Total</th>
+                    <th>Aksi</th>
+                </tr>
             </thead>
             <tbody>
-              <?php
-              $grand = 0;
-              if(@$detail){
+                <?php
+                $grand = 0;
+                if(@$detail){
                 $n=1;
-                $total_lc = 0;
                 foreach(@$detail as $ks=>$vs){
-                  $grand += $vs->subtotal;
-                  $no = $n++;
-                  ?>
-                  <tr>
+                    $grand += $vs->subtotal;
+                    $no = $n++;
+                ?>
+                <tr>
                     <td class="text-center">
 
                       <input type="checkbox" id="get_<?php echo $vs->no_so?>" name="id[]" class="checkbox_opsi" value="<?php echo $vs->id_barang?>">
-                      <?php
-                      $lc = $this->Detailsoedittmp_model->cek_data(array('id_barang'=>$vs->id_barang,'no_so'=>$vs->no_so),'trans_so_detail');
-                      if ($lc->landed_cost == 0 || $lc->landed_cost == "") {
-                        $lc = $this->Detailsoedittmp_model->cek_data(array('id_barang'=>$vs->id_barang,'kdcab'=>$this->auth->user_cab()),'barang_stock');
-                      }
-
-                      $total_lc += $lc->landed_cost*$vs->qty_booked;
-                      ?>
-                      <input type="hidden" id="lc_<?php echo $vs->no_so?>" name="lc[<?php echo $vs->no_so ?>]" value="<?php echo $lc->landed_cost*$vs->qty_booked?>">
-                      <input type="hidden" id="landed_cost_<?php echo $vs->no_so?>" name="landed_cost[]" value="<?php echo $lc->landed_cost?>">
                       <?php echo $no?>
                     </td>
                     <td><?php echo $vs->id_barang.' / '.$vs->nm_barang?></td>
@@ -442,76 +392,74 @@
                         <i class='fa fa-edit'></i>
 
                       </a>
-                      <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
-                      </a>
+                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
+                        </a>
                     </td>
-                  </tr>
+                </tr>
                 <?php } ?>
-              <?php } ?>
+                <?php } ?>
             </tbody>
             <tfoot>
-              <tr>
-                <th class="text-right">
-                  <input type="hidden" id="grandtotallc" name="grandtotallc[]" value="<?php echo $lc->landed_cost?>">
-                  <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
-                </th>
-                <th class="text-right">
-                  <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
-                  <input type="hidden" name="input_edit" id="input_edit">
-                  <a onclick="edit_list('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                    <i class='fa fa-edit'></i>
-                  </a>
-                  <a class="text-red" href="javascript:void(0)" title="Delete" onclick="hapus_list('<?php echo $vs->no_so?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-                    <i class="fa fa-trash"></i>
-                  </a>
-                </th>
-                <!--th class="text-left">
-                <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
-                <i class='fa fa-edit'></i>
-              </a>
-              <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
-              <i class="fa fa-trash"></i>
-            </a>
-          </th-->
-          <th colspan="7" class="text-right">DPP : </th>
-          <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
-            <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="9" class="text-right">Diskon Toko : </th>
-            <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
-            <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="9" class="text-right">PPN : </th>
-            <th colspan="2" class="text-right"><span id="ppnview"></span></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th colspan="9" class="text-right">GRAND TOTAL : </th>
-            <th colspan="2" class="text-right"><span id="totalview"></span></th>
-            <th></th>
-          </tr>
-          <tr>
-            <th class="text-right" colspan="13">
-              <button class="btn btn-danger" onclick="kembali()">
-                <i class="fa fa-refresh"></i><b> Kembali</b>
-              </button>
-              <button class="btn btn-primary" type="button" onclick="saveheaderso_edit()">
-                <i class="fa fa-save"></i><b> Simpan Data SO</b>
-              </button>
-            </th>
-          </tr>
-        </tfoot>
+                <tr>
+                    <th class="text-right">
+                      <img class="selectallarrow" src="<?= base_url('assets/img/arrow_ltr.png') ?>" alt="" width="38" height="22">
+                    </th>
+                    <th class="text-right">
+                      <input type="checkbox" name="get_all" id="get_all" class="checkbox" value="all"> <label class="label_call">Check All :</label>
+                      <input type="hidden" name="input_edit" id="input_edit">
+                      <a onclick="edit_list('<?php echo @$data->no_so ?>')" href="#dialog-edit"  data-toggle="modal" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                        <i class='fa fa-edit'></i>
+                      </a>
+                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="hapus_list('<?php echo $vs->no_so?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+                          <i class="fa fa-trash"></i>
+                        </a>
+                    </th>
+                    <!--th class="text-left">
+                      <a onclick="edit_barang('<?php echo $vso->no_so ?>')" href="javascript:void(0)" title='Edit' data-toggle='tooltip' data-placement='bottom'>
+                        <i class='fa fa-edit'></i>
+                      </a>
+                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"  title='Hapus' data-toggle='tooltip' data-placement='bottom'>
+                          <i class="fa fa-trash"></i>
+                        </a>
+                    </th-->
+                    <th colspan="7" class="text-right">DPP : </th>
+                    <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
+                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>"></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="9" class="text-right">Diskon Toko : </th>
+                    <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="9" class="text-right">Diskon Cash (<?php echo $disc_cash?>%): </th>
+                    <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="9" class="text-right">PPN : </th>
+                    <th colspan="2" class="text-right"><span id="ppnview"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="9" class="text-right">GRAND TOTAL : </th>
+                    <th colspan="2" class="text-right"><span id="totalview"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="text-right" colspan="13">
+                        <button class="btn btn-danger" onclick="kembali()">
+                            <i class="fa fa-refresh"></i><b> Kembali</b>
+                        </button>
+                        <button class="btn btn-primary" type="button" onclick="saveheaderso_edit()">
+                            <i class="fa fa-save"></i><b> Simpan Data SO</b>
+                        </button>
+                    </th>
+                </tr>
+            </tfoot>
 
-      </table>
-        </form>
+        </table>
     </div>
 </div>
 <!-- Modal -->
@@ -541,7 +489,6 @@
 	var base_url			= '<?php echo base_url(); ?>';
 	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
     $(document).ready(function() {
-      $('.radio_disso_rp').hide();
         $('#salesorderitemnya').DataTable({
             "sDom": 'Bfrtip',
             "responsive": true,
@@ -608,19 +555,20 @@
         sethitung();
     });
     $("#item_brg_so").on('mouseover', function(){
-      $('#item_brg_so').popover('show');
+      $('#item_brg_so').popover('show')
     });
 
     $("#ket_item").on('click', function(){
       var a = $('#idcustomer').val();
       if (a !== '') {
+        //alert(a);
         $( "#ket_item" ).popover('destroy');
       }
       else {
+
         $( "#ket_item" ).popover('show');
       }
     });
-
     $('#idcustomer').on('change', function(){
       var a = $('#idcustomer').val();
       if (a !== '') {
@@ -633,44 +581,12 @@
       }
     });
 
-    $("#disso").on('keyup', function(){
-      var harga_normal = parseInt($("#harga_normal").val());
-      var disstd = parseInt($("#diskon_standar_persen").val());
-      var dispro = parseInt($("#diskon_promo_persen").val());
-      var dispro_rp = parseInt($("#diskon_promo_rp").val());
-      var harga = parseInt((harga_normal*(100 - disstd)/100)*(100 - dispro)/100 - dispro_rp);
-      var disso = parseFloat($("#disso").val());
-      if ($("#tipe_disso").val() === "%") {
-        if (parseInt($("#disso").val()) > 100) {
-          swal({
-            title: "Peringatan!",
-            text: "Tidak boleh lebih dari 100%",
-            type: "warning",
-            timer: 1500,
-            showConfirmButton: false
-          });
-          $("#disso").val(0);
-        }else {
-          $("#harga").val(harga*(100 - disso)/100);
-        }
-      }else {
-        var radioValue = $("input[name='radio_disso_rp']:checked"). val();
-        if (radioValue == "tambah") {
-          $("#harga").val(harga + disso);
-        }else {
-          $("#harga").val(harga - disso);
-        }
-      }
-      if (isNaN($("#harga").val())) {
-        $("#harga").val(harga);
-      }
-    });
 
     $("#pop_diskon").on('mouseover', function(){
-      $('#pop_diskon').popover('show');
+      $('#pop_diskon').popover('show')
     });
     $("#pop_diskon").on('mouseout', function(){
-      $('#pop_diskon').popover('hide');
+      $('#pop_diskon').popover('hide')
     });
     $("#qty_supply").on('keyup', function(){
       $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()));
@@ -678,124 +594,37 @@
     });
     $("#qty_order").on('keyup', function(){
       this.value = this.value.match(/^[0-9]+$/);
-        var qo = parseInt($("#qty_order").val());
-        var ket_bonus = parseInt($("#diskon_jika_qty").val());
-        var bonus = parseInt(qo/ket_bonus);
-        if (ket_bonus == 0) {
-          bonus = 0;
-        }
-        var harga = parseInt($('#harga').val());
-        var avl = parseInt($('#qty_avl').val());
-        var qty = parseInt($('#qty_supply').val());
-        var order = parseInt($('#qty_order').val());
-        var diskon = parseInt($('#diskon').val());
-        var qtybonus = parseInt(0);
+      var qo = parseInt($("#qty_order").val());
+      var ket_bonus = parseInt($("#diskon_jika_qty").val());
+      var bonus = parseInt(qo/ket_bonus);
+      if (ket_bonus == 0) {
+        bonus = 0;
+      }
+      var harga = parseInt($('#harga').val());
+      var avl = parseInt($('#qty_avl').val());
+      var qty = parseInt($('#qty_supply').val());
+      var order = parseInt($('#qty_order').val());
+      var diskon = parseInt($('#diskon').val());
+      var qtybonus = parseInt(0);
 
-        $("#qty_bonus").val(bonus);
+      $("#qty_bonus").val(bonus);
+      $("#qty_supply").val(parseInt(qo));
+      if ( parseInt($('#qty_supply').val()) > parseInt($('#qty_avl').val()) ) {
+        $("#qty_supply").val(parseInt($('#qty_avl').val()));
+        $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_avl').val()) + bonus);
+        $("#qty_cancel").val(parseInt($('#qty_order').val()) + parseInt($('#qty_bonus').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
+      }
+      else {
         $("#qty_supply").val(parseInt(qo));
-        if ( parseInt($('#qty_supply').val()) > parseInt($('#qty_avl').val()) ) {
-          $("#qty_supply").val(parseInt($('#qty_avl').val()));
-          $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_avl').val()) + bonus);
-          $("#qty_cancel").val(parseInt($('#qty_order').val()) + parseInt($('#qty_bonus').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
-        }
-        else {
-          $("#qty_supply").val(parseInt(qo));
-          $("#qty_pending").val(parseInt( parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) ));
-          $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) - parseInt($('#qty_pending').val()));
-        }
-        //alert(bonus);
-        if (isNaN($("#qty_bonus").val()) || isNaN($("#qty_supply").val()) || isNaN($("#qty_pending").val()) ) {
-          $("#qty_bonus,#qty_supply,#qty_pending,#qty_cancel").val('');
-        }
-        hitungso();
+        $("#qty_pending").val(parseInt( parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) ));
+        $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) - parseInt($('#qty_pending').val()));
+      }
+      //alert(bonus);
+      if (isNaN($("#qty_bonus").val()) || isNaN($("#qty_supply").val()) || isNaN($("#qty_pending").val()) ) {
+        $("#qty_bonus,#qty_supply,#qty_pending,#qty_cancel").val('');
+      }
+      hitungso();
     });
-
-    function getcustomer(){
-        var idcus = $('#idcustomer').val();
-        if(idcus != ''){
-           $.ajax({
-                type:"GET",
-                url:siteurl+"salesorder/get_customer",
-                data:"idcus="+idcus,
-                success:function(result){
-                    var data = JSON.parse(result);
-                    $('#nmcustomer').val(data.nm_customer);
-                    $('#diskontoko').text(formatCurrency(data.diskon_toko*parseFloat($('#grandtotalso').val())/100,',','.',0));
-                    $('#distoko_text').text(data.diskon_toko+"%");
-                    $('#persen_diskon_toko').val(data.diskon_toko);
-                    getpiccustomer(idcus);
-                    //get_bidus(data.bidang_usaha)
-                    if ($('#bidang_usaha').val() != "") {
-                      if (data.bidang_usaha != $('#bidang_usaha').val()) {
-                        if ($('#totalview').text() == "0") {
-                          if (data.bidang_usaha == 'DISTRIBUTOR') {
-                            $('#diskon_promo_persen').val(0);
-                            $('#diskon_promo_rp').val(0);
-                            $('#bidang_usaha').val(data.bidang_usaha);
-                            hitungso();
-                          }
-                          else {
-                            $('#bidang_usaha').val(data.bidang_usaha);
-                            hitungso();
-                          }
-                        }else {
-                          $('#bidang_usaha').val(data.bidang_usaha);
-                          hitungso();
-                          reset_itemso();
-                        }
-                      }
-                    }else {
-                      $('#diskon_promo_persen').val(0);
-                      $('#diskon_promo_rp').val(0);
-                      $('#bidang_usaha').val(data.bidang_usaha);
-                    }
-                    resetform();
-                }
-            });
-        }
-        sethitung();
-
-    }
-    function reset_itemso(){
-      $.ajax({
-           type:"GET",
-           url:siteurl+"salesorder/hapus_item_so_all",
-           //data:"id_user="+<?= $session['id_user']?>,
-           success:function(result){
-               swal({
-                   title: "Peringatan",
-                   text: "Item SO dihapus karena berbeda Bidang Usaha dengan yang sebelumnya!",
-                   type: "success",
-                   timer: 2000,
-                   showConfirmButton: false
-               });
-               resetform();
-               setTimeout(function(){
-                   window.location.reload();
-               },1600);
-           }
-       });
-    }
-    function get_bidus(bid){
-      if (bid == 'DISTRIBUTOR') {
-        $('#diskon_promo_persen').remove();
-        $('#diskon_promo_rp').remove();
-      }else if (bid == 'AGEN') {
-        $('#diskon_promo_persen').name('diskon_promo_persen');
-        $('#diskon_promo_rp').name('diskon_promo_rp');
-      }else {
-        alert(data.bidang_usaha);
-      }
-    }
-    function getdisso(dis){
-      $('#tipe_disso').html(dis);
-      $('#tipe_disso').val(dis);
-      if (dis == "%") {
-        $('.radio_disso_rp').hide();
-      }else {
-        $('.radio_disso_rp').show();
-      }
-    }
 
     function filterAngka(a){
         if(!a.match(/^[0-9]+$/)){
@@ -868,7 +697,7 @@
 
                     $('#diskon_standar_persen').val(data.diskon_standar_persen)
                     $('#diskon_promo_persen').val(data.diskon_promo_persen);
-                    $('#diskon_promo_rp').val(0);
+                    $('#diskon_promo_rp').val(data.diskon_promo_rp);
                     $('#diskon_jika_qty').val(data.diskon_jika_qty);
                     $('#diskon_qty_gratis').val(data.diskon_qty_gratis);
 
@@ -877,25 +706,17 @@
                     }else {
                       $('#item_brg_so_bonus').prop('disabled', true);
                     }
-
-                    if ($('#bidang_usaha').val() == "DISTRIBUTOR") {
-                      $('#diskon_promo_persen').val(0);
-                      $('#diskon_promo_rp').val(0);
-                      hitungso();
-                    }
-
                     var h_d_std = parseInt($('#harga_normal').val()) - (parseInt($('#diskon_standar_persen').val() * $('#harga_normal').val()/100));
                     var d_pp = parseInt($('#diskon_promo_persen').val()) * h_d_std/100;
                     var d_rp = $('#diskon_promo_rp').val();
                     var harga = h_d_std - d_pp - d_rp;
                     var harga_sebelum_ppn = parseInt($('#harga_normal').val())/110*100;
                     $('#harga_sebelum_ppn').val(harga_sebelum_ppn)
-                    $('#harga').val(harga);
+                    $('#harga').val(pembulatan(harga));
 
                 }
             });
         }
-        //getcustomer();
     }
     function setitembarang_bonus(){
         var idbarang = $('#item_brg_so_bonus').val();
@@ -925,7 +746,24 @@
             });
         }
     }
-
+    function getcustomer(){
+        var idcus = $('#idcustomer').val();
+        if(idcus != ''){
+           $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_customer",
+                data:"idcus="+idcus,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    $('#nmcustomer').val(data.nm_customer);
+                    $('#diskontoko').text(formatCurrency(data.diskon_toko*parseInt($('#grandtotalso').val())/100,',','.',0));
+                    //$('#persen_diskon_toko').val(data.diskon_toko*parseInt($('#grandtotalso').val())/100);
+                    $('#persen_diskon_toko').val(data.diskon_toko);
+                    getpiccustomer(idcus);
+                }
+            });
+        }
+    }
     function getpiccustomer(idcus){
         $.ajax({
             type:"GET",
@@ -989,7 +827,7 @@
     }
     function sethitung(){
         var gt = $('#grandtotalso').val();
-        var total_lc = parseInt($('#grandtotallc').val());
+
         $('#dppso').val(gt);
         var npp = parseInt($('#nilaippn').val());//PPN APA TIDAK
         //alert(dto);
@@ -1009,13 +847,12 @@
         $('#ppnso').val(npp);
         //$('#flagppnso').val(ppn);
         $('#totalso').val(dpp);
-        $('#total_lc').val(total_lc);
         $('#diskon_toko').val(dto);
         $('#diskon_cash').val(dcc);
         $('#diskoncash').text(formatCurrency(dcc,',','.',0));
         $('#ppnview').text("(Include) "+npp+"%");
         $('#diskontoko').text(formatCurrency(dto,',','.',0));
-        $('#totalview').text(formatCurrency(dpp,',','.',0));
+        $('#totalview').text(formatCurrency(pembulatan(dpp),',','.',0));
     }
     function hitungcancel(){
         var avl = parseInt($('#qty_avl').val());

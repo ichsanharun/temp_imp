@@ -29,6 +29,7 @@ class Receiving extends Admin_Controller
                                  'Trans_stock/Trans_stock_model',
                                  'Barang_stock/Barang_stock_model',
                                  'Invoice/Invoice_model',
+                                 'Jurnal_nomor/Jurnal_model',
                                  'Purchaseorder/Purchaseorder_model',
                                  'Purchaseorder/Detailpurchaseorder_model',
                                  'Aktifitas/aktifitas_model',
@@ -72,8 +73,9 @@ class Receiving extends Admin_Controller
 
     public function konfrimasi_save()
     {
-		    //echo"<pre>";print_r($this->input->post());exit;
+
         $session = $this->session->userdata('app_session');
+        $tgl = $this->input->post('tglreceive');
         $nopo 	= $this->input->post('no_pr');
         $kdcab 	= $this->input->post('kdcab');
         //Update counter NO_DO
@@ -82,7 +84,7 @@ class Receiving extends Admin_Controller
         $this->db->update('cabang', array('no_receive' => $count->no_receive + 1));
         //Update counter NO_DO
 
-        $norec = $this->Receiving_model->generate_noreceive($session['kdcab']);
+        $norec = $this->Receiving_model->generate_noreceive($session['kdcab'],$tgl);
         $dataheader = array(
             'no_receiving' => $norec,
             'po_no' => $nopo,
@@ -113,13 +115,16 @@ class Receiving extends Admin_Controller
   		$Cabang_PO			= $Data_Header[0]->kdcab;
   		$Cabang_Pusat		= '100';
   		$Jumlah_Persediaan	= 0;
-  		$Jumlah_Lebih		= 0;
-  		$Jumlah_Hutang		= 0;
+  		$Jumlah_Lebih		    = 0;
+  		$Jumlah_Hutang		  = 0;
   		$Jumlah_Hut_Supplier= 0;
+  		$Jumlah_Hutang_PO 	= 0;
+  		$Qty_Terima		     	= 0;
+  		$Qty_PO			      	= 0;
 
 		  ## END PARAMETER ##
 
-        for ($b = 0; $b < $jumlah_barang; ++$b) {
+      for ($b = 0; $b < $jumlah_barang; ++$b) {
 			## ALI 2019-03-09 ##
 			$Qty_Acc		= $_POST['qty_ib'][$b];
 			$Qty_Pick		= $_POST['qty_plb'][$b];
@@ -129,10 +134,13 @@ class Receiving extends Admin_Controller
 			if($Qty_Pick > $Qty_Acc){
 				$Qty_Lebih	= $Qty_Pick - $Qty_Acc;
 			}
+			$Qty_PO				      += $Qty_Acc;
+			$Qty_Terima			    += ($Qty_Pick - $Qty_Lebih);
 			$Jumlah_Persediaan	+=($Qty_Pick * $Harga_UP);
-			$Jumlah_Hutang		+=(($Qty_Pick - $Qty_Lebih) * $Harga_UP);
-			$Jumlah_Lebih		+=($Qty_Lebih * $Harga_UP);
+			$Jumlah_Hutang	  	+=(($Qty_Pick - $Qty_Lebih) * $Harga_UP);
+			$Jumlah_Lebih	     	+=($Qty_Lebih * $Harga_UP);
 			$Jumlah_Hut_Supplier+=(($Qty_Pick - $Qty_Lebih) * $harga_barang);
+			$Jumlah_Hutang_PO  	+=($Qty_Acc * $harga_barang);
 
 			## END ALI ##
             $detil = array(
@@ -221,17 +229,74 @@ class Receiving extends Admin_Controller
                 );
             $this->Receiving_model->insert_receive_detail_koli($detil);
 
+            if ($_POST['qty_kosong'][$i] >= 1) {
+              $koli   = array(
+                  'no_po'             => $nopo,
+                  'id_barang'         => $_POST["id_barangc"][$i],
+                  'id_koli'           => $_POST["id_koli"][$i],
+                  'nama_koli'         => $_POST["nama_koli"][$i],
+                  'qty'               => $_POST["qty_pl"][$i],
+                  'bagus'             => $_POST['qty_bagus'][$i],
+                  'rusak'             => $_POST['qty_rusak'][$i],
+                  'kosong'            => $_POST['qty_kosong'][$i],
+                  'keterangan'        => $_POST["keterangan"][$i],
+              );
+             $this->db->insert('trans_complain_koli_receiving',$koli);
+             $id_b=$_POST["id_barang"][$i];
+             if ($_POST["qty_pl"][$i]==$_POST["bagus"][$i]) {
+                 $this->db->query("UPDATE `receive_detail_barang` SET `status` = '2' WHERE no_po='$nopo' and id_barang='$_POST[id_barangc][$i]'");
+             } else {
+                 $this->db->query("UPDATE `receive_detail_barang` SET `status` = '3' WHERE no_po='$nopo' and id_barang='$_POST[id_barangc][$i]'");
+             }
+            }
+
             $kdql = $_POST['id_koli'][$i];
-            $queryqol = $this->db->query("SELECT * FROM `barang_stock` WHERE id_barang='$kdql'");
+            $queryqol = $this->db->query("SELECT * FROM `barang_stock` WHERE id_barang='$kdql' AND kdcab = '$session[kdcab]'");
             $rowqly = $queryqol->row();
 
-            $qty_stock = $rowqly->qty_stock + $_POST['qty_bagus'][$i];
-            $qty_avl = $rowqly->qty_avl + $_POST['qty_bagus'][$i];
-            $qty_rusak = $rowqly->qty_rusak + $_POST['qty_rusak'][$i];
+            if ($rowqly) {
+              $qty_stock = $rowqly->qty_stock + $_POST['qty_bagus'][$i];
+              $qty_avl = $rowqly->qty_avl + $_POST['qty_bagus'][$i];
+              $qty_rusak = $rowqly->qty_rusak + $_POST['qty_rusak'][$i];
 
-            $this->db->query("UPDATE `barang_stock` SET `qty_stock` = '$qty_stock', qty_avl='$qty_avl', qty_rusak='$qty_rusak'  WHERE id_barang ='$kdql' and kdcab='$kdcab';");
+              $this->db->query("UPDATE `barang_stock` SET `qty_stock` = '$qty_stock', qty_avl='$qty_avl', qty_rusak='$qty_rusak'  WHERE id_barang ='$kdql' and kdcab='$kdcab';");
+            }else {
+              $rowmcoli = $this->db->query("SELECT * FROM `barang_koli` WHERE id_barang='$datas->id_barang'")->row();
+              $arr_coli_new = array(
+                      'id_barang' => $kdql,
+                      'nm_barang' => $rowmcoli->nm_koli,
+                      'kategori' => 'colly',
+                      'jenis' => substr($kdql,0,2),
+                      'brand' => "IMPORTA",
+                      'satuan' => "PCS",
+                      'qty_stock' => $_POST['qty_bagus'][$i],
+                      'qty_avl' => $_POST['qty_bagus'][$i],
+                      'qty_rusak' => $_POST['qty_rusak'][$i],
+                      'kdcab' => $session['kdcab'],
+                      'sts_aktif' => "aktif",
+                      'created_by' => $this->auth->user_id(),
+                      'created_on' => date('Y-m-d H:i:s'),
+                  );
+
+              $this->db->insert('barang_stock',$arr_coli_new);
+            }
+
         }
-        $this->db->query("UPDATE `trans_po_header` SET `status` = 'RECEIVING' WHERE `trans_po_header`.`no_po` ='$nopo';");
+        if ($Qty_Terima < $Qty_PO) {
+          // code...
+          $this->db->query("UPDATE `trans_po_header` SET `status` = 'RECEIVING UNCLOSED' WHERE `trans_po_header`.`no_po` ='$nopo';");
+
+          $com   = array(
+              'no_po'         => $nopo,
+              'no_pengiriman' => $norec,
+              'tanggal'       => date('Y-m-d'),
+              'created_on'    => date('Y-m-d H:i:s'),
+              'created_by'    => $session['id_user'],
+          );
+          $this->db->insert('trans_complain_receiving',$com);
+        }else {
+          $this->db->query("UPDATE `trans_po_header` SET `status` = 'RECEIVING' WHERE `trans_po_header`.`no_po` ='$nopo';");
+        }
 
         $thb = date('m').substr(date('Y'), 2, 2);
         $querypo = $this->db->query("SELECT * FROM `trans_po_header` WHERE no_po='$nopo' ");
@@ -351,71 +416,134 @@ class Receiving extends Admin_Controller
   		*/
 
   		## ALI 2019-03-09 ##
-  		## JURNAL CABANG ##
-  		$session 				= $this->session->userdata('app_session');
-  		$Tgl_Jurnal				= $this->input->post('tglreceive');
-  		$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($Cabang_PO,$Tgl_Jurnal);
-  		$Keterangan_JV			= 'Persediaan#PO '.$nopo.'#'.$this->input->post('nmsupplier');
+  		## Piutang Cabang ##
+  		$Tgl_Jurnal			= $this->input->post('tglreceive');
+  		$Periode_Receive	= date('Y-m',strtotime($Tgl_Jurnal));
+  		$Bulan_Rec			= date('n',strtotime($Tgl_Jurnal));
+  		$Tahun_Rec			= date('Y',strtotime($Tgl_Jurnal));
 
-  		$dataJVhead = array(
-  			'nomor' 	    	=> $Nomor_JV,
-  			'tgl'	         	=> $Tgl_Jurnal,
-  			'jml'	          	=> $Jumlah_Persediaan,
-  			'koreksi_no'		=> '',
-  			'kdcab'				=> $Cabang_PO,
-  			'jenis'			    => 'V',
-  			'keterangan' 		=> $Keterangan_JV,
-  			'bulan'				=> date('n'),
-  			'tahun'				=> date('Y'),
-  			'user_id'			=> $session['id_user'],
-  			'memo'			    => '',
-  			'tgl_jvkoreksi'		=> $Tgl_Jurnal,
-  			'ho_valid'			=> ''
-  		);
+  		$Periode_Sekarang	= date('Y-m');
+  		$Tgl_Sekarang		= date('Y-m-d');
+  		$Bulan_Now			= date('n');
+  		$Tahun_Now			= date('Y');
+  		$Beda_Bulan			= (($Tahun_Now - $Tahun_Rec) * 12 ) + ($Bulan_Now - $Bulan_Rec);
+  		//echo"Hasil = (".$Tahun_Now." - ".$Tahun_Rec.") * 12) + (".$Bulan_Now." - ".$Bulan_Rec.")";exit;
+  		$AR_Cabang			= array();
+  		$Saldo_Awal			= $Kredit	= $Saldo_Akhir	= 0;
+  		$Debet				= $Jumlah_Hutang;
 
-  		$det_Jurnal				= array();
-  		$det_Jurnal[0]			= array(
-  			  'nomor'         => $Nomor_JV,
-  			  'tanggal'       => $Tgl_Jurnal,
-  			  'tipe'          => 'JV',
-  			  'no_perkiraan'  => '1105-01-01',
-  			  'keterangan'    => $Keterangan_JV,
-  			  'no_reff'       => $nopo,
-  			  'debet'         => $Jumlah_Persediaan,
-  			  'kredit'        => 0
-
-  		);
-  		$det_Jurnal[1]			= array(
-  			  'nomor'         => $Nomor_JV,
-  			  'tanggal'       => $Tgl_Jurnal,
-  			  'tipe'          => 'JV',
-  			  'no_perkiraan'  => '2101-01-01',
-  			  'keterangan'    => $Keterangan_JV,
-  			  'no_reff'       => $nopo,
-  			  'debet'         => 0,
-  			  'kredit'        => $Jumlah_Hutang
-
-  		);
-  		if($Jumlah_Lebih > 0){
-  			$det_Jurnal[2]			= array(
-  				  'nomor'         => $Nomor_JV,
-  				  'tanggal'       => $Tgl_Jurnal,
-  				  'tipe'          => 'JV',
-  				  'no_perkiraan'  => '7101-02-01',
-  				  'keterangan'    => $Keterangan_JV,
-  				  'no_reff'       => $nopo,
-  				  'debet'         => 0,
-  				  'kredit'        => $Jumlah_Lebih
-
+  		for($x=0;$x<($Beda_Bulan + 1);$x++){
+  			$Tgl_Baru		= date('Y-m-d',mktime(0,0,0,$Bulan_Rec + $x,1,$Tahun_Rec));
+  			if($x > 0){
+  				$Saldo_Awal	= $Saldo_Akhir;
+  				$Debet		= $Kredit	= 0;
+  			}
+  			$Saldo_Akhir	= $Saldo_Awal + $Debet - $Kredit;
+  			$AR_Cabang[$x]		= array(
+  				'no_po'			=> $nopo,
+  				'tgl_receive'	=> $Tgl_Jurnal,
+  				'no_do'			=> $this->input->post('no_do_supplier'),
+  				'id_supplier'	=> $this->input->post('idsupplier'),
+  				'nm_supplier'	=> $this->input->post('nmsupplier'),
+  				'bln'			=> date('n',strtotime($Tgl_Baru)),
+  				'thn'			=> date('Y',strtotime($Tgl_Baru)),
+  				'saldo_awal'	=> $Saldo_Awal,
+  				'debet'			=> $Debet,
+  				'kredit'		=> $Kredit,
+  				'saldo_akhir'	=> $Saldo_Akhir,
+  				'kdcab'			=> $Cabang_PO
   			);
   		}
 
-  		$this->db->insert('javh',$dataJVhead);
-  		$this->db->insert_batch('jurnal',$det_Jurnal);
-  		## END JURNAL  CABANG##
+  		$this->db->insert_batch('ar_cabang',$AR_Cabang);
+  		//echo"<pre>";print_r($AR_Cabang);exit;
+  		$Kurang_Terima	= 0;
+  		if($Qty_Terima < $Qty_PO){
+  			$Kurang_Terima		= $Qty_PO  - $Qty_Terima;
+  		}
+
+    		## JURNAL CABANG ##
+    		$session 				= $this->session->userdata('app_session');
+
+    		$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Pembelian($Cabang_PO,$Tgl_Jurnal);
+    		$Keterangan_JV			= 'Persediaan#PO '.$nopo.'#'.$this->input->post('nmsupplier');
+
+    		$dataJVhead = array(
+    			'nomor' 	    	=> $Nomor_JV,
+    			'tgl'	         	=> $Tgl_Jurnal,
+    			'jml'	          	=> $Jumlah_Persediaan,
+    			'koreksi_no'		=> '',
+    			'kdcab'				=> $Cabang_PO,
+    			'jenis'			    => 'V',
+    			'keterangan' 		=> $Keterangan_JV,
+    			'bulan'				=> date('n'),
+    			'tahun'				=> date('Y'),
+    			'user_id'			=> $session['id_user'],
+    			'memo'			    => '',
+    			'tgl_jvkoreksi'		=> $Tgl_Jurnal,
+    			'ho_valid'			=> ''
+    		);
+
+    		$det_Jurnal				= array();
+    		$det_Jurnal[0]			= array(
+    			  'nomor'         => $Nomor_JV,
+    			  'tanggal'       => $Tgl_Jurnal,
+    			  'tipe'          => 'JV',
+    			  'no_perkiraan'  => '1105-01-01',
+    			  'keterangan'    => $Keterangan_JV,
+    			  'no_reff'       => $nopo,
+    			  'debet'         => $Jumlah_Persediaan,
+    			  'kredit'        => 0
+
+    		);
+    		$det_Jurnal[1]			= array(
+    			  'nomor'         => $Nomor_JV,
+    			  'tanggal'       => $Tgl_Jurnal,
+    			  'tipe'          => 'JV',
+    			  'no_perkiraan'  => '2101-01-01',
+    			  'keterangan'    => $Keterangan_JV,
+    			  'no_reff'       => $nopo,
+    			  'debet'         => 0,
+    			  'kredit'        => $Jumlah_Hutang
+
+    		);
+    		if($Jumlah_Lebih > 0){
+    			$det_Jurnal[2]			= array(
+    				  'nomor'         => $Nomor_JV,
+    				  'tanggal'       => $Tgl_Jurnal,
+    				  'tipe'          => 'JV',
+    				  'no_perkiraan'  => '7101-02-01',
+    				  'keterangan'    => $Keterangan_JV,
+    				  'no_reff'       => $nopo,
+    				  'debet'         => 0,
+    				  'kredit'        => $Jumlah_Lebih
+
+    			);
+    		}
+
+    		$this->db->insert('javh',$dataJVhead);
+    		$this->db->insert_batch('jurnal',$det_Jurnal);
+  		  $Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Cabang_PO,'JP');
+    		## END JURNAL  CABANG##
 
   		## JURNAL HO ##
-  		$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Memorial($Cabang_Pusat,$Tgl_Jurnal);
+
+  		/* CEK JURNAL BAYAR */
+  		$Jumlah_Bayar		= 0;
+  		$Persen_Bayar		= 0;
+  		$Pros_Bayar		= $this->db->get_where('trans_po_payment',array('LOWER(status)'=>'close','no_po'=>$nopo));
+  		$num_Bayar		= $Pros_Bayar->num_rows();
+  		if($num_Bayar > 0){
+  			$det_Bayar		= $Pros_Bayar->result();
+  			foreach($det_Bayar as $keyB=>$valB){
+  				$Persen_Bayar		+=floatval($valB->persen);
+          $Nominal_Bayar		+=floatval($valB->nominal);
+  				$Jumlah_Bayar		+=floatval($valB->bayar);
+  			}
+        $Nominal_Dollar = $rowpo->rupiah_total/$rowpo->rupiah;
+  		}
+
+  		$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Pembelian($Cabang_Pusat,$Tgl_Jurnal);
   		$Keterangan_JV			= 'Piutang Cabang#PO '.$nopo.'#'.$this->input->post('nmsupplier');
 
   		$dataJVhead = array(
@@ -433,16 +561,22 @@ class Receiving extends Admin_Controller
   			'tgl_jvkoreksi'		=> $Tgl_Jurnal,
   			'ho_valid'			=> ''
   		);
-  		if($Cabang_PO=='101'){
-  			$Coa_Piutang	='1104-01-04';
-  		}else if($Cabang_PO=='102'){
-  			$Coa_Piutang	='1104-01-02';
-  		}else if($Cabang_PO=='103'){
-  			$Coa_Piutang	='1104-01-03';
-  		}else if($Cabang_PO=='104'){
-  			$Coa_Piutang	='1104-01-05';
+
+  		$Coa_Piutang		= $this->Jurnal_model->get_COA_Piutang($Cabang_PO);
+  		$Profit			  	= $Jumlah_Hutang - $Jumlah_Hut_Supplier;
+  		$Hutang_Supp		= $Jumlah_Hut_Supplier;
+
+  		/*
+  		if($Persen_Bayar >=100){
+  			$Profit				    = $Jumlah_Hutang - $Jumlah_Hutang_PO;
+  			$Hutang_Supp			= $Jumlah_Hutang_PO;
+  		}else{
+
+  			$Profit				    = $Jumlah_Hutang - $Jumlah_Hut_Supplier;
+  			$Hutang_Supp			= $Jumlah_Hut_Supplier;
   		}
-  		$Profit				    = $Jumlah_Hutang - $Jumlah_Hut_Supplier;
+    		*/
+
   		$det_Jurnal				= array();
   		$det_Jurnal[0]			= array(
   			  'nomor'         => $Nomor_JV,
@@ -463,40 +597,143 @@ class Receiving extends Admin_Controller
   			  'keterangan'    => 'Hutang Supplier#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
   			  'no_reff'       => $nopo,
   			  'debet'         => 0,
-  			  'kredit'        => $Jumlah_Hut_Supplier
+  			  'kredit'        => $Hutang_Supp
 
   		);
-  		$det_Jurnal[2]			= array(
-  			  'nomor'         => $Nomor_JV,
-  			  'tanggal'       => $Tgl_Jurnal,
-  			  'tipe'          => 'JV',
-  			  'no_perkiraan'  => '4102-01-01',
-  			  'keterangan'    => 'Persediaan#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
-  			  'no_reff'       => $nopo,
-  			  'debet'         => 0,
-  			  'kredit'        => $Profit
+  		if($Profit > 0){
+  			$det_Jurnal[2]			= array(
+  				  'nomor'         => $Nomor_JV,
+  				  'tanggal'       => $Tgl_Jurnal,
+  				  'tipe'          => 'JV',
+  				  'no_perkiraan'  => '4102-01-01',
+  				  'keterangan'    => 'Pendapatan#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  				  'no_reff'       => $nopo,
+  				  'debet'         => 0,
+  				  'kredit'        => $Profit
 
-  		);
+  			);
+  		}else if($Profit < 0){
+  			## CONFIRM LAGI COA ##
+  			$Profit				= $Profit * -1;
+  			$det_Jurnal[2]			= array(
+  				  'nomor'         => $Nomor_JV,
+  				  'tanggal'       => $Tgl_Jurnal,
+  				  'tipe'          => 'JV',
+  				  'no_perkiraan'  => '4102-01-01',
+  				  'keterangan'    => 'Pendapatan#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  				  'no_reff'       => $nopo,
+  				  'debet'         => $Profit,
+  				  'kredit'        => 0
+  			);
+  		}
+
   		$this->db->insert('javh',$dataJVhead);
   		$this->db->insert_batch('jurnal',$det_Jurnal);
+  		$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Cabang_Pusat,'JP');
+
+
+
+  		if($Persen_Bayar >=100 || $Nominal_Bayar >=$Nominal_Dollar){
+  			/*
+  			## Jika Barang yang di terima masih Kurang makan selisih kurs tetap dibebankan DAHULU ##
+  			*/
+  			$Selisih_Bayar		= $Jumlah_Bayar - $Hutang_Supp;
+
+
+  			$Nomor_Jurnal_CN	= $this->Jurnal_model->get_Nomor_Jurnal_Pembelian($Cabang_Pusat,$Tgl_Sekarang);
+
+  			$Keterangan_CN		= 'Penyelesaian hutang#PO '.$nopo.'#'.$this->input->post('nmsupplier');
+  			$dataCNHead			= array(
+  				'nomor' 	    	=> $Nomor_Jurnal_CN,
+  				'tgl'	         	=> $Tgl_Sekarang,
+  				'jml'	          	=> $Jumlah_Bayar,
+  				'koreksi_no'		=> '',
+  				'kdcab'				=> $Cabang_Pusat,
+  				'jenis'			    => 'V',
+  				'keterangan' 		=> $Keterangan_CN,
+  				'bulan'				=> date('n',strtotime($Tgl_Sekarang)),
+  				'tahun'				=> date('Y',strtotime($Tgl_Sekarang)),
+  				'user_id'			=> $session['id_user'],
+  				'memo'			    => '',
+  				'tgl_jvkoreksi'		=> $Tgl_Sekarang,
+  				'ho_valid'			=> ''
+  			);
+
+
+  			$detail_CN		= array();
+  			$detail_CN[0]	= array(
+  				'nomor'         => $Nomor_Jurnal_CN,
+  				'tanggal'       => $Tgl_Sekarang,
+  				'tipe'          => 'JV',
+  				'no_perkiraan'  => '2101-01-01',
+  				'keterangan'    => 'Penyelesaian hutang#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  				'no_reff'       => $nopo,
+  				'debet'         => $Hutang_Supp,
+  				'kredit'        => 0
+  			);
+
+  			$detail_CN[1]	= array(
+  				'nomor'         => $Nomor_Jurnal_CN,
+  				'tanggal'       => $Tgl_Sekarang,
+  				'tipe'          => 'JV',
+  				'no_perkiraan'  => '1108-01-01',
+  				'keterangan'    => 'Penyelesaian hutang#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  				'no_reff'       => $nopo,
+  				'debet'         => 0,
+  				'kredit'        => $Jumlah_Bayar
+  			);
+
+
+  			//COA LABA RUGI SELISIH KURS
+  			## MOHON DI KONFIRMASI LAGI NOMOR COA ##
+
+  			$COA_Kurs		= '6812-01-01';
+  			if($Selisih_Bayar < 0){
+  				$Jumlah_Kurs	= $Selisih_Bayar * -1;
+  				$detail_CN[2]	= array(
+  					'nomor'         => $Nomor_Jurnal_CN,
+  					'tanggal'       => $Tgl_Sekarang,
+  					'tipe'          => 'JV',
+  					'no_perkiraan'  => $COA_Kurs,
+  					'keterangan'    => 'Penyelesaian hutang#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  					'no_reff'       => $nopo,
+  					'debet'         => 0,
+  					'kredit'        => $Jumlah_Kurs
+  				);
+  			}else if($Selisih_Bayar > 0){
+  				$detail_CN[2]	= array(
+  					'nomor'         => $Nomor_Jurnal_CN,
+  					'tanggal'       => $Tgl_Sekarang,
+  					'tipe'          => 'JV',
+  					'no_perkiraan'  => $COA_Kurs,
+  					'keterangan'    => 'Penyelesaian hutang#PO '.$nopo.'#'.$this->input->post('nmsupplier'),
+  					'no_reff'       => $nopo,
+  					'debet'         => $Selisih_Bayar,
+  					'kredit'        => 0
+  				);
+  			}
+  			$this->db->insert('javh',$dataCNHead);
+  			$this->db->insert_batch('jurnal',$detail_CN);
+  			$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Cabang_Pusat,'JP');
+  		}
 
   		## END JURNAL HO ##
+  		$this->db->trans_complete();
+          if ($this->db->trans_status() === false) {
+              $this->db->trans_rollback();
+              $param = array(
+                  'save' => 0,
+                  'msg' => 'GAGAL, perubahan..!!!',
+                  );
+          } else {
+              $this->db->trans_commit();
+              $param = array(
+                  'save' => 1,
+                  'msg' => 'SUKSES, melakukan perubahaan..!!!',
+                  );
+          }
 
-        if ($this->db->trans_status() === false) {
-            $this->db->trans_rollback();
-            $param = array(
-                'save' => 0,
-                'msg' => 'GAGAL, perubahan..!!!',
-                );
-        } else {
-            $this->db->trans_commit();
-            $param = array(
-                'save' => 1,
-                'msg' => 'SUKSES, melakukan perubahaan..!!!',
-                );
-        }
-
-        echo json_encode($param);
+          echo json_encode($param);
     }
 
     public function konfrimasi_save_lamx()

@@ -97,7 +97,8 @@ class Purchaseorder_pusat extends Admin_Controller
             'rupiah_total' => $this->input->post('total_rupiah'),
             'no_pi' => $this->input->post('no_pi'),
             'status' => 'PI',
-            'shipping' => $this->input->post('shipping')
+            'shipping' => $this->input->post('shipping'),
+            'status_cabang' => 'HUTANG'
         );
 
         $this->db->trans_begin();
@@ -128,15 +129,30 @@ class Purchaseorder_pusat extends Admin_Controller
 
         $jumlahx = count($_POST['pembayaran']);
 
-        for ($i = 0; $i < $jumlahx; ++$i) {
+        if ($_POST['opsi_top'] == 'persen') {
+          for ($i = 0; $i < $jumlahx; ++$i) {
             ++$no;
             $detil = array(
-                        'no_po' => "$nopo",
-                        'persen' => $_POST['pembayaran'][$i],
-                        'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
-                        'status' => 'open',
-                    );
+              'no_po' => "$nopo",
+              'persen' => $_POST['pembayaran'][$i],
+              'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
+              'status' => 'open',
+              'tipe_payment'=>'persen'
+            );
             $this->Purchaseorder_pusat_model->insert_po_payment($detil);
+          }
+        }else {
+          for ($i = 0; $i < $jumlahx; ++$i) {
+            ++$no;
+            $detil = array(
+              'no_po' => "$nopo",
+              'nominal' => $_POST['pembayaran'][$i],
+              'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
+              'status' => 'open',
+              'tipe_payment'=>'nominal'
+            );
+            $this->Purchaseorder_pusat_model->insert_po_payment($detil);
+          }
         }
 
         if ($this->db->trans_status() === false) {

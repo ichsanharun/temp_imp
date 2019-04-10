@@ -472,12 +472,15 @@ class Reportso extends Admin_Controller {
     function downloadExcel_old()
     {
       $session = $this->session->userdata('app_session');
-      if ($this->uri->segment(4) == "All") {
+      if ($this->uri->segment(3) == "ALL") {
         $data_so = $this->Salesorder_model
+        ->where(array(
+          'LEFT(trans_so_header.no_so,3)' => $session['kdcab']
+        ))
         ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
         ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
         ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
-        ->find_all_by(array('LEFT(trans_so_header.no_so,3)'=>$session['kdcab']));
+        ->get_data("1=1","trans_so_header");
       }else {
 
         $data_so = $this->Salesorder_model

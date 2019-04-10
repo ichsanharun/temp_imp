@@ -115,8 +115,327 @@ class Invoice extends Admin_Controller {
   	   $expired[tgl]  = $jthtempo;
        echo json_encode($expired);
     }
-
     function saveheaderinvoice(){
+		if($this->input->post()){
+			$nd       		  	= $this->input->post('nd');
+			$detail_do		  	= $this->input->post('det_do');
+			$custid				= $this->input->post('idcustomer_do');
+			$custname			= $this->input->post('nmcustomer_do');
+			$alamat			    = $this->input->post('alamat');
+			$npwp			   	= $this->input->post('npwp');
+			$alamat_npwp	 	= $this->input->post('alamat_npwp');
+
+			$tgl_expired		= $this->input->post('tgljthtempo');
+			$kefak				= $this->input->post('kode_faktur');
+			$sts_materai		= $this->input->post('materai');
+			$id_salesman		= $this->input->post('id_salesman');
+			$nm_salesman		= $this->input->post('nm_salesman');
+			$nofaktur			= '';
+			$OK					= 1;
+
+  			$faktur_data	  	= $this->Invoice_model->getFakturAktif();
+
+  			if($faktur_data['hasil'] != '1'){
+  				$OK			= 0;
+  			}else{
+  				$Kode_Gen		= $faktur_data['data']['idgen'];
+  				$fakturid		= $faktur_data['data']['no_faktur'];
+  			}
+
+  			if($OK==1){
+  				$Tgl_Invoice			= $this->input->post('tanggal_invoice');
+				$Bulan_Invoice			= date('n',strtotime($Tgl_Invoice));
+				$Tahun_Invoice			= date('Y',strtotime($Tgl_Invoice));
+  				$session 				= $this->session->userdata('app_session');
+				$no_invoice 			= $this->Invoice_model->generate_noinv($session['kdcab'],$Tgl_Invoice);
+  				$customer 				= $this->Invoice_model->cek_data(array('id_customer'=>$custid),'customer');
+
+
+  				$nofaktur			= $kefak.'.'.$fakturid;
+  				$Arr_Update			= array(
+  					'sts'				=> '1',
+  					'nofaktur'			=> $nofaktur,
+  					'tglfaktur'			=> $this->input->post('tanggal_invoice'),
+  					'tglinvoice'		=> $this->input->post('tanggal_invoice'),
+  					'noinvoice'			=> $no_invoice,
+  					'tanggal_generate'	=> date('Y-m-d H:i:s')
+  				);
+
+  				$Biaya_Materai			= 0;
+  				if($sts_materai=='Y'){
+  					$Biaya_Materai		= 6000;
+  				}
+
+				if($this->input->post('n_ppn') > 0){
+  					$faktur_pajak		= $nofaktur;
+  				}else{
+  					$faktur_pajak		= '';
+  				}
+  				$Arr_detail				= array();
+  				//$Total_DPP	      = $Total_Diskon	= $Total_After	= $PPN	= $Total_landed = $Harga_tahap_1 = $Harga_tahap_2 = $Harga_tahap_3 = $Total_Diskon_item= 0;
+  				//$DO_Detail			  = $this->Invoice_model->get_where_in('no_do',$detail_do,'trans_do_detail');
+  				$Awal					    =  0;
+				$detail_inv_post = $this->input->post('id');
+				for ($i = 0; $i<count($detail_inv_post); $i++) {
+					$dbdo 				= $this->Invoice_model->cek_data(array('id_barang'=>$this->input->post('id_barang')[$i]),'barang_master');
+					$landed_stock		= $this->Invoice_model->cek_data(array('id_barang'=>$this->input->post('id_barang')[$i]),'barang_stock');
+					$landed_cost		= $this->input->post('jumlah')[$i] * $landed_stock->landed_cost;
+					$Total_landed		+= $landed_cost;
+					$Awal++;
+					$Arr_detail[$Awal]['no_invoice']					= $no_invoice;
+					$Arr_detail[$Awal]['id_barang']					    = $this->input->post('id_barang')[$i];
+					$Arr_detail[$Awal]['nm_barang']					  	= $this->input->post('nm_barang')[$i];
+					$Arr_detail[$Awal]['jumlah']						= $this->input->post('jumlah')[$i];
+					$Arr_detail[$Awal]['satuan']					    = $dbdo->satuan;
+					$Arr_detail[$Awal]['hargajual']					    = $this->input->post('hargajual')[$i];
+					$Arr_detail[$Awal]['persen_diskon_stdr']		    = $this->input->post('persen_diskon_stdr')[$i];
+					$Arr_detail[$Awal]['harga_after_diskon_stdr']	   	= $this->input->post('harga_after_diskon_stdr')[$i];
+					$Arr_detail[$Awal]['diskon_promo_persen']		    = $this->input->post('diskon_promo_persen')[$i];
+					$Arr_detail[$Awal]['diskon_promo_persen_rpnya']	 	= $this->input->post('diskon_promo_persen_rpnya')[$i];
+					$Arr_detail[$Awal]['harga_nett_dari_so']		    = $this->input->post('harga_nett_dari_so')[$i];
+					$Arr_detail[$Awal]['harga_nett']				    = $this->input->post('harga_nett')[$i];
+
+
+					$Arr_detail[$Awal]['subtot_bef_diskon']			    = $this->input->post('subtot_bef_diskon')[$i];
+					$Arr_detail[$Awal]['subtot_after_diskon']		    = $this->input->post('subtot_after_diskon')[$i];
+
+					$Arr_detail[$Awal]['tgljual']				    	= $this->input->post('tgljual')[$i];
+					$Arr_detail[$Awal]['ppn']						    = $this->input->post('ppn')[$i];
+					$Arr_detail[$Awal]['no_do']					        = $this->input->post('no_do')[$i];
+					$Arr_detail[$Awal]['diskon_so']			            = $this->input->post('diskon_so')[$i];
+					$Arr_detail[$Awal]['tipe_diskon_so']       			= $this->input->post('tipe_diskon_so')[$i];
+					$Arr_detail[$Awal]['hargalanded']				    = $this->input->post('hargalanded')[$i];
+					//$Arr_detail[$Awal]['diskon']						= $discount_satuan;
+					//$Arr_detail[$Awal]['bonus']				        = $this->input->post('bonus')[$key];
+				}
+
+  				$headerinv = array(
+  					'no_invoice' 		     	=> $no_invoice,
+  					'kdcab' 			      	=> $session['kdcab'],
+  					'id_customer'	 	      	=> $this->input->post('id_customer'),
+  					'nm_customer' 		      	=> $this->input->post('nm_customer'),
+  					'tanggal_invoice'      		=> $this->input->post('tanggal_invoice'),
+  					'id_salesman'	         	=> $this->input->post('id_salesman'),
+  					'nm_salesman' 		     	=> $this->input->post('nm_salesman'),
+  					'nofakturpajak' 	      	=> $faktur_pajak,
+  					'tglfakturpajak' 	      	=> $this->input->post('tanggal_invoice'),
+  					'tgljatuhtempo' 	      	=> $this->input->post('tgljatuhtempo'),
+  					'alamatcustomer' 	      	=> $this->input->post('alamatcustomer'),
+  					'npwpcustomer' 		      	=> $this->input->post('npwpcustomer'),
+  					'diskon_toko_persen'    	=> $this->input->post('diskon_toko_persen'),
+  					'diskon_toko_rp'	      	=> $this->input->post('dpp')*$this->input->post('diskon_toko_persen')/100,
+  					'diskon_cash_persen'    	=> $this->input->post('diskon_cash_persen'),
+  					'diskon_cash_rp'        	=> $this->input->post('dpp')*$this->input->post('diskon_cash_persen')/100,
+  					'hargajualbefdis'	      	=> $this->input->post('hargajualbefdis'),
+  					'hargajualafterdis'	    	=> $this->input->post('hargajualafterdis'),
+  					'hargajualafterdistoko'		=> $this->input->post('hargajualafterdistoko'),
+  					'hargajualafterdiscash'		=> $this->input->post('hargajualafterdiscash'),
+  					'diskon_stdr_rp'	      	=> $this->input->post('diskon_stdr_rp'),
+  					//'diskontotal'		        => $this->input->post('diskontotal'),
+  					'dpp'				        => $this->input->post('dpp'),
+  					'ppn'				        => $this->input->post('n_ppn'),
+  					'meterai'			        => $Biaya_Materai,
+  					'hargajualtotal'	      	=> $this->input->post('hargajualtotal'),
+  					'piutang'			        => $this->input->post('hargajualtotal'),
+  					'hargalandedtotal'     		=> $Total_landed,
+  				);
+
+
+				## ACCOUNT RECEIVABLE ##
+				$Total_Inv				= $this->input->post('hargajualtotal');
+				$Bulan_Sekarang			= date('n');
+				$Tahun_Sekarang			= date('Y');
+				$Beda_Bulan				= (($Tahun_Sekarang - $Tahun_Invoice) * 12) + ($Bulan_Sekarang - $Bulan_Invoice);
+				if($Beda_Bulan < 1){
+					$Beda_Bulan			= 0;
+				}
+				$dataAR					= array();
+				$intL				   	= 0;
+				$Saldo_Awal			= 0;
+				$Kredit					= 0;
+				$Debet					= $Total_Inv;
+				$Saldo_Akhir		= $Total_Inv;
+				for($x=0;$x<=$Beda_Bulan;$x++){
+					$intL++;
+					$Bulan_Proses		= date('n',mktime(0,0,0,$Bulan_Invoice + $x,1,$Tahun_Invoice));
+					$Tahun_Proses		= date('Y',mktime(0,0,0,$Bulan_Invoice + $x,1,$Tahun_Invoice));
+					if($intL > 1){
+						$Debet			= 0;
+						$Saldo_Awal		= $Total_Inv;
+					}
+					$dataAR[$x] 	= array(
+						'no_invoice' 		=> $no_invoice,
+						'tgl_invoice'		=> $Tgl_Invoice,
+						'customer_code'	=> $this->input->post('id_customer'),
+						'customer' 			=> $this->input->post('nm_customer'),
+						'bln'				    => $Bulan_Proses,
+						'thn'				    => $Tahun_Invoice,
+						'saldo_awal' 		=> $Saldo_Awal, //nilai invoice
+						'debet'				  => $Debet,
+						'kredit'			  => $Kredit,
+						'saldo_akhir'		=> $Saldo_Akhir, //nilai invoice
+						'kdcab'				  => $session['kdcab']
+  					);
+				}
+
+
+
+				## NOMOR JV ##
+				$Nomor_JV				= $this->Invoice_model->get_Nomor_Jurnal_Sales($session['kdcab'],$Tgl_Invoice);
+
+				$Total_DPP				= $Total_Inv;
+				$Keterangan_INV		= 'PENJUALAN A/N '.$this->input->post('nm_customer').' INV NO. '.$no_invoice;
+				$COA_Sales				= '4201-01-01';
+				$dataJVhead = array(
+  					'nomor' 	    	=> $Nomor_JV,
+  					'tgl'	         	=> $this->input->post('tanggal_invoice'),
+  					'jml'	          => $Total_Inv,
+  					'koreksi_no'		=> '',
+  					'kdcab'				  => $session['kdcab'],
+  					'jenis'			    => 'V',
+  					'keterangan' 		=> $Keterangan_INV,
+					'bulan'				    => $Bulan_Invoice,
+  					'tahun'				  => $Tahun_Invoice,
+  					'user_id'			  => $session['id_user'],
+  					'memo'			    => '',
+  					'tgl_jvkoreksi'	=> $Tgl_Invoice,
+  					'ho_valid'			=> ''
+  				);
+
+				$det_Jurnal				= array();
+				$det_Jurnal[]			= array(
+					  'nomor'         => $Nomor_JV,
+					  'tanggal'       => $Tgl_Invoice,
+					  'tipe'          => 'JV',
+					  'no_perkiraan'  => '1104-01-01',
+					  'keterangan'    => $Keterangan_INV,
+					  'no_reff'       => $no_invoice,
+					  'debet'         => $Total_Inv,
+					  'kredit'        => 0
+
+				);
+				if($this->input->post('n_ppn') > 0){
+					$Total_DPP				= $Total_Inv - $this->input->post('n_ppn');
+					$COA_Sales				= '4101-01-01';
+					$det_Jurnal[]			= array(
+						  'nomor'         => $Nomor_JV,
+						  'tanggal'       => $Tgl_Invoice,
+						  'tipe'          => 'JV',
+						  'no_perkiraan'  => '2107-04-01',
+						  'keterangan'    => 'PPN A/N '.$this->input->post('nm_customer').' INV NO. '.$no_invoice,
+						  'no_reff'       => $no_invoice,
+						  'debet'         => 0,
+						  'kredit'        => $this->input->post('n_ppn')
+
+					);
+				}
+				$det_Jurnal[]			  = array(
+					  'nomor'         => $Nomor_JV,
+					  'tanggal'       => $Tgl_Invoice,
+					  'tipe'          => 'JV',
+					  'no_perkiraan'  => $COA_Sales,
+					  'keterangan'    => $Keterangan_INV,
+					  'no_reff'       => $no_invoice,
+					  'debet'         => 0,
+					  'kredit'        => $Total_DPP
+
+				);
+
+				/*
+
+				if($this->input->post('n_ppn') == 0){
+					$datajurnal_2 = array(
+					  'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+					  'tanggal'       => $this->input->post('tanggal_invoice'),
+					  'tipe'          => 'JV',
+					  'no_perkiraan'  => '4201-01-01',
+					  'keterangan'    => 'Penjualan Kotor Non PPN #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+					  'no_reff'       => $no_invoice,
+					  'debet'         => 0,
+					  'kredit'        => $this->input->post('hargajualtotal')
+					);
+  				}else {
+					$datajurnal_2 = array(
+					  'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+					  'tanggal'       => $this->input->post('tanggal_invoice'),
+					  'tipe'          => 'JV',
+					  'no_perkiraan'  => '4101-01-01',
+					  'keterangan'    => 'Penjualan Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+					  'no_reff'       => $no_invoice,
+					  'debet'         => 0,
+					  'kredit'        => $this->input->post('dpp')
+					);
+					$datajurnal_3 = array(
+					  'nomor'         => $this->Invoice_model->generate_nojv($session['kdcab']),
+					  'tanggal'       => $this->input->post('tanggal_invoice'),
+					  'tipe'          => 'JV',
+					  'no_perkiraan'  => '2107-04-01',
+					  'keterangan'    => 'PPN K Penjualan Invoice #'.$no_invoice.'#'.$this->input->post('nm_customer'),
+					  'no_reff'       => $no_invoice,
+					  'debet'         => 0,
+					  'kredit'        => $this->input->post('n_ppn')
+					);
+
+				}
+				*/
+
+
+  				$Kode_Proses			   = implode("','",$detail_do);
+
+  				$Qry_Update_DO			 = "UPDATE trans_do_header SET status='INV',no_invoice='$no_invoice' WHERE no_do IN ('".$Kode_Proses."')";
+  				$Qry_Update_Cabang	 = "UPDATE cabang SET no_invoice=no_invoice + 1 WHERE kdcab='".$session['kdcab']."'";
+
+  				$this->db->trans_begin();
+  				$this->db->query($Qry_Update_Cabang);
+  				$this->db->query($Qry_Update_DO);
+  				if($this->input->post('ppn') > 0){
+  					$this->db->update('faktur_detail',$Arr_Update,array('idgen'=>$Kode_Gen,'fakturid'=>$fakturid));
+  				}
+  				$this->db->insert_batch('trans_invoice_detail',$Arr_detail);
+  				$this->db->insert('trans_invoice_header',$headerinv);
+
+
+				## INSERT JURNAL ##
+				$this->db->insert('javh',$dataJVhead);
+				$this->db->insert_batch('jurnal',$det_Jurnal);
+
+				## INSERT ACCOUNT RECEIVABLE  ##
+				$this->db->insert_batch('ar',$dataAR);
+
+				$Qry_Update_Cabang_acc	 = "UPDATE pastibisa_tb_cabang SET noJS=noJS + 1 WHERE nocab='".$session['kdcab']."'";
+				$this->db->query($Qry_Update_Cabang_acc);
+
+  				if($this->db->trans_status() === FALSE){
+  					 $this->db->trans_rollback();
+  					 $Arr_Return		= array(
+  							'status'		=> 2,
+  							 'pesan'		=> 'Gagal simpan data'
+  					   );
+  				}else{
+  					 $this->db->trans_commit();
+  					 $Arr_Return		= array(
+  						'status'		=> 1,
+  						 'pesan'			=> 'Sukses simpan data'
+  				   );
+  				}
+  			}else{
+  				$Arr_Return		= array(
+  					'status'		=> 2,
+  					'pesan'			=> $faktur_data['pesan']
+  			   );
+  			}
+  		}else{
+  			$Arr_Return		= array(
+  				'status'		=> 3,
+  				'pesan'			=> 'No Record Was Found To Process. Please Try Again...'
+  		   );
+  		}
+
+          echo json_encode($Arr_Return);
+
+
+    }
+    function saveheaderinvoice_old(){
 		if($this->input->post()){
 			$nd       		  	= $this->input->post('nd');
 			$detail_do		  	= $this->input->post('det_do');

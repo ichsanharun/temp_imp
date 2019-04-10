@@ -65,17 +65,12 @@ class Salesorder_model extends BF_Model
     }
     function pilih_item($kdcab){
         $query="SELECT
-                barang_stock.id_barang,
-                barang_stock.nm_barang,
-                barang_stock.harga,
-                barang_stock.qty_stock,
-                barang_stock.qty_avl,
-                barang_stock.landed_cost,
-                barang_stock.kdcab
+                *
                 FROM
                 barang_stock WHERE kdcab='$kdcab' AND kategori = 'set'";
         return $this->db->query($query);
     }
+
 
     function get_item_barang($idbarang,$kdcab){
         $query="SELECT
@@ -87,21 +82,46 @@ class Salesorder_model extends BF_Model
         return $this->db->query($query);
         //LEFT JOIN barang_master ON `barang_stock`.`id_barang` = `barang_master`.`id_barang`
     }
+    function generate_noso($kdcab,$tgl){
 
-    /*
-    function generate_noso($kdcab){
-        $query = "SELECT cabang.no_so
-                  FROM
-                  cabang WHERE cabang.kdcab='$kdcab'";
+        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+        7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
+        );
+        $bln_now = date('m',strtotime($tgl));
+        $kode_bln = '';
+        foreach($arr_tgl as $k=>$v){
+          if($k == $bln_now){
+            $kode_bln = $v;
+          }
+        }
+        $cek = $kdcab.'-SO-'.date('y').$kode_bln;
+        /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
+        WHERE no_so LIKE '%$cek%'")->num_rows();*/
+        $query = "SELECT MAX(no_so) as max_id
+        FROM
+        trans_so_header WHERE LEFT(no_so,3)='$kdcab' AND stsorder != 'PENDING' AND no_so LIKE '%$cek%'";
         $q = $this->db->query($query);
-        $r = $q->row();
-        $kode = (int)$r->no_so+1;
-        $next_kode = str_pad($kode, 4, "0", STR_PAD_LEFT);
-        return $kdcab.'-SO'.date('y').$next_kode;
-    }
-    */
+        $query_cek = $q->num_rows();
+        if ($query_cek == 0) {
+          $kode = 1;
+          $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+          $fin = $kdcab.'-SO-'.date('y').$kode_bln.$next_kode;
+        }else {
+          $query = "SELECT MAX(no_so) as max_id
+          FROM
+          trans_so_header WHERE LEFT(no_so,3)='$kdcab' AND stsorder != 'PENDING' AND no_so LIKE '%$cek%'";
+          $q = $this->db->query($query);
+          $r = $q->row();
+          $kode = (int)substr($r->max_id,10)+1;
+          $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+          $fin =  $kdcab.'-SO-'.date('y').$kode_bln.$next_kode;
+        }
 
-    function generate_noso($kdcab){
+
+      return $fin;
+    }
+
+    function generate_noso_old($kdcab){
         $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
@@ -113,8 +133,7 @@ class Salesorder_model extends BF_Model
             }
         }
         $cek = $kdcab.'-SO-'.date('y').$kode_bln;
-        /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
-        WHERE no_so LIKE '%$cek%'")->num_rows();*/
+        /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header WHERE no_so LIKE '%$cek%'")->num_rows();*/
         $this->db->select("MAX(no_so) as max_id");
         $this->db->like('no_so', $cek);
         $this->db->from('trans_so_header');
@@ -159,7 +178,7 @@ class Salesorder_model extends BF_Model
     }
 
     function generate_no_pl($kdcab){
-      $arr_tgl = array(1=>'A',2=>'B',3=>'B',4=>'D',5=>'E',6=>'F',
+      $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
                        7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                       );
       $bln_now = date('m');

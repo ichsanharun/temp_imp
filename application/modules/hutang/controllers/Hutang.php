@@ -23,7 +23,7 @@ class Hutang extends Admin_Controller
     public function index()
     {
 
-        $pi = $this->db->query('SELECT a.id as idsss, a.`status` as st, a.*, b.*  FROM `trans_po_payment` as a, trans_po_header as b WHERE a.no_po=b.no_po AND b.kdcab = '.$this->auth->user_cab());
+        $pi = $this->db->query('SELECT a.id as idsss, a.`status` as st, a.*, b.*  FROM `trans_po_payment` as a, trans_po_header as b WHERE a.no_po=b.no_po AND b.kdcab = '.$this->auth->user_cab().' AND b.status = "INVOICE"');
 
         $this->template->set('results', $pi);
         $this->template->title('Data Pelunasan Pembelian');
@@ -53,12 +53,12 @@ class Hutang extends Admin_Controller
   		//echo"<pre>"; print_r($det_Bank);exit;
 
   		if($det_Bank){
-  			$data	= "<option value=''>-- Pilih Bank --</option>";
+  			$data	= "<option value=''>-- Pilih Bank --";
   			foreach($det_Bank as $key=>$vals){
-  				 $data .= "<option value='".$vals->no_perkiraan."'>".$vals->nama."</option>";
+  				 $data .= "<option value='".$vals->no_perkiraan."'>".$vals->nama;
   			}
   		}else{
-  			$data	= "<option value=''>Empty List</option>";
+  			$data	= "<option value=''>Empty List";
   		}
 		    //echo $data;
         echo json_encode($data);
@@ -77,16 +77,16 @@ class Hutang extends Admin_Controller
     public function bayar_save()
     {
         $session 	= $this->session->userdata('app_session');
-        $id 		= $this->input->post('id');
+        $id 		  = $this->input->post('id');
         $nopo 		= $this->input->post('no_po');
-        $inv 		= $this->input->post('no_invoice');
+        $inv 	  	= $this->input->post('no_invoice');
         $supp 		= $this->input->post('supplier');
-        $ket 		= $this->input->post('keterangan');
+        $ket 	  	= $this->input->post('keterangan');
         $jumlah 	= $this->input->post('jumlah');
         $kdcab 		= $session['kdcab'];
-        $tgl 		= date('Y-m-d');
-        $thb 		= date('m').substr(date('Y'), 2, 2);
-		$dataHeader	= $this->db->get_where('trans_po_payment',array('id'=>$id))->result();
+        $tgl 	  	= date('Y-m-d');
+        $thb 	  	= date('m').substr(date('Y'), 2, 2);
+		$dataHeader 	= $this->db->get_where('trans_po_payment',array('id'=>$id))->result();
 
 		/*
 		if ($this->input->post('myRadios') == '1') {

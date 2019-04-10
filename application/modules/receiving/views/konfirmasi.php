@@ -140,6 +140,7 @@
                    <th>QTY Picking List</th>
                    <th>Bagus</th>
                    <th>Rusak</th>
+                   <th>Kosong</th>
                    <th>Keterangan</th>
                </tr>
            </thead>
@@ -158,13 +159,16 @@
                         <td><?= $datas->nm_barang; ?></td>
                         <td><?= $datas->qty_acc; ?></td>
                         <td>
-                            <input onblur="pl(<?= $no; ?>,this.value)" name="qty_plb[]" value="<?= $datas->qty_acc; ?>" />
+                            <input onkeyup="pl(<?= $no; ?>,this.value)" name="qty_plb[]" value="<?= $datas->qty_acc; ?>" class="form-control"/>
                         </td>
                         <td>
                             <input class="form-control input-sm qty_bagus<?= $no; ?>" readonly="" name="qty_bagus_t[]" type="text" value="<?= $datas->qty_acc; ?>" />
                         </td>
                         <td>
                             <input class="form-control input-sm qty_rusak<?= $no; ?>" readonly="" name="qty_rusak_t[]" type="text" value="0"/>
+                        </td>
+                        <td>
+                            <input class="form-control input-sm qty_kosong<?= $no; ?>" readonly="" name="qty_kosong_t[]" type="text" value="0"/>
                         </td>
                         <td>
                         </td>
@@ -186,13 +190,16 @@
                               </td>
                               <td><?= $datas->qty_acc; ?></td>
                               <td>
-                                    <input class="qty<?= $no; ?>" name="qty_pl[]" value="<?= $datas->qty_acc; ?>" />
+                                    <input class="form-control qty<?= $no; ?>" name="qty_pl[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
-                                    <input onkeyup="cek(<?= $no; ?>,<?= $query->num_rows(); ?>)" class="barang<?= $no; ?>" name="qty_bagus[]" value="<?= $datas->qty_acc; ?>" />
+                                    <input onkeyup="cek(<?= $no; ?>,<?= $query->num_rows(); ?>)" class="form-control barang<?= $no; ?>" name="qty_bagus[]" value="<?= $datas->qty_acc; ?>" />
                                 </td>
                                 <td>
-                                    <input class="rusak<?= $no; ?>" name="qty_rusak[]" value="0"/>
+                                    <input class="form-control rusak<?= $no; ?>" name="qty_rusak[]" value="0"/>
+                                </td>
+                                <td>
+                                    <input class="form-control kosong<?= $no; ?>" name="qty_kosong[]" value="0"/>
                                 </td>
                                 <td>
                                     <input name="keterangan[]" />
@@ -292,21 +299,13 @@
         qtyy=parseInt($('.qty'+num).val());
 
         $('.qty_bagus'+num).val(hasilMin);
-        if (qtyy<hasilMin) {
-          $('.qty_rusak'+num).val(0);
-        }else {
-          $('.qty_rusak'+num).val(qtyy-hasilMin);
-        }
+
         console.log($('.qty'+num).val());
 
         for (var i = 0; i < jum; i++) {
             qty=parseInt($('.qty'+num).eq(i).val());
             bagus=parseInt($('.barang'+num).eq(i).val());
-            if (qty<bagus) {
-              $('.rusak'+num).eq(i).val(0);
-            }else {
-              $('.rusak'+num).eq(i).val(qty-bagus);
-            }
+
         }
     }
 </script>

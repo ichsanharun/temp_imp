@@ -66,17 +66,31 @@ thead input {
         <!--a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a-->
     </span>
   </div>
-	<div class="box-body">
+	<div class="box-body" style="overflow-x:auto">
 		<table id="example1" class="table table-bordered table-striped">
         <thead>
 	        <tr>
-	            <th width="2%">#</th>
-              <th width="15%">NO. Invoice</th>
-              <th>Nama Customer</th>
-              <th>Tanggal</th>
-              <th>Nama Salesman</th>
-              <th>Total</th>
-			        <th>Status</th>
+						<th width="2%">NO</th>
+						<th width="15%">NO. INVOICE</th>
+						<th width="15%">NO. SO</th>
+						<th>NAMA CUSTOMER</th>
+						<th>TANGGAL INVOICE</th>
+						<th>NAMA SALES</th>
+						<th>TOTAL INVOICE</th>
+						<th>NAMA PRODUK</th>
+						<th>JENIS PRODUK</th>
+						<th>GRUP PRODUK</th>
+						<th>SATUAN PRODUK</th>
+						<th>JUMLAH</th>
+						<th>HARGA PRODUK</th>
+						<th>DISKON STD.</th>
+						<th>HARGA SETELAH DIS.STD</th>
+						<th>DISKON PROMO</th>
+						<th>DISKON SO</th>
+						<th>HARGA SETELAH DISKON SO</th>
+						<th>PPN</th>
+						<th>HARGA SUBTOTAL</th>
+						<th>STATUS</th>
 	        </tr>
         </thead>
         <tbody>

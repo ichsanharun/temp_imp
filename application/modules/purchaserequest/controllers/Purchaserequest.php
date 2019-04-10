@@ -91,7 +91,8 @@ class Purchaserequest extends Admin_Controller
     public function save_new()
     {
         $session = $this->session->userdata('app_session');
-        $nopr = $this->Purchaserequest_model->generate_nopr($session['kdcab']);
+        $tgl = $this->input->post('tglpr');
+        $nopr = $this->Purchaserequest_model->generate_nopr($session['kdcab'],$tgl);
         $headerpr = array(
             'no_pr' => $nopr,
             'tgl_pr' => $this->input->post('tglpr'),

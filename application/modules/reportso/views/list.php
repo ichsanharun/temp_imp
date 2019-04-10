@@ -274,7 +274,7 @@
         //alert(detail);
         tabledetail.column(1).search(a).draw();
         //window.location.href = siteurl+"reportso/filter/"+type_so;
-      }
+  }
 
       function getexcel(){
             var tgl = $('#periode').val();
@@ -289,12 +289,12 @@
             var uri3 = '<?php echo $this->uri->segment(3)?>';
             var uri4 = '<?php echo $this->uri->segment(4)?>';
             //window.location.href =
-            tujuan= siteurl+"reportso/downloadExcel_old/"+uri3+"/"+tglso;
-            $('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
+            window.location.href= siteurl+"reportso/downloadExcel_old/"+uri3+"/"+tglso;
+            //$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
             //param=noso;
             //tujuan = siteurl+'reportso/print_request/'+param;
 
-              $("#repso").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+              //$("#repso").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
           }
 
     function PreviewPdf(noso)

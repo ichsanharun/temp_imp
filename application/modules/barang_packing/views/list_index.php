@@ -129,10 +129,9 @@ thead input {
                   		<tr>
                   			<th width="5">#</th>
                   			<th>Kode Produk</th>
-                  			<th>Jenis Produk</th>
-                  			<th>Group Produk</th>
-                  			<th>Nama Set</th>
-                  			<th>Supplier</th>
+                  			<th>Jenis</th>
+                  			<th>Group</th>
+                  			<th>Nama Koli</th>
                   			<th>Satuan</th>
                   			<th>Qty</th>
                   			<th>Status</th>
@@ -160,8 +159,7 @@ thead input {
                 			<td><?= strtoupper($record_colly->nm_jenis) ?></td>
                 			<td><?= strtoupper($record_colly->nm_group) ?></td>
                 			<td><?= $record_colly->nm_barang ?></td>
-                			<td><?= $record_colly->nm_supplier ?></td>
-                			<td><?= $satuan ?></td>
+                			<td><?= $record_colly->satuan ?></td>
                 			<td><?= $record_colly->qty_stock ?></td>
                 			<td>
                 				<?php if($record_colly->sts_aktif == 'aktif'){ ?>
@@ -185,10 +183,9 @@ thead input {
                 		<tr>
                 			<th width="5">#</th>
                 			<th>Kode Produk</th>
-                			<th>Jenis Produk</th>
-                			<th>Group Produk</th>
-                			<th>Nama Set</th>
-                			<th>Supplier</th>
+                			<th>Jenis</th>
+                			<th>Group</th>
+                			<th>Nama Koli</th>
                 			<th>Satuan</th>
                 			<th>Qty</th>
                 			<th>Status</th>
@@ -316,6 +313,18 @@ thead input {
 
 
     $(function() {
+      var table = $('#example1').DataTable( {
+	        orderCellsTop: true,
+	        fixedHeader: true
+	    } );
+      var koli = $('#table_koli').DataTable( {
+	        orderCellsTop: true,
+	        fixedHeader: true
+	    } );
+      var komponen = $('#table_komponen').DataTable( {
+	        orderCellsTop: true,
+	        fixedHeader: true
+	    } );
       //$("#example1").DataTable();
     	$('#example1 thead tr').clone(true).appendTo( '#example1 thead' );
 	    $('#example1 thead tr:eq(1) th').each( function (i) {
@@ -326,6 +335,7 @@ thead input {
 	        }else{
 	        	$(this).html( '<input type="text" />' );
 	        }
+          //var table = $("#example1").DataTable();
 
 	        $( 'input', this ).on( 'keyup change', function () {
 	            if ( table.column(i).search() !== this.value ) {
@@ -344,6 +354,7 @@ thead input {
       $('#table_koli thead tr').clone(true).appendTo( '#table_koli thead' );
 	    $('#table_koli thead tr:eq(1) th').each( function (i) {
 	        var title = $(this).text();
+          //var table = $("#table_koli").DataTable();
 	        //alert(title);
 	        if (title == "#" || title =="Action" ) {
 	        	$(this).html( '' );
@@ -352,13 +363,13 @@ thead input {
 	        }
 
 	        $( 'input', this ).on( 'keyup change', function () {
-	            if ( table.column(i).search() !== this.value ) {
-	                table
+	            if ( koli.column(i).search() !== this.value ) {
+	                koli
 	                    .column(i)
 	                    .search( this.value )
 	                    .draw();
 	            }else{
-	            	table
+	            	koli
 	                    .column(i)
 	                    .search( this.value )
 	                    .draw();
@@ -390,10 +401,7 @@ thead input {
 	        } );
 	    } );
 
-	    var table = $('#example1,#table_koli,#table_komponen').DataTable( {
-	        orderCellsTop: true,
-	        fixedHeader: true
-	    } );
+
     	$("#form-area").hide();
       $("#button_submit").hide();
   	});

@@ -22,6 +22,7 @@ class Deliveryorder_2 extends Admin_Controller {
 
         $this->load->model(array('Deliveryorder_2/Deliveryorder_model',
                                  'Deliveryorder_2/Detaildeliveryorder_model',
+                                 'Jurnal_nomor/Jurnal_model',
                                  'Salesorder/Salesorder_model',
                                  'Salesorder/Detailsalesorder_model',
                                  'Pendingso/Pendingso_model',
@@ -248,189 +249,233 @@ class Deliveryorder_2 extends Admin_Controller {
     }
 
     function saveheaderdo(){
-        $session = $this->session->userdata('app_session');
-        $nodo 	 = $this->Deliveryorder_model->generate_nodo($session['kdcab']);
-       // $supir = $this->Deliveryorder_model->cek_data(array('id_karyawan'=>$this->input->post('supir_do')),'karyawan');
-        $customer = $this->Deliveryorder_model->cek_data(array('id_customer'=>$this->input->post('idcustomer_do')),'customer');
+      $session 		= $this->session->userdata('app_session');
+      $Kode_Cabang	= $session['kdcab'];
+      $Tgl_DO			= $this->input->post('tgl_do');
+      $Nomor_DO 		= $this->Deliveryorder_model->generate_nodo($Kode_Cabang,$Tgl_DO);
+        // $supir = $this->Deliveryorder_model->cek_data(array('id_karyawan'=>$this->input->post('supir_do')),'karyawan');
+        $customer 		= $this->Deliveryorder_model->cek_data(array('id_customer'=>$this->input->post('idcustomer_do')),'customer');
         $Kode_Driver    = $Name_Driver  ='-';
-  		  $Kode_Kendaraan	= $Nama_Kendaraan	='-';
-  		  $Tipe_Kirim		= $this->input->post('tipekirim');
-  		  if(strtolower($Tipe_Kirim)=='sendiri'){
-        			$Pecah_Driver	= explode('^_^',$this->input->post('supir_do'));
-        			$Kode_Driver	= $Pecah_Driver[0];
-        			$Name_Driver	= $Pecah_Driver[1];
+		    $Kode_Kendaraan	= $Nama_Kendaraan	='-';
+    		$Tipe_Kirim		= $this->input->post('tipekirim');
+    		if(strtolower($Tipe_Kirim)=='sendiri'){
+    			$Pecah_Driver		= explode('^_^',$this->input->post('supir_do'));
+    			$Kode_Driver		= $Pecah_Driver[0];
+    			$Name_Driver		= $Pecah_Driver[1];
+    			$Pecah_Kendaraan   	= explode('^_^',$this->input->post('kendaraan_do'));
+    			$Kode_Kendaraan    	= $Pecah_Kendaraan[0];
+    			$Nama_Kendaraan    	= $Pecah_Kendaraan[1];
+    		}else{
+    			  $Name_Driver    	= strtoupper($this->input->post('supir_do'));
+    			  $Nama_Kendaraan	= strtoupper($this->input->post('kendaraan_do'));
+    		}
 
-              $Pecah_Kendaraan   = explode('^_^',$this->input->post('kendaraan_do'));
-              $Kode_Kendaraan    = $Pecah_Kendaraan[0];
-              $Nama_Kendaraan    = $Pecah_Kendaraan[1];
-  		  }else{
-              $Name_Driver    = strtoupper($this->input->post('supir_do'));
-  			      $Nama_Kendaraan	= strtoupper($this->input->post('kendaraan_do'));
-  		  }
-          $dataheaderdo = array(
-              'no_do' => $nodo,
-              //'nd' => $this->input->post('nd'),
-              'id_customer' => $this->input->post('idcustomer_do'),
-              'nm_customer' => $this->input->post('nmcustomer_do'),
-              'alamat_customer' => $customer->alamat,
-              'id_salesman' => $this->input->post('id_salesman'),
-              'nm_salesman' => $this->input->post('nm_salesman'),
-              'tgl_do' => $this->input->post('tgl_do'),
-              'tipe_pengiriman' => $this->input->post('tipekirim'),
-              'id_supir' => $Kode_Driver,
-              'nm_supir' => $Name_Driver,
-              'id_kendaraan' => $Kode_Kendaraan,
-              'ket_kendaraan' => $Nama_Kendaraan,
-              'nm_helper' => $this->input->post('helper_do'),
-              'status' => $this->input->post('status_do'),
-              'created_on'=>date("Y-m-d H:i:s"),
-              'created_by'=>$session['id_user']
-          );
-          $detail = array(
-              'noso_todo'=>$_POST['noso_todo'],
-              'id_barang'=>$_POST['id_barang'],
-              //'qty_supply'=>$_POST['qty_supply']
-              );
-          //$counttodo = $this->Deliveryorder_model->cek_data(,'barang_stock');
+    		$dataheaderdo = array(
+    			  'no_do' 		     	=> $Nomor_DO,
+    			  //'nd' => $this->input->post('nd'),
+    			  'id_customer' 	  => $this->input->post('idcustomer_do'),
+    			  'nm_customer'    	=> $this->input->post('nmcustomer_do'),
+    			  'alamat_customer' => $customer->alamat,
+    			  'id_salesman' 	  => $this->input->post('id_salesman'),
+    			  'nm_salesman'	 	  => $this->input->post('nm_salesman'),
+    			  'tgl_do' 			    => $Tgl_DO,
+    			  'tipe_pengiriman' => $this->input->post('tipekirim'),
+    			  'id_supir' 	     	=> $Kode_Driver,
+    			  'nm_supir' 	     	=> $Name_Driver,
+    			  'id_kendaraan'   	=> $Kode_Kendaraan,
+    			  'ket_kendaraan' 	=> $Nama_Kendaraan,
+    			  'nm_helper' 	  	=> $this->input->post('helper_do'),
+    			  'status' 		    	=> $this->input->post('status_do'),
+    			  'created_on'	  	=> date("Y-m-d H:i:s"),
+    			  'created_by'	  	=> $session['id_user']
+    		);
+    		$detail = array(
+    			'noso_todo'=>$_POST['noso_todo'],
+    			'id_barang'=>$_POST['id_barang'],
+    		  //'qty_supply'=>$_POST['qty_supply']
+    		);
 
-          //print_r($_POST['noso_todo']);
-          //echo count($detail['noso_todo']);die();
+  		$this->db->trans_begin();
+  		$Arr_Detail		= array();
+  		$intL			= 0;
+  		$Total_Landed	= 0;
 
-          $this->db->trans_begin();
-          $x = 0;
-          for($i=0;$i < count($detail['noso_todo']);$i++){
-            $x++;
-              $key = array(
-              'no_so' => $_POST['noso_todo'][$i],
-              'id_barang' => $_POST['id_barang'][$i]
-              );
-              $getitemso = $this->Detailsalesorder_model->find_by($key);
-              $getitemsopending = $this->Detailpendingso_model->find_by($key);
+  		for($x=0;$x < count($detail['noso_todo']);$x++){
+  			$intL++;
+  			$Qty_Supp		= $_POST['qty_supply'][$x];
+  			$Qty_Conf		= $this->input->post('qty_confirm')[$x];
+  			$WHR			= array(
+  				'no_so' 	=> $_POST['noso_todo'][$x],
+  				'id_barang' => $_POST['id_barang'][$x]
+  			);
+  			$getitemso 			    = $this->Detailsalesorder_model->find_by($WHR);
+  			$getitemsopending 	= $this->Detailpendingso_model->find_by($WHR);
 
-              $dataitem_do = array(
-                  'no_do' => $this->Deliveryorder_model->generate_nodo($session['kdcab']),
-                  //'nd' => $this->input->post('nd'),
-                  'no_so' => $_POST['noso_todo'][$i],
-                  'id_barang' => $getitemso->id_barang,
-                  'nm_barang' => $getitemso->nm_barang,
-                  'satuan' => $getitemso->satuan,
-                  'qty_order' => $getitemso->qty_order,
-                  'qty_supply' => $_POST['qty_supply'][$i]
-              );
-              if ($_POST['qty_supply'][$i] == 0) {
+  			if($Qty_Supp >  0){
+  				## GET HARGA LANDED SAAT DO ##
+  				$Harga_Landed		= 0;
+  				$det_barang			= $this->db->get_where('barang_stock',array('id_barang'=>$_POST['id_barang'][$x],'kdcab'=>$Kode_Cabang))->result();
+  				if($det_barang){
+  					$Harga_Landed	= $det_barang[0]->landed_cost;
+  				}
+  				$Total_Landed		+= ($Harga_Landed * $Qty_Supp);
+  				$Arr_Detail			= array(
+  					'no_do' 		=> $Nomor_DO,
+  					'no_so' 		=> $_POST['noso_todo'][$x],
+  					'id_barang' 	=> $getitemso->id_barang,
+  					'nm_barang' 	=> $getitemso->nm_barang,
+  					'satuan' 		=> $getitemso->satuan,
+  					'qty_order' 	=> $getitemso->qty_order,
+  					'qty_supply' 	=> $Qty_Supp,
+  					'harga_landed'	=> $Harga_Landed
+  				);
+  				$this->db->insert('trans_do_detail',$Arr_Detail);
+  			}
 
+  			$WHR_SO 		= array(
+  				'no_so'		=> $_POST['noso_todo'][$x],
+  				'id_barang' => $getitemso->id_barang
+  			);
+  			## POSES DO BIASA ##
+  			if($this->input->post('status_do') == "DO"){
+  				$New_Qty 	= $getitemso->qty_supply + $Qty_Supp;
+          if($Qty_Supp == $Qty_Conf){
+                      ## CLOSE SO ##
+  					$this->db->update('trans_so_detail',array('proses_do'=>'DO','qty_supply'=>$New_Qty,'no_do'=>$Nomor_DO),$WHR_SO);
+  					$cek_close +=1;
+  					$this->db->update('trans_so_header',array('do_supplied'=>$cek_close),array('no_so' => $_POST['noso_todo'][$x]));
+  			  }else{
+  				  $this->db->update('trans_so_detail',array('proses_do'=>'PENDING','qty_supply'=>$New_Qty),$WHR_SO);//Jika masih ada sisa qty
+  			  }
+  			}else{
+  				$Qty_Pend	 = $getitemsopending->qty_supply + $Qty_Supp;
+  				if($Qty_Supp == $Qty_Conf){
+  					## CLOSE SO ##
+  					$this->db->update('trans_so_pending_detail',array('proses_do'=>1,'qty_supply'=>$Qty_Pend),$WHR_SO);//Detail SO sudah semua
+  				}else{
+  					$this->db->update('trans_so_pending_detail',array('qty_supply'=>$Qty_Pend),$WHR_SO);//Jika masih ada sisa qty
+  				}
+  			}
+
+  			  //Update STOK REAL
+  			$count 			= $this->Deliveryorder_model->cek_data(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$Kode_Cabang),'barang_stock');
+  			$qty_stock_awal = $count->qty_stock;
+  			$qty_avl_awal 	= $count->qty_avl;
+  			$this->db->update('barang_stock',array('qty_stock'=>$count->qty_stock - $Qty_Supp),array('id_barang'=>$getitemso->id_barang,'kdcab'=>$Kode_Cabang));
+  			$qty_stock_akhir 	= $count->qty_stock - $Qty_Supp;
+  			$qty_avl_akhir 	= $count->qty_avl;
+
+  			$id_st 			= $this->Trans_stock_model->gen_st($this->auth->user_cab()).$intL;
+  			$data_adj_trans 	= array(
+  				'id_st'				=> $id_st,
+  				'tipe'				=> 'OUT',
+  				'jenis_trans'		=> 'OUT_Pembelian',
+  				'noreff'			=> $Nomor_DO,
+  				'id_barang'			=> $getitemso->id_barang,
+  				'nm_barang'			=> $getitemso->nm_barang,
+  				'kdcab'				=> $this->auth->user_cab(),
+  				'date_stock'		=> date('Y-m-d H:i:s'),
+  				'qty'				=> $Qty_Supp,
+  				'nilai_barang'		=> $getitemso->harga_normal,
+  				'notes'				=> 'DO',
+  				'qty_stock_awal'	=> $qty_stock_awal,
+  				'qty_avl_awal' 		=> $qty_avl_awal,
+  				'qty_stock_akhir'	=> $qty_stock_akhir,
+  				'qty_avl_akhir' 	=> $qty_avl_akhir
+  			);
+  			$this->Trans_stock_model->insert($data_adj_trans);
+
+  		}
+  		for($x=0;$x < count($detail['noso_todo']);$x++){
+  			$getkeyso 		= $this->db->where(array('no_so' => $_POST['noso_todo'][$x]))
+                                   ->from('trans_so_detail')
+                                   ->count_all_results();
+              $getsosupplied 	= $this->Salesorder_model->cek_data(array('no_so' => $_POST['noso_todo'][$x]),'trans_so_header');
+              $csosupplied 	= $getsosupplied->do_supplied;
+              if ($getkeyso == $csosupplied) {
+  				$this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
+  				$this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
               }else {
-                $this->db->insert('trans_do_detail',$dataitem_do);
+  				$this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
+  				$this->db->update('trans_so_header',array('pending_counter'=>$getkeyso.$csosupplied));
               }
+  		}
 
-              $keyclose_so = array(
-                  'no_so' => $_POST['noso_todo'][$i],
-                  'id_barang' => $getitemso->id_barang
-                  );
-              if($this->input->post('status_do') == "DO"){ // ini berarti proses DO dari SO biasa
-                  //$newqty = $this->input->post('qty_confirm')[$i]-$this->input->post('qty_supply')[$i];
-                  $newqty = $getitemso->qty_supply+$this->input->post('qty_supply')[$i];
-                  if($this->input->post('qty_supply')[$i] == $this->input->post('qty_confirm')[$i]){
-                      //berarti SO CLOSE
-                      $this->db->where($keyclose_so);
-                      $this->db->update('trans_so_detail',array('proses_do'=>'DO','qty_supply'=>$newqty));//Detail SO sudah semua
-                      $cek_close +=1;
-                      $this->db->where(array('no_so' => $_POST['noso_todo'][$i]));
-                      $this->db->update('trans_so_header',array('do_supplied'=>$cek_close));//Detail SO sudah semua
+  		## JURNAL PERSEDIAAN ##
+  		if($Total_Landed > 0){
+  			$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Memorial($Kode_Cabang,$Tgl_DO);
+  			$Keterangan_JV			= 'HPP#DO '.$Nomor_DO.'#'.$this->input->post('nmcustomer_do');
+
+  			$dataJVhead = array(
+  				'nomor' 	    	=> $Nomor_JV,
+  				'tgl'	         	=> $Tgl_DO,
+  				'jml'	          	=> $Total_Landed,
+  				'koreksi_no'		=> '',
+  				'kdcab'				=> $Kode_Cabang,
+  				'jenis'			    => 'V',
+  				'keterangan' 		=> $Keterangan_JV,
+  				'bulan'				=> date('n',strtotime($Tgl_DO)),
+  				'tahun'				=> date('Y',strtotime($Tgl_DO)),
+  				'user_id'			=> $session['id_user'],
+  				'memo'			    => '',
+  				'tgl_jvkoreksi'		=> $Tgl_DO,
+  				'ho_valid'			=> ''
+  			);
+
+  			$det_Jurnal				= array();
+  			$det_Jurnal[0]			= array(
+  				  'nomor'         => $Nomor_JV,
+  				  'tanggal'       => $Tgl_DO,
+  				  'tipe'          => 'JV',
+  				  'no_perkiraan'  => '5201-01-01',
+  				  'keterangan'    => $Keterangan_JV,
+  				  'no_reff'       => $Nomor_DO,
+  				  'debet'         => $Total_Landed,
+  				  'kredit'        => 0
+  			);
+
+  			$det_Jurnal[1]			= array(
+  				  'nomor'         => $Nomor_JV,
+  				  'tanggal'       => $Tgl_DO,
+  				  'tipe'          => 'JV',
+  				  'no_perkiraan'  => '1105-01-01',
+  				  'keterangan'    => $Keterangan_JV,
+  				  'no_reff'       => $Nomor_DO,
+  				  'debet'         => 0,
+  				  'kredit'        => $Total_Landed
+  			);
+
+  			$this->db->insert('javh',$dataJVhead);
+  			$this->db->insert_batch('jurnal',$det_Jurnal);
+  			$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Kode_Cabang,'JM');
+  		}
 
 
-
-                      //END Update CLose
-                  }else{
-                      $this->db->where($keyclose_so);
-                      $this->db->update('trans_so_detail',array('proses_do'=>'PENDING','qty_supply'=>$newqty));//Jika masih ada sisa qty
-                      //$this->db->update('trans_so_header',array('proses_do'=>'PENDING','qty_supply'=>$newqty));//Jika masih ada sisa qty
-                  }
-              }else{
-                  $newqtypending = $getitemsopending->qty_supply+$this->input->post('qty_supply')[$i];
-                 if($this->input->post('qty_supply')[$i] == $this->input->post('qty_confirm')[$i]){
-                      //berarti SO CLOSE
-                      $this->db->where($keyclose_so);
-                      $this->db->update('trans_so_pending_detail',array('proses_do'=>1,'qty_supply'=>$newqtypending));//Detail SO sudah semua
-                  }else{
-                      $this->db->where($keyclose_so);
-                      $this->db->update('trans_so_pending_detail',array('qty_supply'=>$newqtypending));//Jika masih ada sisa qty
-                  }
-              }
-
-              //Update STOK REAL
-              $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']),'barang_stock');
-              $qty_stock_awal = $count->qty_stock;
-              $qty_avl_awal = $count->qty_avl;
-              $this->db->where(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$session['kdcab']));
-              $this->db->update('barang_stock',array('qty_stock'=>$count->qty_stock-$_POST['qty_supply'][$i]));
-              $qty_stock_akhir = $count->qty_stock-$_POST['qty_supply'][$i];
-              $qty_avl_akhir = $count->qty_avl;
-
-              $id_st = $this->Trans_stock_model->gen_st($this->auth->user_cab()).$x;
-              $data_adj_trans = array(
-                          'id_st'=>$id_st,
-                          'tipe'=>'OUT',
-                          'jenis_trans'=>'OUT_Pembelian',
-                          'noreff'=>$this->Deliveryorder_model->generate_nodo($session['kdcab']),
-                          'id_barang'=>$getitemso->id_barang,
-                          'nm_barang'=>$getitemso->nm_barang,
-                          'kdcab'=>$this->auth->user_cab(),
-                          'date_stock'=>date('Y-m-d H:i:s'),
-                          'qty'=>$_POST['qty_supply'][$i],
-                          'nilai_barang'=>$getitemso->harga_normal,
-                          'notes'=>'DO',
-                          'qty_stock_awal' => $qty_stock_awal,
-                          'qty_avl_awal' => $qty_avl_awal,
-                          'qty_stock_akhir' => $qty_stock_akhir,
-                          'qty_avl_akhir' => $qty_avl_akhir
-                          );
-                          $this->Trans_stock_model->insert($data_adj_trans);
-              //Update STOK REAL
-          }
-          //$cek_close=0;
-          for($i=0;$i < count($detail['noso_todo']);$i++){
-            $getkeyso = $this->db->where(array('no_so' => $_POST['noso_todo'][$i]))
-                                 ->from('trans_so_detail')
-                                 ->count_all_results();
-            $getsosupplied = $this->Salesorder_model->cek_data(array('no_so' => $_POST['noso_todo'][$i]),'trans_so_header');
-
-            //$ckeyso = count($getkeyso->no_so);
-            $csosupplied = $getsosupplied->do_supplied;
-            if ($getkeyso == $csosupplied) {
-              $this->db->where(array('no_so' => $_POST['noso_todo'][$i]));
-              $this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
-            }
-            else {
-              $this->db->where(array('no_so' => $_POST['noso_todo'][$i]));
-              $this->db->update('trans_so_header',array('pending_counter'=>$getkeyso.$csosupplied));
-            }
-          }
           //Update counter NO_DO
-          $count = $this->Deliveryorder_model->cek_data(array('kdcab'=>$session['kdcab']),'cabang');
-          $this->db->where(array('kdcab'=>$session['kdcab']));
-          $this->db->update('cabang',array('no_suratjalan'=>$count->no_suratjalan+1));
-          //Update counter NO_DO
-          $this->db->insert('trans_do_header',$dataheaderdo);
-          if ($this->db->trans_status() === FALSE)
-          {
-              $this->db->trans_rollback();
-              $param = array(
-              'save' => 0,
-              'msg' => "GAGAL, simpan data..!!!"
-              );
-          }
-          else
-          {
-              $this->db->trans_commit();
-              $param = array(
-              'save' => 1,
-              'msg' => "SUKSES, simpan data..!!!"
-              );
-          }
+      $count 		= $this->Deliveryorder_model->cek_data(array('kdcab'=>$Kode_Cabang),'cabang');
+      $this->db->where(array('kdcab'=>$Kode_Cabang));
+      $this->db->update('cabang',array('no_suratjalan'=>$count->no_suratjalan+1));
+      //Update counter NO_DO
+      $this->db->insert('trans_do_header',$dataheaderdo);
+      if ($this->db->trans_status() === FALSE)
+      {
+        $this->db->trans_rollback();
+        $param = array(
+          'save' => 0,
+          'msg' => "GAGAL, simpan data..!!!"
+        );
+      }
+      else
+      {
+        $this->db->trans_commit();
+        $param = array(
+          'save' => 1,
+          'msg' => "SUKSES, simpan data..!!!"
+        );
+      }
 
-          echo json_encode($param);
-    }
+      echo json_encode($param);
+  }
 
     function set_cancel_do(){
         $nodo = $this->input->post('NO_DO');

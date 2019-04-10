@@ -470,7 +470,7 @@
                       <button class="btn btn-danger" onclick="kembali()">
                           <i class="fa fa-refresh"></i><b> Kembali</b>
                       </button>
-                      <button class="btn btn-primary" type="button" onclick="saveheaderso_pso()">
+                      <button class="btn btn-primary" type="button" onclick="saveheaderso_edit()">
                           <i class="fa fa-save"></i><b> Simpan Data SO</b>
                       </button>
                   </th>
@@ -1123,12 +1123,12 @@
           }
         });
     }
-    function saveheaderso_pso(){
+    function saveheaderso(){
       //sethitung();
         var formdata = $("#form-header-so").serialize();
         if($('#idcustomer').val() != ""){
         $.ajax({
-            url: siteurl+"salesorder/saveheaderpso",
+            url: siteurl+"salesorder/saveheaderso",
             dataType : "json",
             type: 'POST',
             data: formdata,

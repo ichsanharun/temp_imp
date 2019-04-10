@@ -61,10 +61,15 @@ class Barang_packing extends Admin_Controller {
                   'barang_stock.deleted'=>0,
                   'barang_stock.kategori'=>'set',
                   'barang_stock.kdcab'=>$session['kdcab']))
+
                 ->order_by('barang_stock.nm_barang','ASC')->find_all();
         $colly = $this->Barang_stock_model
-                  ->select("barang_stock.*")
+                  ->select("barang_stock.*,
+                  barang_jenis.nm_jenis,
+                  barang_group.nm_group")
                 ->join("barang_koli","barang_stock.id_barang = barang_koli.id_koli","left")
+                ->join("barang_group","barang_group.id_group = MID(barang_stock.id_barang,3,2)","left")
+                ->join("barang_jenis","barang_jenis.id_jenis = LEFT(barang_stock.id_barang,2)","left")
                 ->where(array(
                   'barang_stock.deleted'=>0,
                   'barang_stock.kategori'=>'colly',

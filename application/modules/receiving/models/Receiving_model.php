@@ -64,7 +64,44 @@ class Receiving_model extends BF_Model
         parent::__construct();
     }
 
-    function generate_noreceive($kdcab){
+    function generate_noreceive($kdcab,$tgl){
+      $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
+      7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
+      );
+      $bln_now = date('m',strtotime($tgl));
+      $kode_bln = '';
+      foreach($arr_tgl as $k=>$v){
+        if($k == $bln_now){
+          $kode_bln = $v;
+        }
+      }
+      $cek = $kdcab.'-RC-'.date('y').$kode_bln;
+      /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
+      WHERE no_so LIKE '%$cek%'")->num_rows();*/
+      $query = "SELECT MAX(no_receive) as max_id
+      FROM
+      trans_receive WHERE LEFT(no_receive,3)='$kdcab' AND no_receive LIKE '%$cek%'";
+      $q = $this->db->query($query);
+      $query_cek = $q->num_rows();
+      if ($query_cek == 0) {
+        $kode = 1;
+        $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+        $fin = $kdcab.'-RC-'.date('y').$kode_bln.$next_kode;
+      }else {
+        $query = "SELECT MAX(no_receive) as max_id
+        FROM
+        trans_receive WHERE LEFT(no_receive,3)='$kdcab' AND no_receive LIKE '%$cek%'";
+        $q = $this->db->query($query);
+        $r = $q->row();
+        $kode = (int)substr($r->max_id,10)+1;
+        $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
+        $fin =  $kdcab.'-RC-'.date('y').$kode_bln.$next_kode;
+      }
+
+      return $fin;
+    }
+
+    function generate_noreceive_old($kdcab){
         $query = "SELECT cabang.no_receive
                   FROM
                   cabang WHERE cabang.kdcab='$kdcab'";
@@ -73,7 +110,7 @@ class Receiving_model extends BF_Model
         $kode = (int)$r->no_receive+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
-        $arr_tgl = array(1=>'A',2=>'A',3=>'A',4=>'D',5=>'E',6=>'F',
+        $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
                          7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                         );
         $bln_now = date('m');
@@ -125,5 +162,7 @@ class Receiving_model extends BF_Model
     {
         return $this->db->insert('receive_detail_barang', $data);
     }
+
+
 
 }

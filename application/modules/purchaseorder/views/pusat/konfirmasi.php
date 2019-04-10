@@ -1,6 +1,6 @@
 <!--link rel="stylesheet" href="<?php echo base_url('assets/css/radiobutton.css'); ?>"-->
 <link href="<?= base_url(); ?>assets/css/switch.css" rel="stylesheet" />
-<div class="nav-tabs-pr">
+<div class="nav-tabs-pr" id="top">
     <div class="tab-content">
         <div class="tab-pane active" id="pr">
             <div class="box box-primary">
@@ -68,7 +68,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">NO. PI</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
-                                <input type="text" name="no_pi"  class="form-control input-sm" value="" required="">
+                                <input type="text" name="no_pi" id="no_pi" class="form-control input-sm toolt" value="" required="required" data-toggle="tooltip" data-placement="top" title="Required!">
                             </div>
                         </div>
                         <div class="form-group">
@@ -88,11 +88,11 @@
 
                                             to <strong>RMB</strong>
                                         </td>
-                                        <td style="border-bottom:2px solid #000 !important">
+                                        <td style="border-bottom:1px solid #000 !important">
                                             <input id="kurs_usd" name="kurs_usd" value="<?=$usd_to_rmb?>"  />
                                         </td>
                                         <td rowspan="2">
-                                          <a href="#modals-kurs" data-toggle="modal" class="btn btn-sm" onclick="change_kurs()"><span class="badge bg-primary">Change Kurs</span></a>
+                                          <a href="#modals-kurs" data-toggle="modal" class="btn btn-sm" onclick="change_kurs()"><span class="badge bg-primary">Change<br>Kurs</span></a>
                                         </td>
                                     </tr>
                                     <tr>
@@ -104,6 +104,25 @@
                                         <td>
                                             <input id="kurs_rp" name="kurs_rp" value="<?=$kurs_usd->kurs?>"  />
                                         </td>
+                                    </tr>
+                                    <tr>
+                                      <td>
+                                        <strong>Pembayaran Menggunakan:</strong>
+                                      </td>
+                                      <td>
+                                        <div class="form-group" style="margin-left:5%">
+                                          <div class="radio-inline">
+                                            <label>
+                                              <input type="radio" class="radio_paycon" name="opsi_top" value="rmb" onclick="get_paycon(this.value)">RMB
+                                            </label>
+                                          </div>
+                                          <div class="radio-inline">
+                                            <label>
+                                              <input type="radio" class="radio_paycon" name="opsi_top" value="dollar" onclick="get_paycon(this.value)" checked>Dollar
+                                            </label>
+                                          </div>
+                                        </div>
+                                      </td>
                                     </tr>
                                 </table>
                             </div>
@@ -139,7 +158,7 @@
                             <div class="col-sm-8" style="">
                               <div class="input-group">
                                 <span class="input-group-addon">$</span>
-                                <input type="text" name="shipping"  class="form-control input-sm" value="" required="" onkeyup="this.value = this.value.match(/^[0-9]+$/)">
+                                <input type="text" name="shipping" id="shipping"  class="form-control input-sm" value="" required="" onkeyup="this.value = this.value.match(/^[0-9]+$/)" data-toggle="tooltip" data-placement="top" title="Required!">
                               </div>
                             </div>
                         </div>
@@ -192,11 +211,11 @@
                             <input id="qtyconfirm_<?php echo $no; ?>" class="form-control input-sm qtyconfirm" name="qty_acc[]" value="<?= $datas->qty_acc; ?>" />
                         </td>
                         <td>
-                            <input id="harga_beli_<?php echo $no; ?>" class="form-control input-sm harga_beli" name="harga_satuan[]" onblur="findall()"  value="0" />
+                            <input id="harga_beli_<?php echo $no; ?>" class="form-control input-sm harga_beli" name="harga_satuan[]" onblur="findall()"  value="0"  />
                         </td>
                         <td>
                             <input id="usd_rubah_<?php echo $no; ?>" type="hidden" name="usd[]" class="form-control input-sm usd" value="0" readonly="">
-                            <input  type="text"  name="usd_rubah[]" class="form-control input-sm usd_rubah" value="0" readonly="">
+                            <input  type="text"  name="usd_rubah[]" class="form-control input-sm usd_rubah" value="0" >
                         </td>
                         <td>
                             <input id="rupiah_rubah_<?php echo $no; ?>" type="hidden" name="rupiah[]" class="form-control input-sm rupiah" value="0" readonly="">
@@ -272,7 +291,7 @@
                             </div>
                             <div class="radio-inline">
                               <label>
-                                <input type="radio" class="radio_logo" name="opsi_top" value="nominal" onclick="get_logo(this.value)">Nominal
+                                <input type="radio" class="radio_logo" name="opsi_top" value="nominal" onclick="get_logo(this.value)" checked>Nominal
                               </label>
                             </div>
                           </div>
@@ -292,23 +311,8 @@
                         <div class="col-xs-3">
                           <div class="input-group">
                             <span class="input-group-addon logo_currency">$</span>
-                            <input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\d*[.]?\d*$/)">
+                            <input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\d*[.]?\d*$/);get_payterm()">
                           </div>
-                          <script>
-                            function get_logo(a){
-                              if (a == 'persen') {
-                                b = '%';
-                              }else {
-                                b = '$';
-                              }
-                              var x = document.getElementsByClassName("logo_currency");
-                              console.log(x);
-                              var i;
-                              for (i = 0; i < x.length; i++) {
-                                  x[i].innerHTML= b;
-                              }
-                            }
-                          </script>
                         </div>
                         <div class="col-xs-4">
                             <input type="text" name="perkiraan_bayar[]" class="form-control pull-right datepickerxx"  value="<?= date('Y-m-d'); ?>">
@@ -363,60 +367,220 @@
   </div>
 </div>
 <script>
-function change_kurs_()
-{
-  tujuan = '<?=base_url('kurs/views/settingkurs.php')?>';
 
-    $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-}
+  $(document).ready(function() {
 
-function change_kurs(){
-  url = siteurl+'kurs';
-  $.post(url,{'id':'1'},function(result){
-    $("#MyModalBody").html(result);
+    $("input[name='harga_satuan[]'],input[name='usd_rubah[]']").prop('readonly', true);
+      if ($("input:radio.radio_paycon:checked").val() == 'dollar') {
+        $("input[name='usd_rubah[]']").prop('readonly', false);
+      }else {
+        $("input[name='harga_satuan[]']").prop('readonly', false);
+      }
+
+    $(".toolt").click(function(){
+     $(".toolt").tooltip('destroy');
+    });
+
+    $('#no_pi').tooltip({
+     disabled: true,
+     close: function( event, ui ) { $(this).tooltip('disable'); }
+    });
+
+    $('#no_pi').on('click', function () {
+     $(this).tooltip('enable').tooltip('open');
+   });
+
+    var max_fields      = 10; //maximum input boxes allowed
+    var wrapper         = $(".input_fields_wrap"); //Fields wrapper
+    var add_button      = $(".add_field_button"); //Add button ID
+
+    //console.log(persen);
+
+    var x = 1; //initlal text box count
+    $(add_button).click(function(e){ //on add input button click
+      e.preventDefault();
+      if(x < max_fields){ //max input box allowed
+        x++; //text box increment
+        var persen          = $("input:radio.radio_logo:checked").val();
+        ///console.log("a"+persen);
+        if (persen == "persen") {
+          var logo = "%";
+        }else {
+          var logo = "$";
+        }
+
+
+        $(wrapper).append('<div class="row">'+
+        '<div class="col-xs-1">'+x+'</div>'+
+        '<div class="col-xs-3">'+
+        '<div class="input-group">'+
+        '<span class="input-group-addon logo_currency">'+logo+'</span>'+
+        '<input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\\\d*[.]?\\\d*$/);get_payterm()">'+
+        '</div>'+
+        '</div>'+
+        '<div class="col-xs-4"><input type="text" name="perkiraan_bayar[]" class="form-control pull-right "  id="datepickerxxr'+x+'"  value="<?= date('Y-m-d'); ?>"></div>'+
+        '<a href="#" class="remove_field">Remove</a>'+
+        '</div>'); //add input box
+        $('#datepickerxxr'+x).datepicker({
+          format: 'yyyy-mm-dd',
+          autoclose: true
+        });
+      }
+    });
+
+    $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
+      e.preventDefault(); $(this).parent('div').remove(); x--;
+    })
+
+
   });
-}
+
+    function get_payterm(){
+      var persen          = $("input:radio.radio_logo:checked").val();
+      var nominal         = ($("#total_rupiah").val()/parseFloat(document.getElementById('kurs_rp').value));
+      var values          = $("input[name='pembayaran[]']")
+              .map(function(){return $(this).val();}).get();
+              //console.log(values);
+      var pembayaran_all = 0;
+      for (var i = 0; i < values.length; i++) {
+        pembayaran_all = pembayaran_all + parseFloat(values[i]);
+      }
+      if (persen == "persen") {
+        if (pembayaran_all > 100) {
+          swal({
+            title: "LIMIT 100%",
+            text: "Tidak dapat lebih dari 100%",
+            type: "warning",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("input[name='pembayaran[]']").val(0);
+        }
+      }else {
+        if (pembayaran_all > nominal) {
+          swal({
+            title: "LIMIT $."+nominal,
+            text: "Tidak dapat lebih dari $."+nominal,
+            type: "warning",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("input[name='pembayaran[]']").val(0);
+        }
+      }
+      //console.log(pembayaran_all);
+    }
+
+    function get_logo(a){
+      if (a == 'persen') {
+        b = '%';
+      }else {
+        b = '$';
+      }
+      var x = document.getElementsByClassName("logo_currency");
+      console.log(x);
+      var i;
+      for (i = 0; i < x.length; i++) {
+          x[i].innerHTML= b;
+      }
+    }
+
+    function change_kurs(){
+      url = siteurl+'kurs';
+      $.post(url,{'id':'1'},function(result){
+        $("#MyModalBody").html(result);
+      });
+    }
 
     function saveheaderpr(){
 
-                var formdata = $("#form-header-pr, #form-payment").serialize();
-               // console.log(formdata);
-                $.ajax({
-                    url: siteurl+"purchaseorder/purchaseorder_pusat/konfirmasi_save",
-                    dataType : "json",
-                    type: 'POST',
-                    data: formdata,
-                    success: function(result){
-                        //console.log(result['msg']);
-                        if(result.save=='1'){
-                            swal({
-                                title: "Sukses!",
-                                text: result['msg'],
-                                type: "success",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-                            setTimeout(function(){
-                                window.location.href=siteurl+'purchaseorder/purchaseorder_pusat';
-                            },1600);
-                        } else {
-                            swal({
-                                title: "Gagal!",
-                                text: result['msg'],
-                                type: "error",
-                                timer: 1500,
-                                showConfirmButton: false
-                            });
-                        };
-                    },
-                    error: function (request, error) {
-                        console.log(arguments);
-                        alert(" Can't do because: " + error);
-                    }
-                });
+      var persen          = $("input:radio.radio_logo:checked").val();
+      var nominal         = rubah($("#total_dollar").text());
+      var values          = $("input[name='pembayaran[]']")
+              .map(function(){return $(this).val();}).get();
+              //console.log(values);
+      var pembayaran_all = 0;
+      for (var i = 0; i < values.length; i++) {
+        pembayaran_all = pembayaran_all + parseFloat(values[i]);
+      }
+
+      if ($('#no_pi').val() == "") {
+        $("#no_pi").tooltip('show');
+        $("html, body").animate({scrollTop: 0}, 1000);
+      }else if ($('#shipping').val() == "") {
+        $("#shipping").tooltip('show');
+        $("html, body").animate({scrollTop: 0}, 1000);
+      }else {
+        if (persen == "persen") {
+          if (pembayaran_all < 100) {
+            swal({
+              title: "Peringatan!",
+              text: "Mohon Isi jumlah persen sampai dengan 100%",
+              type: "warning",
+              timer: 2500,
+              showConfirmButton: false
+            });
+            $("input[name='pembayaran[]']").val(0);
+          }else {
+            save();
+          }
+        }else if (persen == "nominal") {
+          if (pembayaran_all < nominal) {
+            swal({
+              title: "PERINGATAN!",
+              text: "Mohon Isi jumlah nominal sesuai yang tertera hingga $."+nominal,
+              type: "warning",
+              timer: 2500,
+              showConfirmButton: false
+            });
+            $("input[name='pembayaran[]']").val(0);
+          }else {
+            save();
+          }
+        }
+
+      }
 
 
 
+
+    }
+    function save(){
+      var formdata = $("#form-header-pr, #form-payment").serialize();
+      // console.log(formdata);
+      $.ajax({
+        url: siteurl+"purchaseorder/purchaseorder_pusat/konfirmasi_save",
+        dataType : "json",
+        type: 'POST',
+        data: formdata,
+        success: function(result){
+          //console.log(result['msg']);
+          if(result.save=='1'){
+            swal({
+              title: "Sukses!",
+              text: result['msg'],
+              type: "success",
+              timer: 1500,
+              showConfirmButton: false
+            });
+            setTimeout(function(){
+              window.location.href=siteurl+'purchaseorder/purchaseorder_pusat';
+            },1600);
+          } else {
+            swal({
+              title: "Gagal!",
+              text: result['msg'],
+              type: "error",
+              timer: 1500,
+              showConfirmButton: false
+            });
+          };
+        },
+        error: function (request, error) {
+          console.log(arguments);
+          alert(" Can't do because: " + error);
+        }
+      });
     }
 
     function filterAngka(a){
@@ -426,60 +590,21 @@ function change_kurs(){
             return 1;
         }
     }
-</script>
-<script>
-    $(document).ready(function() {
 
+    function get_paycon(val){
+      //cek=document.getElementById('kurs_usd').value;
+      if(val=="dollar"){
+        $(".usd_rubah").attr("readonly", false);
+        $(".harga_beli").attr("readonly", true);
+        $(".harga_beli").val(0);
+      }else{
+        $(".harga_beli").attr("readonly", false);
+        $(".usd_rubah").attr("readonly", true);
+        $(".usd_rubah").val(0);
+      }
+    }
 
-
-
-        var max_fields      = 10; //maximum input boxes allowed
-        var wrapper         = $(".input_fields_wrap"); //Fields wrapper
-        var add_button      = $(".add_field_button"); //Add button ID
-        var persen          = $("input:radio.radio_logo:checked").val();
-        if (persen == "persen") {
-          var logo = "%";
-        }else {
-          var logo = "$";
-        }
-        //console.log(persen);
-
-        var x = 1; //initlal text box count
-        $(add_button).click(function(e){ //on add input button click
-            e.preventDefault();
-            if(x < max_fields){ //max input box allowed
-                x++; //text box increment
-
-
-
-                $(wrapper).append('<div class="row">'+
-                                        '<div class="col-xs-1">'+x+'</div>'+
-                                        '<div class="col-xs-3">'+
-                                          '<div class="input-group">'+
-                                            '<span class="input-group-addon logo_currency">'+logo+'</span>'+
-                                            '<input type="text" name="pembayaran[]"  class="form-control input-sm" value="100" required="" onkeyup="this.value = this.value.match(/^-?\\\d*[.]?\\\d*$/)">'+
-                                          '</div>'+
-                                        '</div>'+
-                                        '<div class="col-xs-4"><input type="text" name="perkiraan_bayar[]" class="form-control pull-right "  id="datepickerxxr'+x+'"  value="<?= date('Y-m-d'); ?>"></div>'+
-                                        '<a href="#" class="remove_field">Remove</a>'+
-                                   '</div>'); //add input box
-                $('#datepickerxxr'+x).datepicker({
-                  format: 'yyyy-mm-dd',
-                  autoclose: true
-                });
-            }
-        });
-
-        $(wrapper).on("click",".remove_field", function(e){ //user click on remove text
-            e.preventDefault(); $(this).parent('div').remove(); x--;
-        })
-
-
-    });
-</script>
-
-<script>
-    $("#kurs_rp, #kurs_usd").on("change paste keyup", function() {
+    $("#kurs_rpx, #kurs_usdx").on("change paste keyup", function() {
         cek=document.getElementById('kurs_usd').value;
         if(cek=="0"){
              $(".usd_rubah").attr("readonly", false);
@@ -490,6 +615,7 @@ function change_kurs(){
         }
     });
 
+
     function findall() {
           var array = document.getElementsByName('harga_satuan');
           var total = 0;
@@ -499,26 +625,29 @@ function change_kurs(){
           }
           //console.log(parseInt(total));
         }
-</script>
-<script>
+
     $('.datepickerxx').datepicker({
       format: 'yyyy-mm-dd',
       autoclose: true
     })
+
     var jum = <?php echo count($itembarang); ?>;
+
     $('.harga_beli,.qtyconfirm, #kurs_rp,#kurs_usd,.usd_rubah, .fiskal').on('keyup', function(){
         var total_qty = 0;
         var total_harga_beli = 0;
         var total_dollar = 0;
         var total_rupiah = 0;
+        var subtot_dollar = 0;
         var total_fiskal = 0;
         var total_nofiskal = 0;
         var total_ppn = 0;
+        var payterm          = $("input:radio.radio_paycon:checked").val();
         ppn_cek=document.getElementById('ppnD').value;
         usdK=parseFloat(document.getElementById('kurs_usd').value);
         rpK=parseFloat(document.getElementById('kurs_rp').value);
         cek=document.getElementById('kurs_usd').value;
-        if(cek=="0"){
+        if(payterm=="dollar"){
 
                 for (var i = 0; i < jum; i++) {
                     confirm = parseInt($('.qtyconfirm').eq(i).val());
@@ -545,8 +674,8 @@ function change_kurs(){
 
                     $('#total_qty').text(rubah(total_qty += parseInt($('.qtyconfirm').eq(i).val())));
                     $('#total_harga_beli').text(rubah(total_harga_beli += parseFloat($('.harga_beli').eq(i).val())));
-
                     nomerzz=parseFloat(i)+1;
+                    subtot_dollar += parseInt($('.qtyconfirm').eq(i).val()) * parseFloat(document.getElementById("usd_rubah_"+nomerzz).value);
                     total_dollar += parseFloat(document.getElementById("usd_rubah_"+nomerzz).value);
                     total_rupiah += parseFloat(document.getElementById("rupiah_rubah_"+nomerzz).value);
                     total_fiskal += parseFloat(document.getElementById("subtotal_rubah_"+nomerzz).value);
@@ -564,7 +693,7 @@ function change_kurs(){
                         $('#total_ppn_rubah').val(rubah(total_ppn += parseFloat($('.subtotal_ppn').eq(i).val())));
                     }
 
-                    $('#total_dollar').text(rubah(total_dollar.toFixed(2)));
+                    $('#total_dollar').html(rubah(total_dollar.toFixed(2))+"<br>"+"@Total $."+rubah(subtot_dollar.toFixed(2)));
                     $('#total_rupiah').val(total_rupiah);
                     $('#total_fiskal').val(total_fiskal);
                     $('#total_nofiskal').val(total_nofiskal);

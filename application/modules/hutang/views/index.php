@@ -29,6 +29,10 @@
         // code...
         $dolar = $row->rupiah_total / $row->rupiah;
       }
+
+      if ($row->tipe_payment == "persen") {
+        // code...
+
     $peresen_dolar = $row->persen * $dolar / 100;
     $persen_rupiah = $row->persen * $row->rupiah_total / 100; ?>
 
@@ -52,7 +56,32 @@
 
                     </td>
                 </tr>
-            <?php
+            <?php } else {
+              $persen_rupiah = $row->nominal * $row->rupiah;
+              ?>
+
+                         <tr>
+                             <td><?= $num; ?> </td>
+                             <td><?= $row->no_po; ?></td>
+                             <td><?= @get_invoice($row->no_po); ?></td>
+                             <td><?= $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
+                             <td style="text-align: right">$ <?= number_format($row->nominal, 2, ',', '.'); ?></td>
+                             <td style="text-align: right">Rp. <?= number_format($persen_rupiah, 2, ',', '.'); ?></td>
+                             <td><center><?php echo date('d/m/Y', strtotime($row->perkiraan_bayar)); ?></center></td>
+                             <td style="text-align: center">
+                                 <?php
+                                 if ($row->st == 'open') {
+                                     ?>
+                                     <a class="text-green" href="<?= base_url("hutang/bayar_form/$row->idsss/"); ?>" >Bayar</a>
+                                     <?php
+                                 } else {
+                                     echo 'close';
+                                 } ?>
+
+                             </td>
+                         </tr>
+                     <?php
+            }
             ++$num;
 
     endforeach;

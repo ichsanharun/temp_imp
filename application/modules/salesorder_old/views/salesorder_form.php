@@ -1,0 +1,1179 @@
+<link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
+<!-- FORM HEADER SO-->
+<div class="nav-tabs-salesorder">
+    <div class="tab-content">
+        <div class="tab-pane active" id="salesorder">
+            <div class="box box-primary">
+                <form id="form-header-so" method="post">
+                <div class="form-horizontal">
+                <div class="box-body">
+                    <?php
+                    $headersession = $this->session->userdata('header_so');
+                    ?>
+                    <hr>
+                    <?php
+                    $pic = $this->Salesorder_model->get_pic_customer($headersession['idcustomer'])->result();
+                    $disc_cash = $this->Salesorder_model->get_data(array('diskon'=>'CASH'),'diskon');
+                    foreach ($disc_cash as $key => $value) {
+                      $disc_cash = $value->persen;
+                    }
+                    ?>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <label for="idcustomer" class="col-sm-4 control-label">Nama Customer <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <select id="idcustomer" name="idcustomer" class="form-control input-sm" style="width: 100%;" tabindex="-1" onchange="getcustomer()" required>
+                                <option value=""></option>
+                                <?php
+                                foreach(@$customer as $kc=>$vc){
+                                ?>
+                                <option value="<?php echo $vc->id_customer; ?>" <?php echo set_select('nm_customer', $vc->id_customer, isset($headersession['nmcustomer']) && $headersession['idcustomer'] == $vc->id_customer) ?>>
+                                    <?php echo '('.$vc->bidang_usaha.') , '.$vc->nm_customer ?>
+                                </option>
+                                <?php } ?>
+                                </select>
+                                <input type="hidden" name="nmcustomer" id="nmcustomer" class="form-control input-sm" value="<?php echo $headersession['nmcustomer']?>">
+                                <input type="hidden" name="bidang_usaha" id="bidang_usaha" value="<?=$headersession['bidang_usaha']?>">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="idsalesman" class="col-sm-4 control-label">Nama Salesman <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <select id="idsalesman" name="idsalesman" class="form-control input-sm" style="width: 100%;" tabindex="-1" required onchange="getsalesman()">
+                                <option value=""></option>
+                                <?php
+                                foreach(@$marketing as $km=>$vm){
+                                    $selected = '';
+                                    if($headersession['idsalesman'] == $vm->id_karyawan){
+                                        $selected = 'selected="selected"';
+                                    }
+                                ?>
+                                <option value="<?php echo $vm->id_karyawan; ?>" <?php echo $selected?>>
+                                    <?php echo $vm->nama_karyawan ?>
+                                </option>
+                                <?php } ?>
+                                </select>
+                                <input type="hidden" name="nmsalesman" id="nmsalesman" class="form-control input-sm" value="<?php echo $headersession['nmsalesman']?>">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <?php
+                            if($headersession){
+                                $tglso=$headersession['tglso'];
+                            }else{
+                                $tglso=date('Y-m-d');
+                            }
+                            ?>
+                            <label for="tglso" class="col-sm-4 control-label">Tanggal <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                                    <input type="text" name="tglso" id="tglso" class="form-control input-sm datepicker" value="<?php echo $tglso?>" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <label for="pic" class="col-sm-4 control-label">PIC <font size="4" color="red"><B>*</B></font></label>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                    <!--input name="pic" id="pic" class="form-control" value="<?php echo $headersession['pic']?>"-->
+                                    <?php
+                                    if($headersession['pic']){
+                                    ?>
+                                    <select name="pic" id="pic" class="form-control input-sm select2" required>
+                                        <?php
+                                        foreach($pic as $kp=>$vp){
+                                            $selected ='';
+                                            if($headersession['pic'] == $vp->id_pic){
+                                                $selected = 'selected="selected"';
+                                            }
+                                        ?>
+                                        <option value="<?php echo $vp->id_pic?>" <?php echo $selected?>><?php echo $vp->nm_pic.' ('.$vp->divisi.'-'.$vp->jabatan.')'?></option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                  									}else{
+                  										echo '<select name="pic" id="pic" class="form-control input-sm select2">
+
+                                      </select>
+                                      ';
+                  									?>
+
+
+                                                      <?php } ?>
+                  									<input type="hidden" name="pic_code" id="pic_code" class="form-control input-sm" readonly="readonly">
+                  									<input type="hidden" name="pic_name" id="pic_name" class="form-control input-sm" readonly="readonly">
+
+                                    <input type="hidden" name="dppso" id="dppso" class="form-control input-sm" readonly="readonly">
+                                    <input type="hidden" name="totalso" id="totalso" class="form-control input-sm" readonly="readonly">
+                                    <input type="hidden" name="ppnso" id="ppnso" class="form-control input-sm" value="10" readonly="readonly">
+                                    <input type="hidden" name="persen_diskon_toko" id="persen_diskon_toko" value="<?php echo $headersession['persen_diskon_toko']?>">
+                                    <input type="hidden" name="persen_diskon_cash" id="persen_diskon_cash" value="<?php echo $headersession['persen_diskon_cash']?>">
+                                    <input type="hidden" name="diskon_toko" id="diskon_toko" value="<?php echo $headersession['diskon_toko']?>">
+                                    <input type="hidden" name="diskon_cash" id="diskon_cash" value="<?php echo $headersession['diskon_cash']?>">
+                                    <input type="hidden" name="total_lc" id="total_lc" value="<?php echo $headersession['total_lc']?>">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                      <div class="form-horizontal">
+                        <div class="form-group ">
+                          <label for="pic" class="col-sm-4 control-label">T.O.P <font size="4" color="red"><B>*</B></font></label>
+                          <div class="col-sm-8">
+                            <div class="input-group">
+                              <span class="input-group-addon"><i class="fa fa-edit"></i></span>
+                              <input name="top" id="top" class="form-control" onkeyup="this.value = this.value.match(/^[0-9]+$/)" value="<?php echo $headersession['top']?>" required>
+                              <span class="input-group-addon">Hari</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="form-group ">
+                          <label for="flagppnso" class="col-sm-4 control-label">Flag PPN <font size="4" color="red"><B>*</B></font></label>
+                          <div class="col-sm-8">
+
+                            <?php if (isset($headersession['nilaippn'])) {
+                              $nilppn = $headersession['nilaippn'];
+                            }else {
+                              $nilppn=0;
+                            } ?>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="10" onclick="setppn(this.value)" name="ppn" <?php if($headersession['nilaippn'] != 0){echo "checked";} ?>>PPN (10%)
+                                  </label>
+                                </div>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="0" onclick="setppn(this.value)" name="ppn" <?php if($headersession['nilaippn'] == 0){echo "checked";} ?> >Tanpa PPN
+                                  </label>
+                                  <input type="hidden" name="nilaippn" id="nilaippn" value="<?php echo $nilppn;?>" />
+                                </div>
+
+
+                          </div>
+                        </div>
+                        <div class="form-group ">
+                          <label for="diskoncash" class="col-sm-4 control-label">Pembayaran <font size="4" color="red"><B>*</B></font></label>
+                          <div class="col-sm-8">
+
+                              <?php
+                              if($headersession['diskoncash'] == 0){
+                                ?>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="<?php echo $disc_cash ?>" onclick="setdiskoncash(this.value)" name="diskoncash"/>CASH
+                                  </label>
+                                </div>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="0" onclick="setdiskoncash(this.value)" name="diskoncash" checked="checked" />KREDIT
+                                  </label>
+                                  <input type="hidden" name="nilaidiskoncash" id="nilaidiskoncash" value="0" />
+                                </div>
+
+                              <?php }else{ ?>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="<?php echo $disc_cash ?>" onclick="setdiskoncash(this.value)" name="diskoncash" checked="checked"/>CASH
+                                  </label>
+                                </div>
+                                <div class="radio-inline">
+                                  <label>
+                                    <input type="radio" value="0" onclick="setdiskoncash(this.value)" name="diskoncash"/>KREDIT
+                                  </label>
+                                  <input type="hidden" name="nilaidiskoncash" id="nilaidiskoncash" value="3" />
+                                </div>
+                              <?php } ?>
+
+
+                          </div>
+                        </div>
+                        <div class="form-group ">
+                          <label for="keterangan" class="col-sm-4 control-label">Keterangan<font size="4" color="red"><B>*</B></font></label>
+                          <div class="col-sm-8">
+                            <div class="input-group">
+                              <span class="input-group-addon"><i class="fa fa-file"></i></span>
+                              <textarea name="keterangan" id="keterangan" class="form-control input-sm" placeholder="Keterangan"><?php echo $headersession['keterangan']?></textarea>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+
+                    </div>
+
+                </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- END FORM HEADER SO-->
+<div class="box box-default ">
+    <div class="box-body">
+        <form id="form-detail-so" method="post">
+        <table class="table table-bordered" width="100%">
+            <tr>
+                <th class="text-center" colspan="8">FORM ITEM DETAIL</th>
+            </tr>
+            <tr>
+                <td width="9%"><b>PRODUCT SET</b></td>
+                <td colspan="2" width="20%">
+                  <span id="ket_item" data-toggle="popover" data-placement="bottom" data-content="Silahkan pilih customer terlebih dahulu!">
+                    <select onchange="setitembarang()" id="item_brg_so" name="item_brg_so" class="form-control input-xs form_item_so" style="width: 100%;" tabindex="-1" required>
+                            <option value=""></option>
+                            <?php
+                            foreach(@$itembarang as $k=>$v){
+                            ?>
+                            <option value="<?php echo $v->id_barang; ?>" <?php echo set_select('nm_barang', $v->id_barang, isset($data->nm_barang) && $data->id_barang == $v->id_barang) ?>>
+                                <?php echo $v->id_barang.' , '.$v->nm_barang.' , '.$v->kdcab ?>
+                            </option>
+                            <?php } ?>
+                        </select>
+                  </span>
+                </td>
+                <td width="5%" class="text-right"><b>HARGA NORMAL</b></td>
+                  <td width="10%">
+                    <input type="text" name="harga_normal" id="harga_normal" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Harga Normal sebelum diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                  </td>
+                <td width="5%" class="text-right"><b>HARGA SETELAH DISKON</b></td>
+                  <td width="10%">
+                    <input type="hidden" name="harga_sebelum_ppn" id="harga_sebelum_ppn" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                    <input type="text" name="harga" id="harga" class="form-control input-sm" data-toggle="tooltip" data-placement="bottom" title="Harga setelah diskon standar dan Promo(Persen maupun Rupiah)" readonly="readonly">
+                  </td>
+            </tr>
+            <tr>
+                <td width="5%" class="text-center"><b>QTY ORDER</b></td>
+                <td width="5%" class="text-center"><b>QTY BONUS</b></td>
+                <td width="5%" class="text-center"><b>QTY AVL</b></td>
+                <td width="5%" class="text-center"><b>QTY CONFIRM</b></td>
+                <td width="5%" class="text-center"><b>QTY PENDING</b></td>
+                <td width="5%" class="text-center"><b>QTY CANCEL</b></td>
+                <td class="text-center" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
+                    Diskon SO
+                </td>
+            </tr>
+            <tr>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_order" id="qty_order" class="form-control input-sm form_item_so" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_bonus" id="qty_bonus" class="form-control input-sm form_item_so" data-toggle="tooltip" data-placement="bottom" title="Qty didapat dari diskon bonus" readonly>
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_avl" id="qty_avl" class="form-control input-sm form_item_so" readonly="readonly">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_supply" id="qty_supply" class="form-control input-sm form_item_so" onkeyup="hitungso()" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_pending" id="qty_pending" class="form-control input-sm form_item_so" onkeyup="hitungcancel()" required="required">
+                </td>
+                <td width="10%" class="text-center">
+                    <input type="text" name="qty_cancel" id="qty_cancel" class="form-control input-sm form_item_so" readonly="readonly">
+                    <input type="hidden" name="nama_barang" id="nama_barang" class="form-control input-sm">
+                    <input type="hidden" name="satuan" id="satuan" class="form-control input-sm">
+                    <input type="hidden" name="jenis" id="jenis" class="form-control input-sm">
+                    <input type="hidden" name="total" id="total" class="form-control input-sm">
+
+                </td>
+                <td width="10%" class="text-center" rowspan="2">
+                  <div class="input-group">
+                    <div class="input-group-btn">
+                      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso" name="tipe_disso" value="%">%<span class="caret"></span></button>
+                      <ul class="dropdown-menu bg-dark">
+                        <li><a href="javascript:void(0)" onclick="getdisso('%')">Persen (%)</a></li>
+                        <li><a href="javascript:void(0)" onclick="getdisso('Rp')">Rupiah (Rp)</a></li>
+                      </ul>
+                    </div><!-- /btn-group -->
+                    <input type="text" class="form-control form_item_so" aria-label="" name="disso" id="disso" class="input-sm" value="0">
+                  </div><!-- /input-group -->
+                  <div class="radio_disso_rp" style="display:none">
+                    <div class="radio-inline">
+                      <label>
+                        <input type="radio" value="tambah" name="radio_disso_rp">(+)
+                      </label>
+                    </div>
+                    <div class="radio-inline">
+                      <label>
+                        <input type="radio" value="kurang" name="radio_disso_rp">(-)
+                      </label>
+                    </div>
+                  </div>
+                </td>
+            </tr>
+            <tr>
+                <td class="text-center"><b>POIN @1</b></td>
+                <td width="5%" class="text-center"><b>Diskon Std.</b></td>
+                <td width="5%" class="text-center" colspan="2"><b>Diskon Promo</b></td>
+                <td width="5%" class="text-center" colspan="2" style="border-right:1px solid #f4f4f4"><b>Diskon QTY</b></td>
+
+            </tr>
+            <tr>
+                <td class="text-center">
+                  <center><b>Nilai Per 1 POIN</b></center>
+                  <div class="input-group">
+                    <span class="input-group-addon">Rp</span>
+                    <input type="text" name="poin_per_item" id="poin_per_item" class="form-control input-sm form_item_so" readonly>
+                    <input type="hidden" name="jumlah_poin" id="jumlah_poin" class="form-control input-sm form_item_so" readonly>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Persen</b>
+                  <div class="input-group">
+                    <input type="text" name="diskon_standar_persen" id="diskon_standar_persen" class="form-control input-sm form_item_so" readonly>
+                    <span class="input-group-addon"><i class="fa fa-percent"></i></span>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Persen</b>
+                  <div class="input-group">
+                    <input type="text" name="diskon_promo_persen" id="diskon_promo_persen" class="form-control input-sm form_item_so" readonly>
+                    <span class="input-group-addon"><i class="fa fa-percent"></i></span>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Rupiah</b>
+                  <div class="input-group">
+                    <span class="input-group-addon">Rp</span>
+                    <input type="text" name="diskon_promo_rp" id="diskon_promo_rp" class="form-control input-sm form_item_so" readonly>
+                  </div>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Ketentuan</b>
+                    <input type="text" name="diskon_jika_qty" id="diskon_jika_qty" class="form-control input-sm form_item_so" readonly>
+                </td>
+                <td width="10%" class="text-center">
+                  <b>Bonus</b>
+                    <input type="text" name="diskon_qty_gratis" id="diskon_qty_gratis" class="form-control input-sm form_item_so" readonly>
+                </td>
+                <td class="text-center" colspan="2" rowspan="2" style="border-left:solid 1px #f4f4f4;vertical-align:middle" width="5%">
+                    <button class="btn btn-success btn-sm" type="submit" id="submit" name="save"><i class="fa fa-plus"></i> Tambah</button>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td width="5%" class="text-center" colspan="2"><b>PRODUCT SET BONUS :</b></td>
+                <td width="5%" class="text-center" colspan="2">
+                  <div class="form-group form-inline">
+                  <select onchange="setitembarang_bonus()" id="item_brg_so_bonus" name="item_brg_so_bonus" class="form-control input-xs" style="width: 70%;" tabindex="-1" disabled>
+                          <option value=""></option>
+                          <?php
+                          foreach(@$itembarang as $k=>$v){
+                          ?>
+                          <option value="<?php echo $v->id_barang; ?>" <?php echo set_select('nm_barang', $v->id_barang, isset($data->nm_barang) && $data->id_barang == $v->id_barang) ?>>
+                              <?php echo $v->id_barang.' , '.$v->nm_barang ?>
+                          </option>
+                          <?php } ?>
+                  </select>
+
+                  <input type="hidden" name="nama_barang_bonus" id="nama_barang_bonus" class="form-control input-sm">
+                  <input type="hidden" name="satuan_bonus" id="satuan_bonus" class="form-control input-sm">
+                  <input type="hidden" name="jenis_bonus" id="jenis_bonus" class="form-control input-sm">
+                  <input type="hidden" name="landed_cost" id="landed_cost" class="form-control input-sm">
+                  <input type="hidden" name="sub_landed_cost" id="sub_landed_cost" class="form-control input-sm">
+
+                  <button class="btn btn-warning btn-sm" type="submit" id="submit_bonus" name="save_bonus" disabled ><i class="fa fa-plus"></i> OK</button>
+                  </div>
+                </td>
+                <td>
+                  <center><b>Available:</b></center>
+                  <input type="text" name="qty_avl_bonus" id="qty_avl_bonus" class="form-control input-sm" readonly="readonly">
+                </td>
+            </tr>
+        </table>
+        </form>
+        <div id="div-form">
+        <table id="salesorderitemnya" class="table table-bordered table-striped" width="100%">
+            <thead>
+                <tr>
+                    <th width="2%">#</th>
+                    <th>Item Barang</th>
+                    <th>Satuan</th>
+                    <th>Stok Avl</th>
+                    <th>Qty Order</th>
+                    <th>Qty Confirm</th>
+                    <th>Qty Pending</th>
+                    <th>Qty Cancel</th>
+                    <th>Harga</th>
+                    <th>Diskon(%)</th>
+                    <th>Harga Nett</th>
+                    <th>Total</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                $grand = 0;
+                if(@$listitembarang){
+                $n=1;
+                $total_lc = 0;
+                foreach(@$listitembarang as $ks=>$vs){
+                    $grand += $vs->subtotal;
+                    $total_lc += $vs->landed_cost;
+                    $no = $n++;
+                ?>
+                <tr>
+                    <td class="text-center"><?php echo $no?></td>
+                    <td><?php echo $vs->id_barang.' / '.$vs->nm_barang?></td>
+                    <td><?php echo $vs->satuan?></td>
+                    <td><?php echo $vs->stok_avl?></td>
+                    <td><?php echo $vs->qty_order?></td>
+                    <td><?php echo $vs->qty_booked?></td>
+                    <td><?php echo $vs->qty_pending?></td>
+                    <td><?php echo $vs->qty_cancel?></td>
+                    <td><?php echo formatnomor($vs->harga_normal)?></td>
+                    <td><span id="pop_diskon" data-toggle="popover" data-placement="bottom" data-content="Jumlah Seluruh Diskon"><?php echo formatnomor($vs->diskon_persen)." + ".$vs->diskon_promo_persen." + ".$vs->diskon_so?></span></td>
+                    <td><?php echo formatnomor($vs->harga)?></td>
+                    <td class="text-right"><?php echo formatnomor($vs->subtotal)?></td>
+                    <td class="text-center">
+                        <a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php echo $vs->no_so?>','<?php echo $vs->id_barang?>')"><i class="fa fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <?php } ?>
+                <?php } ?>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="10" class="text-right">DPP : </th>
+                    <th colspan="2" class="text-right"><?php echo formatnomor($grand)?>
+                    <input type="hidden" name="grandtotalso" id="grandtotalso" value="<?php echo $grand?>">
+                    <input type="hidden" name="grandtotallc" id="grandtotallc" value="<?php echo $total_lc?>"></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="10" class="text-right">Diskon Toko (<span id="distoko_text"></span>): </th>
+                    <th colspan="2" class="text-right"><span id="diskontoko"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="10" class="text-right">Diskon Cash (3%): </th>
+                    <th colspan="2" class="text-right"><span id="diskoncash"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="10" class="text-right">PPN : </th>
+                    <th colspan="2" class="text-right"><span id="ppnview"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th colspan="10" class="text-right">GRAND TOTAL : </th>
+                    <th colspan="2" class="text-right"><span id="totalview"></span></th>
+                    <th></th>
+                </tr>
+                <tr>
+                    <th class="text-right" colspan="13">
+                        <button class="btn btn-danger" onclick="kembali()">
+                            <i class="fa fa-refresh"></i><b> Kembali</b>
+                        </button>
+                        <button class="btn btn-primary" type="button" onclick="saveheaderso()">
+                            <i class="fa fa-save"></i><b> Simpan Data SO</b>
+                        </button>
+                    </th>
+                </tr>
+            </tfoot>
+
+        </table>
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function() {
+      $('.radio_disso_rp').hide();
+
+        $("#item_brg_so,#idcustomer,#idsalesman,#pic,#item_brg_so_bonus").select2({
+            placeholder: "Pilih",
+            allowClear: true
+        });
+        var idcus = $('#idcustomer').val();
+        if(idcus != ''){
+          getpiccustomer(idcus);
+        }
+
+        $("#item_brg_so").prop("disabled", true);
+        var a = $('#idcustomer').val();
+
+        if (a != '') {
+          $("#item_brg_so").prop("disabled", false);
+        }
+
+
+        var gt = $('#grandtotalso').val();
+        $('#dppso').val(gt);
+
+        $(".datepicker").datepicker({
+            format : "yyyy-mm-dd",
+            showInputs: true,
+            autoclose:true
+        });
+
+        sethitung();
+    });
+
+    $("#item_brg_so").on('mouseover', function(){
+      $('#item_brg_so').popover('show');
+    });
+
+    $("#ket_item").on('click', function(){
+      var a = $('#idcustomer').val();
+      if (a !== '') {
+        $( "#ket_item" ).popover('destroy');
+      }
+      else {
+        $( "#ket_item" ).popover('show');
+      }
+    });
+
+    $('#idcustomer').on('change', function(){
+      var a = $('#idcustomer').val();
+      if (a !== '') {
+        $( "#ket_item" ).popover('destroy');
+        $("#item_brg_so").prop("disabled", false);
+      }
+      else {
+
+        $( "#ket_item" ).popover('show');
+      }
+    });
+
+    $("#disso").on('keyup', function(){
+      var harga_normal = parseInt($("#harga_normal").val());
+      var disstd = parseInt($("#diskon_standar_persen").val());
+      var dispro = parseInt($("#diskon_promo_persen").val());
+      var dispro_rp = parseInt($("#diskon_promo_rp").val());
+      var harga = parseInt((harga_normal*(100 - disstd)/100)*(100 - dispro)/100 - dispro_rp);
+      var disso = parseFloat($("#disso").val());
+      var nett = harga*(100 - disso)/100;
+      if ($("#tipe_disso").val() === "%") {
+        if (parseInt($("#disso").val()) > 100) {
+          swal({
+            title: "Peringatan!",
+            text: "Tidak boleh lebih dari 100%",
+            type: "warning",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $("#disso").val(0);
+        }else {
+          $("#harga").val((nett).toFixed(2));
+        }
+      }else {
+        var radioValue = $("input[name='radio_disso_rp']:checked"). val();
+        if (radioValue == "tambah") {
+          $("#harga").val(harga + disso);
+        }else {
+          $("#harga").val(harga - disso);
+        }
+      }
+      if (isNaN($("#harga").val())) {
+        $("#harga").val(harga);
+      }
+    });
+
+    $("#pop_diskon").on('mouseover', function(){
+      $('#pop_diskon').popover('show');
+    });
+    $("#pop_diskon").on('mouseout', function(){
+      $('#pop_diskon').popover('hide');
+    });
+    $("#qty_supply").on('keyup', function(){
+      $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()));
+      $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
+    });
+    $("#qty_order").on('keyup', function(){
+      this.value = this.value.match(/^[0-9]+$/);
+        var qo = parseInt($("#qty_order").val());
+        var ket_bonus = parseInt($("#diskon_jika_qty").val());
+        var bonus = parseInt(qo/ket_bonus);
+        if (ket_bonus == 0) {
+          bonus = 0;
+        }
+        var harga = parseInt($('#harga').val());
+        var avl = parseInt($('#qty_avl').val());
+        var qty = parseInt($('#qty_supply').val());
+        var order = parseInt($('#qty_order').val());
+        var diskon = parseInt($('#diskon').val());
+        var qtybonus = parseInt(0);
+
+        $("#qty_bonus").val(bonus);
+        $("#qty_supply").val(parseInt(qo));
+        if ( parseInt($('#qty_supply').val()) > parseInt($('#qty_avl').val()) ) {
+          $("#qty_supply").val(parseInt($('#qty_avl').val()));
+          $("#qty_pending").val(parseInt($('#qty_order').val()) - parseInt($('#qty_avl').val()) + bonus);
+          $("#qty_cancel").val(parseInt($('#qty_order').val()) + parseInt($('#qty_bonus').val()) - parseInt($('#qty_pending').val()) - parseInt($('#qty_supply').val()) );
+        }
+        else {
+          $("#qty_supply").val(parseInt(qo));
+          $("#qty_pending").val(parseInt( parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) ));
+          $("#qty_cancel").val(parseInt($('#qty_order').val()) - parseInt($('#qty_supply').val()) - parseInt($('#qty_pending').val()));
+        }
+        //alert(bonus);
+        if (isNaN($("#qty_bonus").val()) || isNaN($("#qty_supply").val()) || isNaN($("#qty_pending").val()) ) {
+          $("#qty_bonus,#qty_supply,#qty_pending,#qty_cancel").val('');
+        }
+        hitungso();
+    });
+
+    function getcustomer(){
+        var idcus = $('#idcustomer').val();
+        if(idcus != ''){
+           $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_customer",
+                data:"idcus="+idcus,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    $('#nmcustomer').val(data.nm_customer);
+                    $('#diskontoko').text(formatCurrency(data.diskon_toko*parseFloat($('#grandtotalso').val())/100,',','.',0));
+                    $('#distoko_text').text(data.diskon_toko+"%");
+                    $('#persen_diskon_toko').val(data.diskon_toko);
+                    getpiccustomer(idcus);
+                    //get_bidus(data.bidang_usaha)
+                    if ($('#bidang_usaha').val() != "") {
+                      if (data.bidang_usaha != $('#bidang_usaha').val()) {
+                        if ($('#totalview').text() == "0") {
+                          if (data.bidang_usaha == 'DISTRIBUTOR') {
+                            $('#diskon_promo_persen').val(0);
+                            $('#diskon_promo_rp').val(0);
+                            $('#bidang_usaha').val(data.bidang_usaha);
+                            hitungso();
+                          }
+                          else {
+                            $('#bidang_usaha').val(data.bidang_usaha);
+                            hitungso();
+                          }
+                        }else {
+                          $('#bidang_usaha').val(data.bidang_usaha);
+                          hitungso();
+                          reset_itemso();
+                        }
+                      }
+                    }else {
+                      $('#diskon_promo_persen').val(0);
+                      $('#diskon_promo_rp').val(0);
+                      $('#bidang_usaha').val(data.bidang_usaha);
+                    }
+                    resetform();
+                }
+            });
+        }
+        sethitung();
+
+    }
+    function reset_itemso(){
+      $.ajax({
+           type:"GET",
+           url:siteurl+"salesorder/hapus_item_so_all",
+           //data:"id_user="+<?= $session['id_user']?>,
+           success:function(result){
+               swal({
+                   title: "Peringatan",
+                   text: "Item SO dihapus karena berbeda Bidang Usaha dengan yang sebelumnya!",
+                   type: "success",
+                   timer: 2000,
+                   showConfirmButton: false
+               });
+               resetform();
+               setTimeout(function(){
+                   window.location.reload();
+               },1600);
+           }
+       });
+    }
+    function get_bidus(bid){
+      if (bid == 'DISTRIBUTOR') {
+        $('#diskon_promo_persen').remove();
+        $('#diskon_promo_rp').remove();
+      }else if (bid == 'AGEN') {
+        $('#diskon_promo_persen').name('diskon_promo_persen');
+        $('#diskon_promo_rp').name('diskon_promo_rp');
+      }else {
+        alert(data.bidang_usaha);
+      }
+    }
+    function getdisso(dis){
+      $('#tipe_disso').html(dis);
+      $('#tipe_disso').val(dis);
+      if (dis == "%") {
+        $('.radio_disso_rp').hide();
+      }else {
+        $('.radio_disso_rp').show();
+      }
+    }
+    function filterAngka(a){
+        if(!a.match(/^[0-9]+$/)){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+    function kembali(){
+        window.location.href = siteurl+'salesorder';
+    }
+    function resetform(){
+
+        $('#item_brg_so').val('').trigger('change');
+        $('.form_item_so').val('');
+        $('#nama_barang').val('');
+        $('#harga').val(0);
+        $('#satuan').val('');
+        $('#jenis').val('');
+        $('#qty_order').val(0);
+        $('#qty_supply').val(0);
+        $('#qty_pending').val(0);
+        $('#qty_cancel').val(0);
+        $('#qty_avl').val(0);
+        $('#total').val(0);
+    }
+    function setppn(ppn){
+        if(ppn == 10) {
+            $('#nilaippn').val(10);
+            sethitung();
+        }else{
+            $('#nilaippn').val(0);
+            sethitung();
+        }
+    }
+    function setdiskoncash(d){
+            $('#persen_diskon_cash').val(d);
+            $('#nilaidiskoncash').val(d);
+            sethitung();
+    }
+    function pembulatan(x){
+      var string_harga = x.toString();
+      var cek = parseInt(string_harga.substr(-3));
+      if (cek > 0) {
+        var pembantu = 1000 - cek;
+        var hasil = parseInt(x) + parseInt(pembantu);
+        return hasil;
+      }else {
+        return x;
+      }
+    }
+    function setitembarang(){
+        var idbarang = $('#item_brg_so').val();
+        var qty = $('#qty_order').val();
+        var qty_sup = $('#qty_supply').val();
+        if(idbarang != ""){
+            $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_item_barang",
+                data:"idbarang="+idbarang,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    console.log(data);
+                    $('#nama_barang').val(data.nm_barang);
+                    $('#harga').val(data.harga);
+                    $('#satuan').val(data.satuan);
+                    $('#jenis').val(data.jenis);
+                    $('#qty_avl').val(data.qty_avl);
+                    $('#total').val(data.harga*qty_sup);
+                    $('#harga_normal').val(data.harga);
+                    $('#poin_per_item').val(data.poin_per_item);
+                    $('#landed_cost').val(data.landed_cost);
+
+                    $('#diskon_standar_persen').val(data.diskon_standar_persen)
+                    $('#diskon_promo_persen').val(data.diskon_promo_persen);
+                    $('#diskon_promo_rp').val(0);
+                    $('#diskon_jika_qty').val(data.diskon_jika_qty);
+                    $('#diskon_qty_gratis').val(data.diskon_qty_gratis);
+
+                    if ($('#diskon_qty_gratis').val() > 0) {
+                      $('#item_brg_so_bonus').prop('disabled', false);
+                    }else {
+                      $('#item_brg_so_bonus').prop('disabled', true);
+                    }
+
+                    if ($('#bidang_usaha').val() == "DISTRIBUTOR") {
+                      $('#diskon_promo_persen').val(0);
+                      $('#diskon_promo_rp').val(0);
+                      hitungso();
+                    }
+
+                    var h_d_std = parseInt($('#harga_normal').val()) - (parseInt($('#diskon_standar_persen').val() * $('#harga_normal').val()/100));
+                    var d_pp = parseInt($('#diskon_promo_persen').val()) * h_d_std/100;
+                    var d_rp = $('#diskon_promo_rp').val();
+                    var harga = h_d_std - d_pp - d_rp;
+                    var harga_sebelum_ppn = parseInt($('#harga_normal').val())/110*100;
+                    $('#harga_sebelum_ppn').val(harga_sebelum_ppn)
+                    $('#harga').val(harga);
+
+                }
+            });
+        }
+        //getcustomer();
+    }
+    function setitembarang_bonus(){
+        var idbarang = $('#item_brg_so_bonus').val();
+        if(idbarang != ""){
+            $('#submit_bonus').prop('disabled', false);
+        }
+        else {
+          $('#submit_bonus').prop('disabled', true);
+        }
+
+        if(idbarang != ""){
+            $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_item_barang_bonus",
+                data:"idbarang="+idbarang,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    console.log(data);
+                    $('#qty_avl_bonus').val(data.qty_avl);
+
+                    $('#nama_barang_bonus').val(data.nm_barang);
+                    $('#harga_bonus').val(data.harga);
+                    $('#satuan_bonus').val(data.satuan);
+                    $('#jenis_bonus').val(data.jenis);
+
+                }
+            });
+        }
+    }
+
+    function getpiccustomer(idcus){
+        $.ajax({
+            type:"GET",
+            url:siteurl+"salesorder/get_pic_customer",
+            data:"idcus="+idcus,
+            success:function(result){
+              $('#pic').html("");
+              $('#pic').html(result);
+
+            }
+        });
+    }
+    function getsalesman(){
+        var idsls = $('#idsalesman').val();
+        if(idsls != ''){
+           $.ajax({
+                type:"GET",
+                url:siteurl+"salesorder/get_salesman",
+                data:"idsales="+idsls,
+                success:function(result){
+                    var data = JSON.parse(result);
+                    $('#nmsalesman').val(data.nama_karyawan);
+                }
+            });
+        }
+    }
+    function hitungso(){
+        var harga = parseInt($('#harga').val());
+        var avl = parseInt($('#qty_avl').val());
+        var qty = parseInt($('#qty_supply').val());
+        var order = parseInt($('#qty_order').val());
+        var diskon = parseInt($('#diskon').val());
+        var bonus = parseInt($('#qty_bonus').val());
+        var poin_per_item = parseInt($('#poin_per_item').val());
+        var landed_cost = (parseFloat($('#landed_cost').val())).toFixed(2);
+
+        var sub_total_lc = landed_cost*qty;
+
+        var total = harga*qty;
+        var poin = parseInt(total/poin_per_item);
+        if(qty > avl){
+          swal({
+            title: "Peringatan!",
+            text: "Stok Available tidak mencukupi",
+            type: "warning",
+            timer: 1500,
+            showConfirmButton: false
+          });
+          $('#qty_supply').val(0);
+        }else{
+          $('#total').val(total);
+          $('#jumlah_poin').val(poin);
+          $('#sub_landed_cost').val(sub_total_lc);
+
+        }
+
+        //
+    }
+    function sethitung(){
+        var gt = $('#grandtotalso').val();
+        var total_lc = parseInt($('#grandtotallc').val());
+        $('#dppso').val(gt);
+        var npp = parseInt($('#nilaippn').val());//PPN APA TIDAK
+        //alert(dto);
+        if ($('#persen_diskon_toko').val() == '') {
+          $('#persen_diskon_toko').val(0);
+        }
+        $('#distoko_text').text($('#persen_diskon_toko').val()+"%");
+        var dpp_so = parseInt($('#dppso').val());
+        var dto = parseFloat($('#persen_diskon_toko').val())*dpp_so/100;
+        var dpp_n = parseInt($('#dppso').val()) - dto;
+        var dcc = parseInt($('#nilaidiskoncash').val())*dpp_n/100;
+        var dpp = parseInt(dpp_n - dcc);
+
+        if(npp == 0){
+            ppn = 0;
+        }
+
+        $('#ppnso').val(npp);
+        $('#total_lc').val(total_lc);
+        $('#totalso').val(dpp);
+        $('#diskon_toko').val(dto);
+        $('#diskon_cash').val(dcc);
+        $('#diskoncash').text(formatCurrency(dcc,',','.',0));
+        $('#ppnview').text("(Include) "+npp+"%");
+        $('#diskontoko').text(formatCurrency(dto,',','.',0));
+        $('#totalview').text(formatCurrency(dpp,',','.',0));
+    }
+    function hitungcancel(){
+        var avl = parseInt($('#qty_avl').val());
+        var qty = parseInt($('#qty_supply').val());
+        var order = parseInt($('#qty_order').val());
+        var pending = parseInt($('#qty_pending').val());
+        var maks = qty+pending;
+        var cancel = order-maks;
+        if(filterAngka($('#qty_pending').val()) == 1){
+            if(pending > avl){
+                /*
+                swal({
+                    title: "Peringatan!",
+                    text: "Qty available tidak cukup",
+                    type: "warning",
+                       timer: 1500,
+                       showConfirmButton: false
+                    });
+                $('#qty_cancel').val(cancel);
+                */
+                swal({
+                      title: "Peringatan !",
+                      text: "Stok Available tidak cukup, lanjutkan ?",
+                      type: "warning",
+                      showCancelButton: true,
+                      confirmButtonColor: "#DD6B55",
+                      confirmButtonText: "Ya, Lanjutakan!",
+                      cancelButtonText: "Tidak!",
+                      closeOnConfirm: true,
+                      closeOnCancel: true
+                    },
+                    function(isConfirm){
+                      if (isConfirm) {
+                        $('#qty_cancel').val(cancel);
+                      }else{
+                        //window.location.reload();
+                      }
+                    });
+            }else{
+                //if(pending != ""){
+                    if(maks > order){
+                        swal({
+                            title: "Peringatan!",
+                            text: "Qty melebihi order",
+                            type: "warning",
+                            timer: 1500,
+                            showConfirmButton: false
+                        });
+                        $('#qty_pending').val(0);
+                    }else{
+                        $('#qty_cancel').val(cancel);
+                    }
+                //}
+            }
+        }else{
+            var ang = $('#qty_pending').val();
+            $('#qty_pending').val(ang.replace(/[^0-9]/g,''));
+        }
+    }
+    $('#form-detail-so').on('submit', function(e){
+        hitungso();
+        e.preventDefault();
+        var formdata = $("#form-detail-so,#form-header-so").serialize();
+        $.ajax({
+            url: siteurl+"salesorder/saveitemso",
+            dataType : "json",
+            type: 'POST',
+            data: formdata,
+            success: function(result){
+                if(result.save=='1'){
+                    swal({
+                        title: "Sukses!",
+                        text: result['msg'],
+                        type: "success",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    resetform();
+                    setTimeout(function(){
+                        window.location.href=siteurl+"salesorder/create";
+                    },1600);
+                    console.log(result.header);
+                } else {
+                    swal({
+                        title: "Gagal!",
+                        text: "Data Gagal Di Simpan",
+                        type: "error",
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                };
+            },
+            error: function(){
+                swal({
+                    title: "Gagal!",
+                    text: "Ajax Data Gagal Di Proses",
+                    type: "error",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+        });
+    });
+    function delete_data(noso,id){
+        //alert(id);
+        swal({
+          title: "Anda Yakin?",
+          text: "Data Akan Terhapus secara Permanen!",
+          type: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#DD6B55",
+          confirmButtonText: "Ya, delete!",
+          cancelButtonText: "Tidak!",
+          closeOnConfirm: false,
+          closeOnCancel: true
+        },
+        function(isConfirm){
+          if (isConfirm) {
+            $.ajax({
+                    url: siteurl+'salesorder/hapus_item_so',
+                    data :{"NO_SO":noso,"ID":id},
+                    dataType : "json",
+                    type: 'POST',
+                    success: function(result){
+                        if(result.delete == '1'){
+                            swal({
+                              title: "Terhapus!",
+                              text: "Data berhasil dihapus",
+                              type: "success",
+                              timer: 1500,
+                              showConfirmButton: false
+                            });
+                            setTimeout(function(){
+                                 window.location.reload();
+                            },1600);
+                        } else {
+                            swal({
+                              title: "Gagal!",
+                              text: "Data gagal dihapus",
+                              type: "error",
+                              timer: 1500,
+                              showConfirmButton: false
+                            });
+                        };
+                    },
+                    error: function(){
+                        swal({
+                          title: "Gagal!",
+                          text: "Gagal Eksekusi Ajax",
+                          type: "error",
+                          timer: 1500,
+                          showConfirmButton: false
+                        });
+                    }
+                });
+          } else {
+            //cancel();
+          }
+        });
+    }
+    function saveheaderso(){
+      //sethitung();
+        var formdata = $("#form-header-so").serialize();
+        if($('#idcustomer').val() != ""){
+          if($('#top').val() != ""){
+            if($('#idsalesman').val() != ""){
+              $.ajax({
+                url: siteurl+"salesorder/saveheaderso",
+                dataType : "json",
+                type: 'POST',
+                data: formdata,
+                success: function(result){
+                  if(result.save=='1'){
+                    swal({
+                      title: "Sukses!",
+                      text: result['msg'],
+                      type: "success",
+                      timer: 1500,
+                      showConfirmButton: false
+                    });
+                    setTimeout(function(){
+                      window.location.href=siteurl+'salesorder';
+                    },1600);
+                  } else {
+                    swal({
+                      title: "Gagal!",
+                      text: "Data Gagal Di Simpan",
+                      type: "error",
+                      timer: 1500,
+                      showConfirmButton: false
+                    });
+                  };
+                },
+                error: function(){
+                  swal({
+                    title: "Gagal!",
+                    text: "Ajax Data Gagal Di Proses",
+                    type: "error",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                }
+              });
+            }else{
+               swal({
+                    title: "Peringatan!",
+                    text: "Silahkan pilih Sales",
+                    type: "warning",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+            }
+          }else{
+             swal({
+                  title: "Peringatan!",
+                  text: "Silahkan pilih T.O.P",
+                  type: "warning",
+                  timer: 1500,
+                  showConfirmButton: false
+              });
+          }
+        }else{
+           swal({
+                title: "Peringatan!",
+                text: "Silahkan pilih customer",
+                type: "warning",
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    }
+    function formatCurrency(amount, decimalSeparator, thousandsSeparator, nDecimalDigits){
+        var num = parseInt( amount );
+        decimalSeparator = decimalSeparator || '.';
+        thousandsSeparator = thousandsSeparator || ',';
+        nDecimalDigits = nDecimalDigits == null? 2 : nDecimalDigits;
+        var fixed = num.toFixed(nDecimalDigits);
+        var parts = new RegExp('^(-?\\d{1,3})((?:\\d{3})+)(\\.(\\d{' + nDecimalDigits + '}))?$').exec(fixed);
+        if(parts){
+            return parts[1] + parts[2].replace(/\d{3}/g, thousandsSeparator + '$&') + (parts[4] ? decimalSeparator + parts[4] : '');
+        }else{
+            return fixed.replace('.', decimalSeparator);
+        }
+    }
+</script>
