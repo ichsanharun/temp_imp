@@ -419,6 +419,7 @@ class Purchaserequest extends Admin_Controller
         $headerpr = array(
             'id_cbm' => $this->input->post('radio-group'),
             'total_cbm' => $this->input->post('cbm_tot'),
+            'tgl_pr' => $this->input->post('tglpr'),
         );
 
         $this->db->trans_begin();

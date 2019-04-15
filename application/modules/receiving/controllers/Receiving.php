@@ -54,7 +54,12 @@ class Receiving extends Admin_Controller
     public function konfrimasi()
     {
         $sup = $this->uri->segment(3);
-        $no = $this->uri->segment(4);
+        if ($this->uri->segment(5) != "" && $this->uri->segment(6) != "") {
+          $no = $this->uri->segment(4)."/".$this->uri->segment(5)."/".$this->uri->segment(6);
+        }else {
+          $no = $this->uri->segment(4);
+        }
+        // code...
         $session = $this->session->userdata('app_session');
         $this->db->select('*');
         $this->db->from('trans_po_detail');
@@ -855,8 +860,9 @@ class Receiving extends Admin_Controller
 
     public function saveheaderreceiving()
     {
+      $tgl = $this->input->post('tglreceive');
         $session = $this->session->userdata('app_session');
-        $norec = $this->Receiving_model->generate_noreceive($session['kdcab']);
+        $norec = $this->Receiving_model->generate_noreceive($session['kdcab'],$tgl);
         $dataheader = array(
             'no_receiving' => $norec,
             'tglreceive' => $this->input->post('tglreceive'),
@@ -1013,6 +1019,9 @@ class Receiving extends Admin_Controller
 
     public function print_request($norec)
     {
+      if ($this->uri->segment(5)!="") {
+        $norec = $this->uri->segment(3)."/".$this->uri->segment(4)."/".$this->uri->segment(5);
+      }
         $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();

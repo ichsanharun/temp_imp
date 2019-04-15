@@ -78,9 +78,9 @@ class Receiving_model extends BF_Model
       $cek = $kdcab.'-RC-'.date('y').$kode_bln;
       /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
       WHERE no_so LIKE '%$cek%'")->num_rows();*/
-      $query = "SELECT MAX(no_receive) as max_id
+      $query = "SELECT MAX(no_receiving) as max_id
       FROM
-      trans_receive WHERE LEFT(no_receive,3)='$kdcab' AND no_receive LIKE '%$cek%'";
+      trans_receive WHERE LEFT(no_receiving,3)='$kdcab' AND no_receiving LIKE '%$cek%'";
       $q = $this->db->query($query);
       $query_cek = $q->num_rows();
       if ($query_cek == 0) {
@@ -88,9 +88,9 @@ class Receiving_model extends BF_Model
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
         $fin = $kdcab.'-RC-'.date('y').$kode_bln.$next_kode;
       }else {
-        $query = "SELECT MAX(no_receive) as max_id
+        $query = "SELECT MAX(no_receiving) as max_id
         FROM
-        trans_receive WHERE LEFT(no_receive,3)='$kdcab' AND no_receive LIKE '%$cek%'";
+        trans_receive WHERE LEFT(no_receiving,3)='$kdcab' AND no_receiving LIKE '%$cek%'";
         $q = $this->db->query($query);
         $r = $q->row();
         $kode = (int)substr($r->max_id,10)+1;

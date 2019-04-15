@@ -41,8 +41,16 @@
                     <td><?= $row->no_po; ?></td>
                     <td><?= @get_invoice($row->no_po); ?></td>
                     <td><?= $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
-                    <td style="text-align: right">$ <?= number_format($peresen_dolar, 2, ',', '.'); ?></td>
-                    <td style="text-align: right">Rp. <?= number_format($persen_rupiah, 2, ',', '.'); ?></td>
+
+                    <?php if ($persen_rupiah != 0) { ?>
+                     <td style="text-align: right">$ <?= number_format($row->nominal, 2, ',', '.'); ?></td>
+                     <td style="text-align: right">Rp. <?= number_format($persen_rupiah, 2, ',', '.'); ?></td>
+                    <?php }else { ?>
+                      <td style="text-align: right">$ <?= number_format($row->nominal, 2, ',', '.'); ?></td>
+                      <td style="text-align: right">Rp. <?= number_format($row->bayar, 2, ',', '.'); ?></td>
+                    <?php } ?>
+
+
                     <td><center><?php echo date('d/m/Y', strtotime($row->perkiraan_bayar)); ?></center></td>
                     <td style="text-align: center">
                         <?php
@@ -58,6 +66,7 @@
                 </tr>
             <?php } else {
               $persen_rupiah = $row->nominal * $row->rupiah;
+
               ?>
 
                          <tr>
@@ -65,9 +74,15 @@
                              <td><?= $row->no_po; ?></td>
                              <td><?= @get_invoice($row->no_po); ?></td>
                              <td><?= $row->id_supplier; ?> - <?php echo $row->nm_supplier; ?></td>
-                             <td style="text-align: right">$ <?= number_format($row->nominal, 2, ',', '.'); ?></td>
-                             <td style="text-align: right">Rp. <?= number_format($persen_rupiah, 2, ',', '.'); ?></td>
+                            <?php if ($row->nominal == $row->bayar) { ?>
+                             <td style="text-align: right">$ <?= number_format(0, 2, ',', '.'); ?></td>
+                             <td style="text-align: right">Rp. <?= number_format($row->nominal, 2, ',', '.'); ?></td>
                              <td><center><?php echo date('d/m/Y', strtotime($row->perkiraan_bayar)); ?></center></td>
+                            <?php }else { ?>
+                              <td style="text-align: right">$ <?= number_format($row->nominal, 2, ',', '.'); ?></td>
+                              <td style="text-align: right">Rp. <?= number_format($row->bayar, 2, ',', '.'); ?></td>
+                              <td><center><?php echo date('d/m/Y', strtotime($row->perkiraan_bayar)); ?></center></td>
+                            <?php } ?>
                              <td style="text-align: center">
                                  <?php
                                  if ($row->st == 'open') {

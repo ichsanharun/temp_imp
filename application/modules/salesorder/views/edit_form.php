@@ -231,7 +231,7 @@
                     <input type="hidden" name="no_picking_list" id="no_picking_list" class="form-control input-sm" readonly="readonly" value="<?php echo $data->no_picking_list?>">
                     <input type="hidden" name="dppso" id="dppso" class="form-control input-sm" readonly="readonly" value="<?php echo $data->dpp?>">
                     <input type="hidden" name="totalso" id="totalso" class="form-control input-sm" readonly="readonly" value="<?php echo $data->total?>">
-                    <input type="hidden" name="ppnso" id="ppnso" class="form-control input-sm" value="10" readonly="readonly" value="<?php echo $data->ppn?>">
+                    <input type="hidden" name="ppnso" id="ppnso" class="form-control input-sm" readonly="readonly" value="<?php echo $data->ppn?>">
                     <input type="hidden" name="persen_diskon_toko" id="persen_diskon_toko" value="<?php echo $data->persen_diskon_toko?>">
                     <input type="hidden" name="persen_diskon_cash" id="persen_diskon_cash" value="<?php echo $data->persen_diskon_cash?>">
                     <input type="hidden" name="diskon_toko" id="diskon_toko" value="<?php echo $data->diskon_toko?>">
@@ -278,6 +278,7 @@
               <tbody id="isi_so">
                 <?php
                 $i = 0;
+                $dpp = 0;
                 if ($detail) {
                   foreach ($detail as $key => $value) {
                     $i = $key+1;
@@ -374,7 +375,7 @@
                                 $diskon_so = '0';
                               } ?>
                               <button type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso_1<?=$db->id_barang?>" name="tipe_disso1[]" value="<?=$tp?>"><?=$symbol?><span class="caret"></span></button>
-                              <input type="hidden" id="tipe_disso_<?=$db->id_barang?>" name="tipe_disso[]" value="<?=$tp?>">
+                              <input type="hidden" id="tipe_disso_<?=$db->id_barang?>" class="tipe_disso" name="tipe_disso[]" value="<?=$tp?>">
 
                               <ul class="dropdown-menu bg-dark">
                                 <li><a href="javascript:void(0)" onclick="getdisso('%','<?=$db->id_barang?>')">Persen (%)</a></li>
@@ -402,11 +403,20 @@
                       </td>
                     </tr>
                     <?php
+                    $dpp += $value['subtotal'];
                   }
                 }
                 ?>
               </tbody>
               <tfoot id="input_tambahan">
+                <tr>
+                  <th class="text-right" colspan="7">
+                    <strong>DPP:</strong>
+                  </th>
+                  <th>
+                    <span id="dpp_view"><?=$dpp?></span>
+                  </th>
+                </tr>
                 <tr>
                   <th class="text-right" colspan="7">
                     <strong>Diskon Toko:</strong>
@@ -437,9 +447,9 @@
                         <a class="btn btn-danger" href="javascript:void(0)" data-toggle="" title="Add" onclick="remove_list()"><i class="fa fa-minus">&nbsp;</i>Kurangi Item</a>
                       </th>
                       <th class="text-right" colspan="5">
-                          <button class="btn btn-danger" onclick="kembali()">
+                          <a class="btn btn-danger" onclick="kembali()">
                               <i class="fa fa-refresh"></i><b> Kembali</b>
-                          </button>
+                          </a>
                           <button class="btn btn-primary" type="button" onclick="save()">
                               <i class="fa fa-save"></i><b> Simpan Data</b>
                           </button>
@@ -704,12 +714,14 @@
             $('#bidang_usaha').val(data.bidang_usaha);
           }
           resetform();
+          hitung_total();
         }
       });
     }else {
       $("#button_add_list").prop("disabled", true);
     }
-    sethitung();
+    hitung_total();
+    //sethitung();
 
   }
   function remove_list(){
@@ -793,27 +805,31 @@
     }
     var dc = 0;
     var dt = 0;
-
+    var dpp = sum;
     var total = sum;
     var dt_nominal = 0;
     var dc_nominal = 0;
     if ($('#persen_diskon_toko').val() != 0) {
       var dt = parseFloat($('#persen_diskon_toko').val());
       var total = sum-(sum*dt/100);
-      var dt_nominal = sum*dt/100;
+      var dt_nominal = parseFloat(sum*dt/100);
     }
     if ($('#persen_diskon_cash').val() != 0) {
-      var dc = parseInt($('#persen_diskon_cash').val());
-      var total = total-(total*dc/100);
-      var dc_nominal = total*dc/100;
+      var dc = parseFloat($('#persen_diskon_cash').val());
+      var total = sum-(sum*dc/100);
+      var dc_nominal = parseFloat(sum*dc/100);
     }
     //alert(dc);
     //alert(sum);
-    $('#dt_view').text(dt+'%'+'('+formatCurrency(dt_nominal,',','.',0)+')');
-    $('#dc_view').text(dc+'%'+'('+formatCurrency(dc_nominal,',','.',0)+')');
-    $('#total_view').text(formatCurrency(total,',','.',0));
+    $('#dpp_view').text(num(dpp));
+    $('#dt_view').text(dt+'%'+'('+num(dt_nominal)+')');
+    $('#dc_view').text(dc+'%'+'('+num(dc_nominal)+')');
+    $('#total_view').text(num(total));
     $('#totalso').val(total);
     $('#dppso').val(total);
+  }
+  function num(n) {
+    return (n).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
   }
   function filterAngka(a){
     if(!a.match(/^[0-9]+$/)){
@@ -1106,10 +1122,8 @@
   function setppn(ppn){
       if(ppn == 10) {
           $('#nilaippn').val(10);
-          sethitung();
       }else{
           $('#nilaippn').val(0);
-          sethitung();
       }
   }
   function setdiskoncash(d){

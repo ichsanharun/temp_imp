@@ -135,9 +135,7 @@ class Salesorder extends Admin_Controller {
         $diskon_cash        = $this->input->post('diskon_cash');
         $keterangan         = $this->input->post('keterangan');
         $top                = $this->input->post('top');
-        if ($ppn == '10') {
-          $dppso = $totalso/1.1;
-        }
+
 
         $dataheaderso = array(
             'no_so'               => $noso,
@@ -151,7 +149,7 @@ class Salesorder extends Admin_Controller {
             'pic'                 => $picso,
             'waktu'               => $waktu,
             'dpp'                 => $dppso,
-            'ppn'                 => $ppnso,
+            'ppn'                 => $ppn,
             'stsorder'            => $statusso,
             'flag_ppn'            => $ppnso,
             'total'               => $totalso,
@@ -287,11 +285,14 @@ class Salesorder extends Admin_Controller {
             'created_on'=>date("Y-m-d H:i:s"),
             'created_by'=>$session['id_user'],
           );
+          $tot_so = ($tot_so * ((100-$persen_diskon_toko)/100)) * ((100-$persen_diskon_cash)/100);
           $this->db->insert('trans_so_header',$dataheadersopending);
+          $this->db->where(array('no_so'=>$noso));
+          $this->db->update('trans_so_header',array('total'=>$tot_so));
         }
-
         $this->db->where(array('no_so'=>$noso));
-        $this->db->update('trans_so_header',array('total_lc'=>$tot_lc,'total'=>$tot_so));
+        $this->db->update('trans_so_header',array('total_lc'=>$tot_lc));
+
 
 
 
@@ -453,7 +454,7 @@ class Salesorder extends Admin_Controller {
             'pic'                 => $picso,
             'waktu'               => $waktu,
             'dpp'                 => $dppso,
-            'ppn'                 => $ppnso,
+            'ppn'                 => $ppn,
             'stsorder'            => $statusso,
             'flag_ppn'            => $ppnso,
             'total'               => $totalso,
@@ -2447,6 +2448,232 @@ class Salesorder extends Admin_Controller {
     }
 
     function print_request($noso){
+      $no_so = $noso;
+      $mpdf=new mPDF('utf-8', array(210,145), 10 ,'Arial', 5, 5, 16, 16, 1, 4, 'P');
+      $mpdf->SetImportUse();
+
+        $so_data = $this->Salesorder_model->find_data('trans_so_header',$no_so,'no_so');
+        $cabang = $this->Salesorder_model->find_data('cabang',$session['kdcab'],'kdcab');
+        $customer = $this->Salesorder_model->cek_data(array('id_customer'=>$so_data->id_customer),'customer');
+        $detail = $this->Detailsalesorder_model->find_all_by(array('no_so' => $no_so));
+
+        $this->template->set('so_data', $so_data);
+        $this->template->set('cabang', $cabang);
+        $this->template->set('customer', $customer);
+        $this->template->set('detail', $detail);
+        $show = $this->template->load_view('print_data',$data);
+        foreach ($detail as $key => $value) {
+          if ($value->tipe_diskon_so != 'persen') {
+            if ($value->tipe_diskon_so == 'rupiah_kurang') {
+              $harga_net = (($value->harga_normal*((100-$value->diskon_persen)/100))*((100-$value->diskon_promo_persen)/100))-$value->diskon_so;
+            }else {
+              $harga_net = (($value->harga_normal*((100-$value->diskon_persen)/100))*((100-$value->diskon_promo_persen)/100))+$value->diskon_so;
+            }
+          }else {
+            $harga_net = (($value->harga_normal*((100-$value->diskon_persen)/100))*((100-$value->diskon_promo_persen)/100))*((100-$value->diskon_so)/100);
+          }
+          $tot += $harga_net*$value->qty_booked;
+        }
+        $header = '
+        <table width="100%" border="0" id="header-tabel">
+          <?php  ?>
+            <tr>
+              <th width="30%" style="text-align: left;">
+                <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
+              </th>
+              <th colspan="3" style="border-right: none;text-align: center;padding-left:0% !important;margin-left:-10px !important" width="100%">SALES ORDER (SO)<br>NO. : '.@$so_data->no_so.'</th>
+              <th colspan="4" style="border-left: none;"></th>
+
+                <!--th colspan="3" width="30%" style="text-align: left;">PT IMPORTA JAYA ABADI<br><?php //echo @$cabang->namacabang?></th-->
+
+            </tr>
+          </table>
+          <hr style="padding:0;margin:0">
+          <table width="100%" border="0" id="header-tabel" style="font-size:7pt">
+            <tr>
+                <td width="10%">SALES</td>
+                <td width="1%">:</td>
+                <td colspan="2">'.strtoupper(@$so_data->nm_salesman).'</td>
+                <td width="15%">TGL SO</td>
+                <td width="1%">:</td>
+                <td>'.date('d-M-Y',strtotime(@$so_data->tanggal)).'</td>
+            </tr>
+            <tr>
+                <td width="10%">CUSTOMER</td>
+                <td width="1%">:</td>
+                <td colspan="2">'.strtoupper(@$so_data->nm_customer).'</td>
+                <td width="10%">TGL KIRIM</td>
+                <td width="1%">:</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td width="10%">ALAMAT</td>
+                <td width="1%">:</td>
+                <td colspan="2">'.@$customer->alamat.'</td>
+                <td width="10%">TOP (Hari)</td>
+                <td width="1%">:</td>
+                <td>'.@$so_data->top.'</td>
+            </tr>
+            <tr>
+                <td width="10%">KETERANGAN</td>
+                <td width="1%">:</td>
+                <td colspan="2">'.@$so_data->keterangan.'</td>
+                <td width="10%"></td>
+                <td width="1%"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td width="10%"></td>
+                <td width="1%"></td>
+                <td></td>
+            </tr>
+
+          </table><hr style="padding:0;margin:0">
+          <table width="100%" id="tabel-laporan">
+              <tr>
+                  <th width="1%">NO</th>
+                  <th width="40%">NAMA BARANG</th>
+                  <th width="20%">COLLY</th>
+                  <th width="7%">QTY COLLY</th>
+                  <th width="7%">TOTAL COLLY</th>
+                  <th width="8%">SATUAN</th>
+                  <th width="5%">QTY</th>
+                  <th width="15%">HARGA</th>
+                  <th width="15%">JUMLAH</th>
+
+              </tr>
+              </table>
+        ';
+
+            $this->mpdf->SetHTMLHeader($header,'0',true);
+            $session = $this->session->userdata('app_session');
+            if (@$so_data->diskon_toko != 0) {
+              $disto = "1. Diskon Toko";
+            }else {
+              $disto = "1. Disc - %";
+            }
+
+            $disc_toko = @$so_data->persen_diskon_toko*@$tot/100;
+
+            if (@$so_data->diskon_cash != 0) {
+              $disca = "2. Diskon Cash";
+            }else {
+              $disca = "2. Disc - %";
+            }
+
+            if (@$so_data->diskon_toko != 0) {
+              $ppn_judul = "3. PPN";
+            }else {
+              $ppn_judul = "3. PPN - %";
+            }
+            $tglprint = date("d-m-Y H:i:s");
+            $this->mpdf->SetHTMLFooter('
+            <hr>
+            <table width="100%" border="0" style="font-size:7.5pt">
+                <tr>
+                    <td width="20%"><center>Dibuat Oleh,</center></td>
+                    <td width="20%"><center>Mengetahui,</center></td>
+                    <td width="20%"><center>Disetujui,</center></td>
+                    <td width="10%">JUMLAH NOMINAL</td>
+                    <td width="1%">:</td>
+                    <td width="10%" style="text-align: right;">'.formatnomor(@$tot).'</td>
+                    <td width="8%" style="text-align: right;">Blm JTT</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%">
+                      '.$disto.'
+                    </td>
+                    <td width="1%">:</td>
+                    <td width="10%" style="text-align: right;">
+                      '.formatnomor($disc_toko).'
+                    </td>
+                    <td width="8%" style="text-align: right;">01-30</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%">
+                      '.$disca.'
+                    </td>
+                    <td width="1%">:</td>
+                    <td width="10%" style="text-align: right;">
+                      '.formatnomor(@$so_data->persen_diskon_cash*@$so_data->dpp/100).'
+                    </td>
+                    <td width="8%" style="text-align: right;">31-60</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%">
+                      '.$ppn_judul.'
+                    </td>
+                    <td width="1%">:</td>
+                    <td width="10%" style="text-align: right;">
+                      '.formatnomor(@$so_data->ppn).'
+                    </td>
+                    <td width="8%" style="text-align: right;">61-90</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"><center>( Adm Sales & Stok )</center></td>
+                    <td width="15%"><center>( Spv. ACC & Tax )</center></td>
+                    <td width="15%"><center>( BM )</center></td>
+                    <td width="15%">ONGKOS KIRIM</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                    <td width="8%" style="text-align: right;">> 90</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%"></td>
+                    <td width="15%"><b>GRAND TOTAL</b></td>
+                    <td width="1%">:</td>
+                    <td style="border:solid 1px #000;text-align: right;margin-right: 10px;"><b> '.formatnomor(@$so_data->total).'</b></td>
+                    <td width="8%" style="text-align: right;">TOTAL</td>
+                    <td width="1%">:</td>
+                    <td></td>
+                </tr>
+            </table>
+            <hr />
+            <div id="footer">
+            <table>
+                <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($userData->nm_lengkap) .' On '. $tglprint .'</td></tr>
+            </table>
+            </div>
+            ');
+
+
+            $this->mpdf->AddPageByArray([
+                    'orientation' => 'P',
+                    'sheet-size'=> [210,148],
+                    'margin-top' => 42,
+                    'margin-bottom' => 46,
+                    'margin-left' => 5,
+                    'margin-right' => 5,
+                    'margin-header' => 0,
+                    'margin-footer' => 0,
+                ]);
+            $this->mpdf->WriteHTML($show);
+            $this->mpdf->Output();
+
+    }
+
+    function print_request_Old($noso){
         $no_so = $noso;
         $session = $this->session->userdata('app_session');
         $mpdf=new mPDF('','','','','','','','0','0','');

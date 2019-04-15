@@ -953,16 +953,16 @@ class Invoice extends Admin_Controller {
 			$dataJVhead = array(
 				'nomor' 	    	=> $Nomor_JV,
 				'tgl'	         	=> date('Y-m-d'),
-				'jml'	          	=> $Harga_Total,
+				'jml'	         	=> $Harga_Total,
 				'koreksi_no'		=> '',
-				'kdcab'				=> $detail_INV->kdcab,
+				'kdcab'			  	=> $detail_INV->kdcab,
 				'jenis'			    => 'V',
 				'keterangan' 		=> $Keterangan_INV,
-				'bulan'				=> $Bulan_Sekarang,
-				'tahun'				=> $Tahun_Sekarang,
-				'user_id'			=> $session['id_user'],
+				'bulan'			  	=> $Bulan_Sekarang,
+				'tahun'		   		=> $Tahun_Sekarang,
+				'user_id'		   	=> $session['id_user'],
 				'memo'			    => '',
-				'tgl_jvkoreksi'		=> date('Y-m-d'),
+				'tgl_jvkoreksi'	=> date('Y-m-d'),
 				'ho_valid'			=> ''
 			);
 
@@ -1004,9 +1004,6 @@ class Invoice extends Admin_Controller {
 				  'kredit'        => 0
 
 			);
-
-
-
 
 			 $Cek_Faktur	= $this->db->query("SELECT * FROM faktur_detail WHERE noinvoice='".$No_Inv."'")->num_rows();
 			 $Upd_Invoice	= array(

@@ -140,9 +140,14 @@
                             $kurs_usd = $this->Model_hutang->cek_data(array("kode"=>"USD"),'mata_uang');
                             $jrp = $row->rupiah*$bayar_dollar;
                           }else {
-                            $jrp = $row->nominal*$row->rupiah;
+                            if ($row->nominal == $row->bayar) {
+                              $jrp = $row->nominal;
+                            }else {
+                              $jrp = $row->nominal*$row->rupiah;
+                            }
                           }
                            ?>
+
                            <span class="input-group-addon">IDR</span>
                         <input type="text" class="form-control" name="jumlah_tampil" id="jumlah_tampil" onkeyup="document.getElementById('jum').value = this.value.replace(',', '.')" maxlength="45" value="<?=number_format($jrp, 2, '.', '')?>" >
                         <input type="hidden" class="form-control" name="jumlah" maxlength="45" id="jum" value="<?=$jrp?>" >

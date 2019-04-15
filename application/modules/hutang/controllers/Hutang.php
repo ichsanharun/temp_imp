@@ -42,12 +42,12 @@ class Hutang extends Admin_Controller
   			$Bulan_Lalu	= 12;
   			$Tahun_Lalu	= date('Y')-1;
   		}
-  		$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Now."' AND `thn`='".$Tahun_Now."'";
+  		$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='100-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Now."' AND `thn`='".$Tahun_Now."'";
   		$Num_Bank	= $this->db->query($Query_Bank)->num_rows();
   		if($Num_Bank > 0){
   			$det_Bank		= $this->db->query($Query_Bank)->result();
   		}else{
-  			$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='".$kdcab."-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Lalu."' AND `thn`='".$Tahun_Lalu."'";
+  			$Query_Bank	= "SELECT * FROM `coa` WHERE kdcab='100-A' AND `level`='5' AND `no_perkiraan` LIKE '1102-%' AND `bln`='".$Bulan_Lalu."' AND `thn`='".$Tahun_Lalu."'";
   			$det_Bank	= $this->db->query($Query_Bank)->result();
   		}
   		//echo"<pre>"; print_r($det_Bank);exit;

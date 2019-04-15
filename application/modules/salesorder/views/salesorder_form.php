@@ -231,10 +231,10 @@
                     <input type="hidden" name="dppso" id="dppso" class="form-control input-sm" readonly="readonly">
                     <input type="hidden" name="totalso" id="totalso" class="form-control input-sm" readonly="readonly">
                     <input type="hidden" name="ppnso" id="ppnso" class="form-control input-sm" value="10" readonly="readonly">
-                    <input type="hidden" name="persen_diskon_toko" id="persen_diskon_toko" value="<?php echo $headersession['persen_diskon_toko']?>">
-                    <input type="hidden" name="persen_diskon_cash" id="persen_diskon_cash" value="<?php echo $headersession['persen_diskon_cash']?>">
-                    <input type="hidden" name="diskon_toko" id="diskon_toko" value="<?php echo $headersession['diskon_toko']?>">
-                    <input type="hidden" name="diskon_cash" id="diskon_cash" value="<?php echo $headersession['diskon_cash']?>">
+                    <input type="hidden" name="persen_diskon_toko" id="persen_diskon_toko" value="">
+                    <input type="hidden" name="persen_diskon_cash" id="persen_diskon_cash" value="">
+                    <input type="hidden" name="diskon_toko" id="diskon_toko" value="">
+                    <input type="hidden" name="diskon_cash" id="diskon_cash" value="">
                   <!-- Data HEADER SO -->
 
 
@@ -307,9 +307,9 @@
                       <a class="btn btn-danger" href="javascript:void(0)" data-toggle="" title="Add" onclick="remove_list()"><i class="fa fa-minus">&nbsp;</i>Kurangi Item</a>
                     </th>
                     <th class="text-right" colspan="5">
-                        <button class="btn btn-danger" onclick="kembali()">
+                        <a class="btn btn-danger" onclick="kembali()">
                             <i class="fa fa-refresh"></i><b> Kembali</b>
-                        </button>
+                        </a>
                         <button class="btn btn-primary" type="button" onclick="save()">
                             <i class="fa fa-save"></i><b> Simpan Data</b>
                         </button>
@@ -377,6 +377,7 @@
         if ($(this).val() == "") {
           $(this).val(0);
         }
+        testing($(this));
         //$(this).val($(this).val().match(/^[0-9]+$/));
       });
       $('#listadjust tbody').on( 'change', 'select.form_item_so', function () {
@@ -494,7 +495,10 @@
       //console.log(penting.parents('tr').find("input.id_barang").val());
       var id_barang = penting.parents('tr').find("input.id_barang").val();
       var harga_normal = parseFloat(penting.parents('tr').find("input.harga_normal").val());
-      var harga_nett = parseFloat(penting.parents('tr').find("input.harga_nett").val());
+      var diskon_standar_persen = parseFloat(penting.parents('tr').find("input.diskon_standar_persen").val());
+      var diskon_promo_persen = parseFloat(penting.parents('tr').find("input.diskon_promo_persen").val());
+      //var harga_nett = parseFloat(penting.parents('tr').find("input.harga_nett").val());
+      var harga_nett = (harga_normal * ((100-diskon_standar_persen)/100)) * ((100-diskon_promo_persen)/100);
       var qty_order = parseFloat(penting.parents('tr').find("input.qty_order").val());
       var disso = parseFloat(penting.parents('tr').find("input.disso").val());
       var diskon_standar_persen = parseFloat(penting.parents('tr').find("input.diskon_standar_persen").val());
@@ -513,8 +517,9 @@
           var harga_nett = (harga_nett+disso);
         }
       }
+      $('#harga_nett_'+id_barang).val((harga_nett).toFixed(2));
       //console.log(radio);
-      $('#total_'+id_barang).val(subtotal);
+      $('#total_'+id_barang).val((subtotal).toFixed(2));
       hitung_total();
       penting.parents('tr').find("span.subtotal_view").text(formatCurrency((subtotal).toFixed(2),',','.',2))
       //tabel.cell(rows, 7).data(formatCurrency((subtotal).toFixed(2),',','.',2)).draw();
@@ -660,18 +665,19 @@
           sum += parseFloat(x[i].value);
       }
       var dc = 0;
+      var dt = 0;
       var total = sum;
       var dt_nominal = 0;
       var dc_nominal = 0;
       if ($('#persen_diskon_toko').val() != 0) {
         var dt = parseFloat($('#persen_diskon_toko').val());
-        var total = sum-(sum*dt/100);
         var dt_nominal = sum*dt/100;
+        var total = sum-dt_nominal;
       }
       if ($('#persen_diskon_cash').val() != 0) {
-        var dc = parseInt($('#persen_diskon_cash').val());
-        var total = total-(total*dc/100);
-        var dc_nominal = total*dc/100;
+        var dc = parseFloat($('#persen_diskon_cash').val());
+        var dc_nominal = sum*dc/100;
+        var total = total-dc_nominal;
       }
       //alert(dc);
       //alert(sum);

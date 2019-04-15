@@ -142,7 +142,7 @@
                       </a>
                     <?php }} ?>
                     <?php if($ENABLE_VIEW) { ?>
-                    <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
+                    <a href="javascript:void(0)" data-toggle="mod" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
                     <span class="glyphicon glyphicon-print"></span>
                     </a>
                     <?php } ?>
@@ -345,11 +345,11 @@
     }
     function PreviewPdf(noso)
     {
-      $('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
+      //$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
       param=noso;
-      tujuan = 'salesorder/print_request/'+param;
+      window.open('salesorder/print_request/'+param);
 
-        $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+        //$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }
     function PickingList(noso)
     {
