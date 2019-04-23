@@ -16,6 +16,7 @@
                   <th>NO. SO</th>
                   <th>NAMA CUSTOMER</th>
                   <th>TANGGAL SO</th>
+                  <th>STATUS ORDER</th>
                   <th>NAMA SALESMAN</th>
                   <th>DPP</th>
                   <th>PPN</th>
@@ -43,6 +44,7 @@
                   <td><?= $row->no_so ?> </td>
                   <td><?= $row->nm_customer ?> </td>
                   <td><?= $row->tanggal ?> </td>
+                  <td><?= $row->stsorder ?> </td>
                   <td><?= $row->nm_salesman ?> </td>
                   <td><?= $row->dpp ?> </td>
                   <td><?= $row->ppn ?> </td>

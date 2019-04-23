@@ -40,7 +40,8 @@ thead input {
           </div>
           <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-md" id="filterby" onchange="filterby()">
+
+              <select class="form-control input-md" id="filterby" onchange="filterby()" >
                 <option value="">Pilih Filter</option>
                 <?php
                   foreach(is_filter_report_jual() as $kf=>$vf){
@@ -61,9 +62,13 @@ thead input {
   </div>
 	<!-- /.box-header -->
   <div class="col-sm-12" style="padding-bottom: 20px;">
-    <span class="pull-right">
-      <?php echo anchor(site_url('reportpenjualan/downloadExcel_old/').$this->uri->segment(3).'/'.$this->uri->segment(4).'?filter='.$this->input->get('filter').'&param='.$this->input->get('param'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary"'); ?>
-        <!--a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a-->
+
+			<span class="pull-right">
+
+				<a data-toggle="modal" href="#dialog-rekap" class="btn btn-primary btn-sm" title="Excel"><i class="fa fa-download">&nbsp;</i>Excel  </a>
+				<!--a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a-->
+			</span>
+
     </span>
   </div>
 	<div class="box-body" style="overflow-x:auto">
@@ -77,19 +82,7 @@ thead input {
 						<th>TANGGAL INVOICE</th>
 						<th>NAMA SALES</th>
 						<th>TOTAL INVOICE</th>
-						<th>NAMA PRODUK</th>
-						<th>JENIS PRODUK</th>
-						<th>GRUP PRODUK</th>
-						<th>SATUAN PRODUK</th>
-						<th>JUMLAH</th>
-						<th>HARGA PRODUK</th>
-						<th>DISKON STD.</th>
-						<th>HARGA SETELAH DIS.STD</th>
-						<th>DISKON PROMO</th>
-						<th>DISKON SO</th>
-						<th>HARGA SETELAH DISKON SO</th>
-						<th>PPN</th>
-						<th>HARGA SUBTOTAL</th>
+
 						<th>STATUS</th>
 	        </tr>
         </thead>
@@ -124,20 +117,7 @@ thead input {
 					<td><?php echo $vr->nm_salesman?></td>
 					<td class="text-right"><?php echo $vr->hargajualtotal?></td>
 
-					<td><?= $vr->nm_barang ?> </td>
-					<td><?= $vr->nm_jenis ?> </td>
-					<td><?= $vr->nm_group ?> </td>
-					<td><?= $vr->satuan ?> </td>
-					<td><?= $vr->jumlah ?> </td>
 
-					<td><?= $vr->hargajual ?> </td>
-					<td><?= $vr->persen_diskon_stdr ?> </td>
-					<td><?= $vr->harga_after_diskon_stdr ?> </td>
-					<td><?= $vr->diskon_promo_persen ?> </td>
-					<td><?php echo $vr->diskon_so."(".$vr->tipe_diskon_so.")" ?> </td>
-					<td><?= $vr->harga_nett ?> </td>
-					<td><?= $vr->ppn ?> </td>
-					<td><?= $vr->subtot_after_diskon ?> </td>
 			<td class="text-center">
 			<?php
 				$OK		=1;
@@ -173,6 +153,59 @@ thead input {
 	</div>
 	<!-- /.box-body -->
 </div>
+
+<div class="modal modal-primary" id="dialog-rekap" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"></h4>
+      </div>
+      <div class="modal-body" id="repso">
+				<div class="form-horizontal">
+				    <div class="box-body" style="border:solid 1px #fff;">
+				            <div class="col-sm-12">
+											<div class="row">
+												<div class="form-horizontal">
+													<div class="col-sm-6">
+									          <div class="input-group ">
+									              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+									              <input type="text" id="periode_awal_ex" name="periode_awal_ex" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
+																<span class="input-group-addon">S.d</span>
+																<input type="text" id="periode_akhir_ex" name="periode_akhir_ex" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
+									          </div>
+													</div>
+								        </div>
+												<div class="form-horizontal">
+														<div class="col-sm-6">
+										          <div class="input-group ">
+																<span class="input-group-addon"><i class="fa fa-share"></i></span>
+
+																<select class="form-control input-md" id="filterby_ex">
+																	<option value="">Pilih Filter</option>
+																	<option value="all">All</option>
+																	<option value="by_customer">Per Customer</option>
+																	<option value="by_sales">Per Sales</option>
+
+																</select>
+										          </div>
+														</div>
+									      </div>
+											</div>
+										</div>
+        		</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+        <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
+        <button type="button" class="btn btn-warning" onclick="proses_ex()">
+        <span class="glyphicon glyphicon-save"></span> Export Excel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
@@ -197,6 +230,16 @@ thead input {
     //var param = '<?php echo $this->input->get('param')?>';
     //console.log(param);
 	});
+
+	function proses_ex()
+	{
+		var pawal = $("#periode_awal_ex").val();
+		var pakhir = $("#periode_akhir_ex").val();
+		var fb = $('#filterby_ex').val();
+		window.location.href = siteurl+'reportpenjualan/downloadExcel_old/'+pawal+'/'+pakhir+'/'+fb;
+
+		//	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+	}
 
   $(function() {
       var dataTable = $("#example1").DataTable().draw();

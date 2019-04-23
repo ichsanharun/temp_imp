@@ -53,6 +53,8 @@ class Piutang_cabang extends Admin_Controller
         $this->template->render('list_piutang');
     }
 	function get_data_display(){
+		include APPPATH.'helpers/extend_helper.php';
+		$det_Akses	= akses_server_side();
 		$session 	= $this->session->userdata('app_session');
 		$WHERE		="";
 		if($session['kdcab'] !='100'){
@@ -114,10 +116,10 @@ class Piutang_cabang extends Admin_Controller
 	
 	
 		$sql_details = array(
-			'user' => 'root',
-			'pass' => 'Annabell2018',
-			'db'   => $this->db->database,
-			'host' => 'localhost'
+			'user' => $det_Akses['hostuser'],
+			'pass' => $det_Akses['hostpass'],
+			'db'   => $det_Akses['hostdb'],
+			'host' => $det_Akses['hostname']
 		);
 		include( 'ssp.class.php' );
 		

@@ -6,13 +6,15 @@
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
 <div class="box">
-   
+
     <div class="box-body">
         <table id="example1" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th width="2%">#</th>
                 <th>NO. PO</th>
+                <th>No. PR</th>
+                <th>No. RC</th>
                 <th>Supplier</th>
                 <th>Tanggal PO</th>
                 <th width="10%">Aksi</th>
@@ -23,10 +25,14 @@
            if (@$results) {
                $n = 1;
                foreach (@$results as $kp => $vp) {
+                 $cek_pr = $this->db->select('no_pr')->where(array('no_po'=>$vp->no_po))->group_by('no_pr')->get('trans_po_detail')->row();
+                 $cek_rc = $this->db->select('no_receiving')->where(array('po_no'=>$vp->no_po))->group_by('no_receiving')->get('trans_receive')->row();
                    $no = $n++; ?>
            <tr>
              <td><center><?php echo $no; ?></center></td>
              <td><center><?php echo $vp->no_po; ?></center></td>
+             <td><center><?php echo $cek_pr->no_pr; ?></center></td>
+             <td><center><?php echo $cek_rc->no_receiving; ?></center></td>
              <td><?php echo $vp->id_supplier; ?> - <?php echo $vp->nm_supplier; ?></td>
              <td><center><?php echo date('d/m/Y', strtotime($vp->tgl_po)); ?></center></td>
              <td>
@@ -47,8 +53,8 @@
                         </a>
                         <?php
                     } ?>
-                 
-                
+
+
                 </center>
              </td>
            </tr>
@@ -100,7 +106,7 @@
 
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }
-    
+
     function PreviewPdfpooo(nopo)
     {
       tujuan = 'purchaseorder/print_request_po/'+nopo;

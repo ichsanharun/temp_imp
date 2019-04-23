@@ -21,6 +21,8 @@
 	        <tr>
 	          <th width="2%">#</th>
               <th width="20%">NO. Receiving</th>
+              <th width="20%">NO. PO</th>
+              <th width="20%">NO. PR</th>
               <th>Supplier</th>
               <th>Tanggal</th>
               <th width="7%">Aksi</th>
@@ -31,10 +33,14 @@
         if (@$results) {
             $n = 1;
             foreach (@$results as $kr => $vr) {
+              //$cek_po = $this->db->select('po_no')->where(array('no_receiving'=>$vp->no_receiving))->group_by('po_no')->get('trans_receive')->row();
+              $cek_pr = $this->db->select('no_pr')->where(array('no_po'=>$vr->po_no))->group_by('no_pr')->get('trans_po_detail')->row();
                 $no = $n++; ?>
         <tr>
           <td width="1%"><center><?php echo $no; ?></center></td>
           <td width="20%"><center><?php echo $vr->no_receiving; ?></center></td>
+          <td width="20%"><center><?php echo $vr->po_no; ?></center></td>
+          <td width="20%"><center><?php echo $cek_pr->no_pr; ?></center></td>
           <td><?php echo $vr->id_supplier; ?> / <?= get_supplier($vr->id_supplier); ?></td>
           <td><center><?php echo date('d/m/Y', strtotime($vr->tglreceive)); ?></center></td>
           <td>
@@ -89,5 +95,5 @@
       tujuan = 'receiving/print_request/'+norec;
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }
-    
+
 </script>

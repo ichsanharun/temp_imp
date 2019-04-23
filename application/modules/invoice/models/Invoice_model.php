@@ -251,7 +251,7 @@ class Invoice_model extends BF_Model
 
 	function getFakturAktif(){
 		$Arr_Return = array();
-		$this->db->where(array('status'=>'1'));
+		$this->db->where(array('status'=>1));
 		$Pros_Header		= $this->db->get('faktur_header');
 		$Num_Header			= $Pros_Header->num_rows();
 		if($Num_Header > 0){

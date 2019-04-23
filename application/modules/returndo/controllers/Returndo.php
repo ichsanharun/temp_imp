@@ -38,7 +38,7 @@ class Returndo extends Admin_Controller {
     public function index(){
         //$this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status !=' =>'CCL'));
+        $data = $this->Deliveryorder_model->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status !=' =>'CCL'));
         $tipe = $this->Deliveryorder_model->group_by('konfirm_do')->find_all();
 
         $this->template->set('results', $data);

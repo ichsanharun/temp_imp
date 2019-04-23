@@ -71,6 +71,17 @@ class Salesorder_model extends BF_Model
         return $this->db->query($query);
     }
 
+    function gen_st($kdcab){
+        $tahun  = intval(date('Y'));
+        $bulan  = intval(date('m'));
+        $hari   = intval(date('d'));
+        $jam    = intval(date('H'));
+        $menit  = intval(date('i'));
+        $detik  = intval(date('s'));
+        $id_log = $kdcab.'VL'.$tahun.$bulan.$hari.$jam.$menit.$detik;
+        return $id_log;
+    }
+
 
     function get_item_barang($idbarang,$kdcab){
         $query="SELECT
@@ -177,7 +188,7 @@ class Salesorder_model extends BF_Model
         return $kdcab.'-PL-'.date('y').$next_kode;
     }
 
-    function generate_no_pl($kdcab){
+    function generate_no_pl_old1($kdcab){
       $arr_tgl = array(1=>'A',2=>'B',3=>'C',4=>'D',5=>'E',6=>'F',
                        7=>'G',8=>'H',9=>'I',10=>'J',11=>'K',12=>'L'
                       );
@@ -204,6 +215,12 @@ class Salesorder_model extends BF_Model
       $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
 
       return $kdcab.'-PL-'.date('y').$kode_bln.$next_kode;
+    }
+
+    function generate_no_pl($kdcab,$noso){
+      $urut = substr($noso,7,8);
+
+      return $kdcab.'-PL-'.$urut;
     }
 
     function pilih_marketing($kdcab){

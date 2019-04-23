@@ -77,7 +77,7 @@
                 			<?php endif; ?>
 
                 			<?php if($ENABLE_DELETE) : ?>
-                				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli?>')"><i class="fa fa-trash"></i>
+                				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli?>','koli')"><i class="fa fa-trash"></i>
                 				</a>
                 			<?php endif; ?>
                 			</td>
@@ -126,65 +126,65 @@
             	<!-- /.box-header -->
             	<div class="box-body">
             		<table id="tabel_model" class="table table-bordered table-striped">
-            		<thead>
-            		<tr>
-            			<th width="5">#</th>
-            			<th>Kode Model</th>
-            			<th>Nama Model</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</thead>
+              		<thead>
+                		<tr>
+                			<th width="5">#</th>
+                			<th>Kode Model</th>
+                			<th>Nama Model</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</thead>
 
-            		<tbody>
-            		<?php if(empty($results)){
-            		}else{
-            			$numb=0; foreach($model AS $record){ $numb++; ?>
-            		<tr>
-            		    <td><?= $numb; ?></td>
-            			<td><?= $record->id_koli_model ?></td>
-            			<td><?= $record->koli_model ?></td>
-                  <td>
-            				<?php if($record->sts_aktif == 'aktif'){ ?>
-            					<label class="label label-success">Aktif</label>
-            				<?php }else{ ?>
-            					<label class="label label-danger">Non Aktif</label>
-            				<?php } ?>
-            			</td>
-            			<td style="padding-left:20px">
-            			<?php if($ENABLE_VIEW) : ?>
-            				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_model?>')">
-            				<span class="glyphicon glyphicon-print"></span>
-            				</a>
-            			<?php endif; ?>
+              		<tbody>
+                		<?php if(empty($results)){
+                		}else{
+                			$numb=0; foreach($model AS $record){ $numb++; ?>
+                		<tr>
+                		    <td><?= $numb; ?></td>
+                			<td><?= $record->id_koli_model ?></td>
+                			<td><?= $record->koli_model ?></td>
+                      <td>
+                				<?php if($record->sts_aktif == 'aktif'){ ?>
+                					<label class="label label-success">Aktif</label>
+                				<?php }else{ ?>
+                					<label class="label label-danger">Non Aktif</label>
+                				<?php } ?>
+                			</td>
+                			<td style="padding-left:20px">
+                			<?php if($ENABLE_VIEW) : ?>
+                				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_model?>')">
+                				<span class="glyphicon glyphicon-print"></span>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_MANAGE) : ?>
-            				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_model?>','model')"><i class="fa fa-pencil"></i>
-            				</a>
-            			<?php endif; ?>
+                			<?php if($ENABLE_MANAGE) : ?>
+                				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_model?>','model')"><i class="fa fa-pencil"></i>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_DELETE) : ?>
-            				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_model?>')"><i class="fa fa-trash"></i>
-            				</a>
-            			<?php endif; ?>
-            			</td>
-            		</tr>
-            		<?php } }  ?>
-            		</tbody>
+                			<?php if($ENABLE_DELETE) : ?>
+                				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_model?>','model')"><i class="fa fa-trash"></i>
+                				</a>
+                			<?php endif; ?>
+                			</td>
+                		</tr>
+                		<?php } }  ?>
+              		</tbody>
 
-            		<tfoot>
-            		<tr>
-                  <th width="5">#</th>
-            			<th>Kode Model</th>
-            			<th>Nama Model</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</tfoot>
+              		<tfoot>
+                		<tr>
+                      <th width="5">#</th>
+                			<th>Kode Model</th>
+                			<th>Nama Model</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</tfoot>
             		</table>
             	</div>
             	<!-- /.box-body -->
@@ -208,65 +208,65 @@
             	<!-- /.box-header -->
             	<div class="box-body">
             		<table id="example1" class="table table-bordered table-striped">
-            		<thead>
-            		<tr>
-            			<th width="5">#</th>
-            			<th>Kode Varian</th>
-            			<th>Nama Varian</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</thead>
+              		<thead>
+                		<tr>
+                			<th width="5">#</th>
+                			<th>Kode Varian</th>
+                			<th>Nama Varian</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</thead>
 
-            		<tbody>
-            		<?php if(empty($warna)){
-            		}else{
-            			$numb=0; foreach($warna AS $record){ $numb++; ?>
-            		<tr>
-            		    <td><?= $numb; ?></td>
-            			<td><?= $record->id_koli_warna ?></td>
-            			<td><?= $record->koli_warna ?></td>
-                  <td>
-            				<?php if($record->sts_aktif == 'aktif'){ ?>
-            					<label class="label label-success">Aktif</label>
-            				<?php }else{ ?>
-            					<label class="label label-danger">Non Aktif</label>
-            				<?php } ?>
-            			</td>
-            			<td style="padding-left:20px">
-            			<?php if($ENABLE_VIEW) : ?>
-            				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_warna?>')">
-            				<span class="glyphicon glyphicon-print"></span>
-            				</a>
-            			<?php endif; ?>
+              		<tbody>
+                		<?php if(empty($warna)){
+                		}else{
+                			$numb=0; foreach($warna AS $record){ $numb++; ?>
+                		<tr>
+                		    <td><?= $numb; ?></td>
+                			<td><?= $record->id_koli_warna ?></td>
+                			<td><?= $record->koli_warna ?></td>
+                      <td>
+                				<?php if($record->sts_aktif == 'aktif'){ ?>
+                					<label class="label label-success">Aktif</label>
+                				<?php }else{ ?>
+                					<label class="label label-danger">Non Aktif</label>
+                				<?php } ?>
+                			</td>
+                			<td style="padding-left:20px">
+                			<?php if($ENABLE_VIEW) : ?>
+                				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_warna?>')">
+                				<span class="glyphicon glyphicon-print"></span>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_MANAGE) : ?>
-            				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_warna?>','warna')"><i class="fa fa-pencil"></i>
-            				</a>
-            			<?php endif; ?>
+                			<?php if($ENABLE_MANAGE) : ?>
+                				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_warna?>','warna')"><i class="fa fa-pencil"></i>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_DELETE) : ?>
-            				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_warna?>')"><i class="fa fa-trash"></i>
-            				</a>
-            			<?php endif; ?>
-            			</td>
-            		</tr>
-            		<?php } }  ?>
-            		</tbody>
+                			<?php if($ENABLE_DELETE) : ?>
+                				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_warna?>','warna')"><i class="fa fa-trash"></i>
+                				</a>
+                			<?php endif; ?>
+                			</td>
+                		</tr>
+                		<?php } }  ?>
+              		</tbody>
 
-            		<tfoot>
-            		<tr>
-                  <th width="5">#</th>
-            			<th>Kode Warna</th>
-            			<th>Nama Warna</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</tfoot>
+              		<tfoot>
+                		<tr>
+                      <th width="5">#</th>
+                			<th>Kode Warna</th>
+                			<th>Nama Warna</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</tfoot>
             		</table>
             	</div>
             	<!-- /.box-body -->
@@ -293,65 +293,65 @@
             	<!-- /.box-header -->
             	<div class="box-body">
             		<table id="example1" class="table table-bordered table-striped">
-            		<thead>
-            		<tr>
-            			<th width="5">#</th>
-            			<th>Kode Varian</th>
-            			<th>Nama Varian</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</thead>
+              		<thead>
+                		<tr>
+                			<th width="5">#</th>
+                			<th>Kode Varian</th>
+                			<th>Nama Varian</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</thead>
 
-            		<tbody>
-            		<?php if(empty($varian)){
-            		}else{
-            			$numb=0; foreach($varian AS $record){ $numb++; ?>
-            		<tr>
-            		    <td><?= $numb; ?></td>
-            			<td><?= $record->id_koli_varian ?></td>
-            			<td><?= $record->koli_varian ?></td>
-                  <td>
-            				<?php if($record->sts_aktif == 'aktif'){ ?>
-            					<label class="label label-success">Aktif</label>
-            				<?php }else{ ?>
-            					<label class="label label-danger">Non Aktif</label>
-            				<?php } ?>
-            			</td>
-            			<td style="padding-left:20px">
-            			<?php if($ENABLE_VIEW) : ?>
-            				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_varian?>')">
-            				<span class="glyphicon glyphicon-print"></span>
-            				</a>
-            			<?php endif; ?>
+              		<tbody>
+                		<?php if(empty($varian)){
+                		}else{
+                			$numb=0; foreach($varian AS $record){ $numb++; ?>
+                		<tr>
+                		    <td><?= $numb; ?></td>
+                			<td><?= $record->id_koli_varian ?></td>
+                			<td><?= $record->koli_varian ?></td>
+                      <td>
+                				<?php if($record->sts_aktif == 'aktif'){ ?>
+                					<label class="label label-success">Aktif</label>
+                				<?php }else{ ?>
+                					<label class="label label-danger">Non Aktif</label>
+                				<?php } ?>
+                			</td>
+                			<td style="padding-left:20px">
+                			<?php if($ENABLE_VIEW) : ?>
+                				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_koli_varian?>')">
+                				<span class="glyphicon glyphicon-print"></span>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_MANAGE) : ?>
-            				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_varian?>','varian')"><i class="fa fa-pencil"></i>
-            				</a>
-            			<?php endif; ?>
+                			<?php if($ENABLE_MANAGE) : ?>
+                				<a class="text-green" href="javascript:void(0)" title="Edit" onclick="data_change('<?=$record->id_koli_varian?>','varian')"><i class="fa fa-pencil"></i>
+                				</a>
+                			<?php endif; ?>
 
-            			<?php if($ENABLE_DELETE) : ?>
-            				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_varian?>')"><i class="fa fa-trash"></i>
-            				</a>
-            			<?php endif; ?>
-            			</td>
-            		</tr>
-            		<?php } }  ?>
-            		</tbody>
+                			<?php if($ENABLE_DELETE) : ?>
+                				<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?=$record->id_koli_varian?>','varian')"><i class="fa fa-trash"></i>
+                				</a>
+                			<?php endif; ?>
+                			</td>
+                		</tr>
+                		<?php } }  ?>
+              		</tbody>
 
-            		<tfoot>
-            		<tr>
-                  <th width="5">#</th>
-            			<th>Kode Varian</th>
-            			<th>Nama Varian</th>
-                  <th>Status</th>
-            			<?php if($ENABLE_MANAGE) : ?>
-            			<th width="50"></th>
-            			<?php endif; ?>
-            		</tr>
-            		</tfoot>
+              		<tfoot>
+                		<tr>
+                      <th width="5">#</th>
+                			<th>Kode Varian</th>
+                			<th>Nama Varian</th>
+                      <th>Status</th>
+                			<?php if($ENABLE_MANAGE) : ?>
+                			<th width="50"></th>
+                			<?php endif; ?>
+                		</tr>
+              		</tfoot>
             		</table>
             	</div>
             	<!-- /.box-body -->
@@ -401,15 +401,12 @@
   	});
 
   	function add_data_master(){
-
 			var url = 'koli/create/';
 			$(".box").hide();
 			$("#form-area-master").show();
 
 			$("#form-area-master").load(siteurl+url);
-
-		    $("#title").focus();
-
+		  $("#title").focus();
 	  }
 
   function edit_master(kodebarang){
@@ -419,8 +416,7 @@
 			$("#form-area-master").show();
 
 			$("#form-area-master").load(siteurl+url);
-
-		    $("#title").focus();
+		  $("#title").focus();
 		}
 	}
 
@@ -448,7 +444,7 @@
   }
 
 	//Delete
-	function delete_data(id){
+	function delete_data(id,tipe){
 		//alert(id);
 		swal({
 		  title: "Anda Yakin?",
@@ -464,7 +460,7 @@
 		function(isConfirm){
 		  if (isConfirm) {
 		  	$.ajax({
-		            url: siteurl+'koli/hapus_koli/'+id,
+		            url: siteurl+'koli/hapus_koli/'+id+'/'+tipe,
 		            dataType : "json",
 		            type: 'POST',
 		            success: function(msg){

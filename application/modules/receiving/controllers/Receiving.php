@@ -45,7 +45,7 @@ class Receiving extends Admin_Controller
     {
         //$this->auth->restrict($this->viewPermission);
 
-        $data = $this->Receiving_model->order_by('no_receiving', 'ASC')->find_all();
+        $data = $this->Receiving_model->order_by('no_receiving', 'ASC')->find_all_by(array('kdcab'=>$this->auth->user_cab()));
         $this->template->set('results', $data);
         $this->template->title('Receiving');
         $this->template->render('list');

@@ -11,7 +11,7 @@
               <div class="box-body">
 
                 <input type="hidden" id="id_koli" name="id_koli" value="<?php echo set_value('id_koli', isset($data->id_koli) ? $data->id_koli : ''); ?>">
-                <?php  if(isset($id)){$type='edit';}?>
+                <?php  if(isset($data[0]->nama_koli)){$type='edit';}?>
                 <input type="hidden" id="type" name="type_form" value="<?= isset($type) ? $type : 'add' ?>">
 
                 <div class="form-group col-sm-11">

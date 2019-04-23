@@ -15,7 +15,7 @@ thead input {
 
 <div class="box">
   <div class="col-lg-12">
-  
+
     <div class="box-header text-left"><b>Pilih Periode : </b>
       <?php
       if (!empty($this->uri->segment(3)) AND !empty($this->uri->segment(4))) {
@@ -40,12 +40,19 @@ thead input {
           </div>
           <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-sm" id="filtercabang">
+              <?php
+              $dis ='';
+              $cab ='';
+              if ($this->auth->user_cab() != "100") {
+                $dis = "disabled";
+                $cab = $this->auth->user_cab();
+              } ?>
+              <select class="form-control input-sm" id="filtercabang" <?=$dis?>>
                 <option value="">Pilih Cabang</option>
-                <?php 
-                foreach(@$cabang as $k=>$v){ 
+                <?php
+                foreach(@$cabang as $k=>$v){
                   $selected = '';
-                  if($this->uri->segment(5) == $v->kdcab){
+                  if($this->auth->user_cab() == $v->kdcab){
                     $selected='selected="selected"';
                   }
                 ?>
@@ -57,7 +64,7 @@ thead input {
         </div>
       </div>
       <span class="pull-right">
-      <?php echo anchor(site_url('reportpembelian/downloadExcel').'?tglawal='.$pawal.'&tglakhir='.$pakhir.'&idcabang='.$this->uri->segment(5), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+      <?php echo anchor(site_url('reportpembelian/downloadExcel').'?tglawal='.$pawal.'&tglakhir='.$pakhir.'&idcabang='.$cab, ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
       <!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>-->
     </span>
     </div>

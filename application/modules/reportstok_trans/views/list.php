@@ -13,13 +13,13 @@ thead input {
 
 <div class="box">
 	<div class="box-header"><b>Pilih Cabang : </b>
-    <select id="kdcab" name="kdcab" class="form-control input-sm" style="width: 25%;" tabindex="-1" required onchange="getcabang(this.id)">
+    <select id="kdcab" name="kdcab" class="form-control input-sm" style="width: 25%;" tabindex="-1" required onchange="getcabang(this.id)" disabled="disabled">
         <option value=""></option>
         <?php
           $cab='';
           foreach(@$cabang as $kc=>$vc){
             $selected = '';
-            if($this->uri->segment(3) == $vc->kdcab){
+            if($this->auth->user_cab() == $vc->kdcab){
                  $selected = 'selected="selected"';
                  $cab = $vc->namacabang;
             }

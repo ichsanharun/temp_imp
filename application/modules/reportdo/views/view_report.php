@@ -2,7 +2,7 @@
 
  header("Content-type: application/vnd-ms-excel");
 
- header("Content-Disposition: attachment; filename=x.xls");
+ header("Content-Disposition: attachment; filename=REPORT_DO_".date("d-M-Y_H:i:s").".xls");
 
  header("Pragma: no-cache");
 

@@ -79,7 +79,6 @@ $db['default'] = array(
     'hostname' => 'localhost',
     'username' => 'root',
     'password' => 'mysql',
-    //'password' => 'Annabell2018',
     'database' => 'imperial',
     'dbdriver' => 'mysqli',
     'dbprefix' => '',

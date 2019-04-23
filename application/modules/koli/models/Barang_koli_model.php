@@ -70,8 +70,18 @@ class Barang_koli_model extends BF_Model
       $max_id = $row['max_id'];
       $max_id1 =(int) substr($max_id,7,3);
       $counter = $max_id1 +1;
-      $koli_barang = $kode.str_pad($counter, 2, "0", STR_PAD_LEFT);
+      $koli_barang = $kode.str_pad($counter, 3, "0", STR_PAD_LEFT);
       return $koli_barang;
+    }
+
+    public function delete($id='',$tipe=''){
+      if ($tipe == 'koli') {
+        return $this->db->delete('barang_koli',array('id_koli'=>$id));
+      }else {
+        $table = 'barang_koli_'.$tipe;
+        $data = array('id_koli_'.$tipe => $id);
+        return $this->db->delete($table,$data);
+      }
     }
 
     function get_id_anak($kode){

@@ -76,7 +76,7 @@ class Koli extends Admin_Controller {
         $this->template->set('warna', $warna);
         $this->template->set('varian', $varian);
         $this->template->title('Koli');
-		$this->template->render('koli_form');
+		      $this->template->render('koli_form');
    	}
 
     public function create_anak($anak)
@@ -340,9 +340,9 @@ class Koli extends Admin_Controller {
                     );
 
             //Add Data
-            $id = $this->db->insert('barang_koli_'.$tipe,$data);
+            //$id = $this->db->insert('barang_koli_'.$tipe,$data);
 
-            if(is_numeric($id))
+            if($this->db->insert('barang_koli_'.$tipe,$data))
             {
                 $keterangan     = "SUKSES, tambah Koli ".$id_koli.", atas Nama : ".$nm_koli;
                 $status         = 1;
@@ -380,10 +380,11 @@ class Koli extends Admin_Controller {
     {
         $this->auth->restrict($this->deletePermission);
         $id = $this->uri->segment(3);
+        $tipe = $this->uri->segment(4);
 
         if($id!=''){
 
-            $result = $this->Barang_koli_model->delete($id);
+            $result = $this->Barang_koli_model->delete($id,$tipe);
 
             $keterangan     = "SUKSES, Delete data Koli ".$id;
             $status         = 1;

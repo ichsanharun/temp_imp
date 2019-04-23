@@ -23,6 +23,7 @@ class Salesorder extends Admin_Controller {
                                  'Salesorder/Detailsalesordertmp_model',
                                  'Salesorder/Detailsoptmp_model',
                                  'Salesorder/Detailsoedittmp_model',
+                                 'Salesorder/Trans_avl_model',
                                  'Customer/Customer_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
@@ -112,11 +113,11 @@ class Salesorder extends Admin_Controller {
     }
 
     function saveso(){
-      $tglso              = $this->input->post('tglso');
+        $tglso              = $this->input->post('tglso');
         $session            = $this->session->userdata('app_session');
         $noso               = $this->Salesorder_model->generate_noso($session['kdcab'],$tglso);
         $noso_pending       = $this->Salesorder_model->generate_no_pending($noso);
-        $no_pickinglist     = $this->Salesorder_model->generate_no_pl($session['kdcab']);
+        $no_pickinglist     = $this->Salesorder_model->generate_no_pl($session['kdcab'],$noso);
         $idcustomer         = $this->input->post('idcustomer');
         $nmcustomer         = $this->input->post('nmcustomer');
         $idsalesman         = $this->input->post('idsalesman');
@@ -162,12 +163,16 @@ class Salesorder extends Admin_Controller {
             'created_on'          => date("Y-m-d H:i:s"),
             'created_by'          => $session['id_user']
             );
+
         $this->db->trans_begin();
+
         $this->db->insert('trans_so_header',$dataheaderso);
-        $arr_idbrg         = $this->input->post('id_barang');
-        $tot_lc = 0;
-        $tot_so = 0;
+
+        $arr_idbrg     = $this->input->post('id_barang');
+        $tot_lc        = 0;
+        $tot_so        = 0;
         $total_pending = 0;
+
         for ($i=0; $i < count($arr_idbrg); $i++) {
           $get_data_barang = $this->Salesorder_model->get_item_barang($arr_idbrg[$i],$session['kdcab'])->row();
           $data_avl = $get_data_barang->qty_avl; //GET DATA AVAILABLE, AGAR TIDAK BENTROK DG USER LAIN
@@ -190,11 +195,17 @@ class Salesorder extends Admin_Controller {
             }
           }
 
-          if (isset($this->input->post('radio_disso_rp')[$i])) {
+          /*if (isset($this->input->post('radio_disso_rp')[$i])) {
             $tipe_disso = "rupiah_".$this->input->post('radio_disso_rp')[$i];
           }else {
             $tipe_disso = "persen";
+          }*/
+          if ($this->input->post('tipe_disso')[$i] == "persen") {
+            $tipe_disso = "persen";
+          }else {
+            $tipe_disso = "rupiah_".$this->input->post('radio_disso_rp_'.$arr_idbrg[$i]);
           }
+
           if ($qty_confirm_to_order != '0') {
             $dataitem = array(
               'no_so'               => $noso,
@@ -226,6 +237,26 @@ class Salesorder extends Admin_Controller {
             $this->db->insert('trans_so_detail',$dataitem);
             $this->db->where(array('id_barang'=>$arr_idbrg[$i],'kdcab'=>$session['kdcab']));
             $this->db->update('barang_stock',array('qty_avl'=>$data_avl-$qty_confirm_to_order));
+
+            $id_st 			= $this->Salesorder_model->gen_st($this->auth->user_cab()).$i;
+      			$data_adj_trans 	= array(
+      				'id_st'				    => $id_st,
+      				'tipe'				    => 'OUT',
+      				'jenis_trans'		  => 'OUT_SO',
+      				'noreff'		  	  => $noso,
+      				'id_barang'			  => $arr_idbrg[$i],
+      				'nm_barang'			  => $get_data_barang->nm_barang,
+      				'kdcab'			  	  => $this->auth->user_cab(),
+      				'date_stock'		  => date('Y-m-d H:i:s'),
+      				'qty'			    	  => $qty_confirm_to_order,
+      				'nilai_barang'	  => $this->input->post('harga')[$i],
+      				'notes'			  	  => 'SO',
+      				'qty_stock_awal'	=> $get_data_barang->qty_stock,
+      				'qty_avl_awal' 		=> $data_avl,
+      				'qty_stock_akhir'	=> $get_data_barang->qty_avl,
+      				'qty_avl_akhir' 	=> $data_avl-$qty_confirm_to_order
+      			);
+      			$this->Trans_avl_model->insert($data_adj_trans);
           }
 
           if ($qty_pending>0) {
@@ -437,9 +468,7 @@ class Salesorder extends Admin_Controller {
         $diskon_cash        = $this->input->post('diskon_cash');
         $keterangan         = $this->input->post('keterangan');
         $top                = $this->input->post('top');
-        if ($ppn == '10') {
-          $dppso = $totalso/1.1;
-        }
+
 
         $dataheaderso = array(
             //'no_so'               => $noso,
@@ -472,17 +501,41 @@ class Salesorder extends Admin_Controller {
         $this->db->update('trans_so_header',$dataheaderso);
         $arr_idbrg         = $this->input->post('id_barang');
         $tot_lc = 0;
-
+        $num = 0;
         $detail_item_old = $this->db->query("SELECT * FROM trans_so_detail WHERE no_so = '$no_so'")->result();
         foreach ($detail_item_old as $key => $value) {
           $get_barang = $this->Salesorder_model->get_item_barang($value->id_barang,$session['kdcab'])->row();
           $avl = $get_barang->qty_avl; //GET DATA AVAILABLE, AGAR TIDAK BENTROK DG USER LAIN
           $this->db->where(array('id_barang'=>$value->id_barang,'kdcab'=>$session['kdcab']));
           $this->db->update('barang_stock',array('qty_avl'=>$avl+$value->qty_booked));
+          $id_st 			= $this->Salesorder_model->gen_st($this->auth->user_cab()).$num."-Edit_IN";
+          $data_adj_trans 	= array(
+            'id_st'				    => $id_st,
+            'tipe'				    => 'IN',
+            'jenis_trans'		  => 'IN_SO_EDIT',
+            'noreff'		  	  => $noso,
+            'id_barang'			  => $get_data_barang->id_barang,
+            'nm_barang'			  => $get_data_barang->nm_barang,
+            'kdcab'			  	  => $this->auth->user_cab(),
+            'date_stock'		  => date('Y-m-d H:i:s'),
+            'qty'			    	  => $value->qty_booked,
+            'nilai_barang'	  => $value->harga_normal,
+            'notes'			  	  => 'Masuk saat akan edit SO dan menghapus AVL Lama',
+            'qty_stock_awal'	=> $get_barang->qty_stock,
+            'qty_avl_awal' 		=> $get_barang->qty_avl,
+            'qty_stock_akhir'	=> $get_barang->qty_stock,
+            'qty_avl_akhir' 	=> $avl+$value->qty_booked
+          );
+          $this->Trans_avl_model->insert($data_adj_trans);
+          $num++;
+
+
         }
         $this->db->where(array('no_so'=>$no_so));
         $this->db->delete('trans_so_detail');
+        $numm = 0;
         for ($i=0; $i < count($arr_idbrg); $i++) {
+          //$num++;
           $get_data_barang = $this->Salesorder_model->get_item_barang($arr_idbrg[$i],$session['kdcab'])->row();
           $data_avl = $get_data_barang->qty_avl; //GET DATA AVAILABLE, AGAR TIDAK BENTROK DG USER LAIN
           //MENENTUKAN QTY CONFIRM DAN PENDING
@@ -507,13 +560,9 @@ class Salesorder extends Admin_Controller {
           if ($this->input->post('tipe_disso')[$i] == "persen") {
             $tipe_disso = "persen";
           }else {
-            $tipe_disso = "rupiah_".$this->input->post('radio_disso_rp')[$i];
+            $tipe_disso = "rupiah_".$this->input->post('radio_disso_rp_'.$arr_idbrg[$i]);
           }
-        /*  if ($this->input->post('radio_disso_rp')[$i] != "") {
-            $tipe_disso = $this->input->post('tipe_disso')[$i].$this->input->post('radio_disso_rp')[$i];
-          }else {
-            $tipe_disso = $this->input->post('tipe_disso')[$i];
-          }*/
+
 
           $dataitem = array(
               'no_so'               => $no_so,
@@ -546,6 +595,26 @@ class Salesorder extends Admin_Controller {
 
           $this->db->where(array('id_barang'=>$arr_idbrg[$i],'kdcab'=>$session['kdcab']));
           $this->db->update('barang_stock',array('qty_avl'=>$data_avl-$qty_confirm_to_order));
+
+          $id_st 			= $this->Salesorder_model->gen_st($this->auth->user_cab()).$i."-Edit_OUT";
+          $data_adj_trans 	= array(
+            'id_st'				    => $id_st,
+            'tipe'				    => 'OUT',
+            'jenis_trans'		  => 'OUT_SO_EDIT',
+            'noreff'		  	  => $noso,
+            'id_barang'			  => $arr_idbrg[$i],
+            'nm_barang'			  => $get_data_barang->nm_barang,
+            'kdcab'			  	  => $this->auth->user_cab(),
+            'date_stock'		  => date('Y-m-d H:i:s'),
+            'qty'			    	  => $qty_confirm_to_order,
+            'nilai_barang'	  => $this->input->post('harga')[$i],
+            'notes'			  	  => 'Keluar saat akan Simpan edit SO',
+            'qty_stock_awal'	=> $get_data_barang->qty_stock,
+            'qty_avl_awal' 		=> $get_data_barang->qty_avl,
+            'qty_stock_akhir'	=> $get_data_barang->qty_stock,
+            'qty_avl_akhir' 	=> $data_avl-$qty_confirm_to_order
+          );
+          $this->Trans_avl_model->insert($data_adj_trans);
 
 
           if ($qty_pending>0) {
@@ -652,6 +721,86 @@ class Salesorder extends Admin_Controller {
             );
         }
         echo json_encode($param);
+    }
+
+    public function cps(){
+        //$this->auth->restrict($this->addPermission);
+        $session = $this->session->userdata('app_session');
+        $noso= $this->uri->segment(3);
+        $tipe= $this->uri->segment(4);
+        if ($tipe != 'edit') {
+          $gethead = $this->Salesorder_model->find_by(array('no_so'=>$noso));
+          $getdetail = $this->Detailsalesorder_model->find_all_by(array('no_so'=>$noso));
+        }
+        $this->db->trans_begin();
+        if ($getdetail) {
+          $data_detail = array();
+          foreach ($getdetail as $key => $valued) {
+            $keycek = array(
+              'no_so' => $valued->no_so,
+              'id_barang' => $valued->id_barang ,
+              //'createdby'=> $valued->created_by
+            );
+            $data_detail[$key] = array(
+              'no_so' => $valued->no_so,
+              'id_barang' => $valued->id_barang ,
+              'nm_barang' => $valued->nm_barang ,
+              'satuan' => $valued->satuan ,
+              'jenis' => $valued->jenis ,
+              'qty_order_awal' => $valued->qty_order ,
+              'qty_supply' => $valued->qty_supply ,
+              'qty_booked_awal' => $valued->qty_booked ,
+              'qty_cancel_awal' => $valued->qty_cancel ,
+              'qty_pending_awal' => $valued->qty_pending ,
+              'stok_avl_awal' => $valued->stok_avl ,
+              'qty_order' => $valued->qty_order ,
+
+              'qty_booked' => $valued->qty_booked ,
+              'qty_cancel' => $valued->qty_cancel ,
+              'qty_pending' => $valued->qty_pending ,
+              'stok_avl' => $valued->stok_avl ,
+              'ukuran' => $valued->ukuran ,
+              'harga' => $valued->harga ,
+              'harga_normal' => $valued->harga_normal ,
+              'diskon' => $valued->diskon ,
+              'diskon_persen' => $valued->diskon_persen ,
+              'diskon_standar' => $valued->diskon_standar ,
+              'diskon_promo_rp' => $valued->diskon_promo_rp ,
+              'diskon_promo_persen' => $valued->diskon_promo_persen ,
+              'qty_bonus' => $valued->qty_bonus ,
+              'subtotal' => $valued->subtotal ,
+              'diskon_so' => $valued->diskon_so ,
+              'tipe_diskon_so' => $valued->tipe_diskon_so ,
+              'tgl_order'=> $valued->tgl_order,
+              'landed_cost'=> $valued->landed_cost,
+              'createdby'=> $session['id_user'],
+              'tipe_tmp'=> 'edit',
+            );
+
+          }
+        }
+        else {
+          $getdetail = array();
+        }
+
+        $header        = $this->Salesorder_model->find_by(array('no_so' => $noso));
+        $detail        = $this->Detailsoedittmp_model->find_all_by(array('no_so' => $noso,'tipe_tmp'=>'edit'));
+
+        $itembarang    = $this->Salesorder_model->pilih_item($session['kdcab'])->result();
+        $listitemso    = $this->Detailsalesorder_model->find_all_by(array('no_so' => $noso));
+        $customer      = $this->Customer_model->find_all();
+        $marketing     = $this->Salesorder_model->pilih_marketing($session['kdcab'])->result();
+        $pic           = $this->Salesorder_model->get_pic_customer($header->id_customer)->result();
+
+        $this->template->set('barang',$itembarang);
+        $this->template->set('data',$header);
+        $this->template->set('listitembarang',$listitemso);
+        $this->template->set('detail',$data_detail);
+        $this->template->set('customer',$customer);
+        $this->template->set('marketing',$marketing);
+        $this->template->set('pic',$pic);
+        $this->template->title('Edit Sales Order');
+        $this->template->render('pending_form');
     }
 
     //Edit Sales Order

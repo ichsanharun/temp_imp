@@ -18,14 +18,14 @@ date_default_timezone_set('Asia/Bangkok');
                border:1px solid black;
                padding:3px 3px 3px 3px;
             }
-            
+
             table.dataGrid td.tot
             {
               border:1px solid black;
               padding:3px 3px 3px 3px;
               background:lightgrey;
             }
-            
+
             table.dataGrid tr.ganjil:hover,
             table.dataGrid tr.genap:hover
             {
@@ -39,12 +39,12 @@ date_default_timezone_set('Asia/Bangkok');
             {
             background:lightgrey;
             }
-            
+
             table.dataGrid th
             {
                 text-align:center;
              border:1px solid black;
-            
+
              color:black;
             }
 
@@ -149,7 +149,7 @@ date_default_timezone_set('Asia/Bangkok');
          <tr>
             <td width="10%">NO.REFF</td>
             <td width="1%">:</td>
-            <td colspan="2"></td>
+            <td colspan="2"><?=@$pr_data->no_pr?></td>
             <td width="15%">Masa Produksi</td>
             <td width="1%">:</td>
             <td><?= $row->produksi_awal.' - '.$row->produksi_akhir.' hari'; ?></td>
@@ -262,7 +262,7 @@ date_default_timezone_set('Asia/Bangkok');
         <?php
         } ?>
     </table>
-    
+
     <br />
     <br />
     <br />
@@ -274,7 +274,7 @@ date_default_timezone_set('Asia/Bangkok');
                     Tanggal Approval
                 </td>
                 <td style="width: 70%; text-align: center">
-                   
+
                 </td>
             </tr>
             <tr>
@@ -298,7 +298,7 @@ date_default_timezone_set('Asia/Bangkok');
 
 <?php $tglprint = date('d-m-Y H:i:s'); ?>
 <htmlpagefooter name="footer">
-    
+
     <hr/>
     <div id="footer">
     <table>

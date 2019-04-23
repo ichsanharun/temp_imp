@@ -279,6 +279,14 @@
             <tfoot id="input_tambahan">
               <tr>
                 <th class="text-right" colspan="7">
+                  <strong>DPP:</strong>
+                </th>
+                <th>
+                  <span id="dpp_view"><?=$dpp?></span>
+                </th>
+              </tr>
+              <tr>
+                <th class="text-right" colspan="7">
                   <strong>Diskon Toko:</strong>
                 </th>
                 <th>
@@ -666,26 +674,31 @@
       }
       var dc = 0;
       var dt = 0;
+      var dpp = sum;
       var total = sum;
       var dt_nominal = 0;
       var dc_nominal = 0;
       if ($('#persen_diskon_toko').val() != 0) {
         var dt = parseFloat($('#persen_diskon_toko').val());
-        var dt_nominal = sum*dt/100;
-        var total = sum-dt_nominal;
+        var dt_nominal = parseFloat(total*dt/100);
+        var total = total-(total*dt/100);
       }
       if ($('#persen_diskon_cash').val() != 0) {
         var dc = parseFloat($('#persen_diskon_cash').val());
-        var dc_nominal = sum*dc/100;
-        var total = total-dc_nominal;
+        var dc_nominal = parseFloat(total*dc/100);
+        var total = total-(total*dc/100);
       }
       //alert(dc);
       //alert(sum);
-      $('#dt_view').text(dt+'%'+'('+formatCurrency(dt_nominal,',','.',0)+')');
-      $('#dc_view').text(dc+'%'+'('+formatCurrency(dc_nominal,',','.',0)+')');
-      $('#total_view').text(formatCurrency(total,',','.',0));
+      $('#dpp_view').text(num(dpp));
+      $('#dt_view').text(dt+'%'+'('+num(dt_nominal)+')');
+      $('#dc_view').text(dc+'%'+'('+num(dc_nominal)+')');
+      $('#total_view').text(num(total));
       $('#totalso').val(total);
-      $('#dppso').val(total);
+      $('#dppso').val(sum);
+    }
+    function num(n) {
+      return (n).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
     }
     function filterAngka(a){
       if(!a.match(/^[0-9]+$/)){

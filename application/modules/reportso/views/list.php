@@ -279,7 +279,7 @@
       function getexcel(){
             var tgl = $('#periode').val();
             console.log(tgl);
-            if (tgl == "All") {
+            if (tgl == "All" || tgl == "") {
               var tglso = "All";
             }else {
               var explode = tgl.split('/');
@@ -288,6 +288,7 @@
             }
             var uri3 = '<?php echo $this->uri->segment(3)?>';
             var uri4 = '<?php echo $this->uri->segment(4)?>';
+            //console.log(tglso);
             //window.location.href =
             window.location.href= siteurl+"reportso/downloadExcel_old/"+uri3+"/"+tglso;
             //$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');

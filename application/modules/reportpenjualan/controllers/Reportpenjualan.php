@@ -105,7 +105,7 @@ class Reportpenjualan extends Admin_Controller {
         $this->template->render('filterby');
     }
     function print_rekap(){
-        $mpdf=new mPDF('','','','','','','','','','');
+          $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
@@ -350,11 +350,12 @@ class Reportpenjualan extends Admin_Controller {
     {
       $session = $this->session->userdata('app_session');
       $kdcab = $session['kdcab'];
-      $filter = $this->input->get('filter');
-      $param = $this->input->get('param');
+
+      $filter = $this->uri->segment(5);
+      //$param = $this->input->get('param');
       $where ='';
-      if($filter == "by_produk"){
-          $where = " AND id_barang='".$param."' ";
+      if($filter == "all"){
+          $where = "";
       }elseif($filter == "by_customer"){
           $where = " AND id_customer='".$param."' ";
       }elseif($filter == "by_sales"){

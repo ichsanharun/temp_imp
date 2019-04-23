@@ -54,13 +54,22 @@ class Reportdo extends Admin_Controller {
   function downloadExcel_old()
   {
     $session = $this->session->userdata('app_session');
-
-
+    if ($this->uri->segment(3) == "All") {
       $data_so = $this->Deliveryorder_model
       ->join("trans_do_detail", "trans_do_detail.no_do = trans_do_header.no_do", "left")
       ->join("barang_jenis", "LEFT(trans_do_detail.id_barang,2) = barang_jenis.id_jenis", "left")
       ->join("barang_group", "MID(trans_do_detail.id_barang,3,2) = barang_group.id_group", "left")
-      ->get_data("LEFT(trans_do_header.no_do,3) = '".$session['kdcab']."' AND trans_do_header.tgl_do like '%".$this->uri->segment(3)."%'","trans_do_header");
+      ->get_data("LEFT(trans_do_header.no_do,3) = '".$session['kdcab']."'","trans_do_header");
+      }else {
+
+        $data_so = $this->Deliveryorder_model
+        ->join("trans_do_detail", "trans_do_detail.no_do = trans_do_header.no_do", "left")
+        ->join("barang_jenis", "LEFT(trans_do_detail.id_barang,2) = barang_jenis.id_jenis", "left")
+        ->join("barang_group", "MID(trans_do_detail.id_barang,3,2) = barang_group.id_group", "left")
+        ->get_data("LEFT(trans_do_header.no_do,3) = '".$session['kdcab']."' AND trans_do_header.tgl_do like '%".$this->uri->segment(3)."%'","trans_do_header");
+      }
+
+
 
     $data = array(
       'title2'		=> 'Report',

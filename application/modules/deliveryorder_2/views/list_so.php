@@ -25,7 +25,7 @@
       </select>
     </div>
     <div class="box-body">
-        <table id="example" class="table table-bordered table-striped">
+        <table id="example2" class="table table-bordered table-striped">
         <thead>
           <tr>
               <th width="2%">#</th>
@@ -60,7 +60,8 @@
                     <?php // echo $vso->stsorder?>
                 </td>-->
                 <td class="text-center">
-                    <input <?php //echo $disabled?> type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $no?>" value="<?php echo $vso->no_so?>" onclick="cekcus('<?php echo $vso->id_customer?>','<?php echo $no?>','<?php echo $vso->nm_customer?>','<?php echo "set_choose_do".$no?>')">
+                    <!--input <?php //echo $disabled?> type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $no?>" value="<?php echo $vso->no_so?>" onclick="cekcus('<?php echo $vso->id_customer?>','<?php echo $no?>','<?php echo $vso->nm_customer?>','<?php echo "set_choose_do".$no?>')"-->
+                    <button onclick="proses_do_ind('<?php echo $vso->no_so?>')" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button>
                 </td>
             </tr>
             <?php } ?>
@@ -74,7 +75,7 @@
     <div class="box-body">
       <input type="hidden" name="cekcus" id="cekcus" class="form-control input-sm">
       <input type="hidden" id="cekcustomer" class="form-control input-sm">
-      <button onclick="proses_do()" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button>
+      <!--button onclick="proses_do()" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button-->
     </div>
   </div>
 </div>
@@ -119,12 +120,21 @@
     var uri3 = '<?php echo $this->uri->segment(3)?>';
     window.location.href = siteurl+"deliveryorder_2/proses/"+uri3+"?param="+param;
   }
+
+  function proses_do_ind(ns){
+    var param = ns;
+    var uri3 = '<?php echo $this->uri->segment(3)?>';
+    window.location.href = siteurl+"deliveryorder_2/proses/"+uri3+"?param="+param;
+  }
+
+
   $(function() {
       $("#example1").DataTable();
       $("#form-area").hide();
     });
 
   function cekcus(idcus,no,id,set){
+
     var table = $('#example1').DataTable();
     var cek = $('#'+set);
     //alert(cek.value);

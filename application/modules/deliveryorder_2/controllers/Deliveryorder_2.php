@@ -41,8 +41,12 @@ class Deliveryorder_2 extends Admin_Controller {
     public function index(){
         //$this->auth->restrict($this->viewPermission);
         $session = $this->session->userdata('app_session');
-        $data = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab']));
+        $data = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status'=>'DO'));
+        $data_INV = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status'=>'INV'));
+        $data_CCL = $this->Deliveryorder_model->order_by('no_do','DESC')->find_all_by(array('LEFT(no_do,3)'=>$session['kdcab'],'status'=>'CCL'));
         $this->template->set('results', $data);
+        $this->template->set('results_INV', $data_INV);
+        $this->template->set('results_CCL', $data_CCL);
         $this->template->title('Delivery Order');
         $this->template->render('list');
     }
@@ -800,6 +804,7 @@ class Deliveryorder_2 extends Admin_Controller {
             'id_supir' => $idsupir,
             'nm_supir' => $nmsupir,
             'nm_helper' => $this->input->post('helper_do_edit'),
+            'tgl_do' => $this->input->post('tgl_do'),
             'id_kendaraan' => $idmobil,
             'ket_kendaraan' => $ketmobil
             );

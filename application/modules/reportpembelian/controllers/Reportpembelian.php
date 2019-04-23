@@ -42,7 +42,12 @@ class Reportpembelian extends Admin_Controller {
 
     public function index()
     {
+      if ($this->auth->user_cab() == "100") {
         $data = $this->Purchaseorder_model->order_by('no_po','DESC')->find_all();
+      }else {
+        $data = $this->Purchaseorder_model->order_by('no_po','DESC')->find_all_by(array('kdcab'=>$this->auth->user_cab()));
+      }
+
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $this->template->title('Report Pembelian');
         $this->template->set('cabang', $cabang);
@@ -80,12 +85,20 @@ class Reportpembelian extends Admin_Controller {
 
      function downloadExcel()
     {
-        if(!empty($this->input->get('tglawal')) && !empty($this->input->get('tglakhir')) && !empty($this->input->get('idcabang'))){
+      $cab = $this->input->get('idcabang');
+      if ($cab == "") {
+        $ket_cab = "";
+        $ket_cab1 = "1=1";
+      }else {
+        $ket_cab = "AND kdcab='".$cab."'";
+        $ket_cab1 = array('kdcab'=>$cab);
+      }
+        if(!empty($this->input->get('tglawal')) && !empty($this->input->get('tglakhir'))){
             $data = $this->Purchaseorder_model
-        ->where("tgl_po BETWEEN '".$this->input->get('tglawal')."' AND '".$this->input->get('tglakhir')."' AND kdcab='".$this->input->get('idcabang')."'")
+        ->where("tgl_po BETWEEN '".$this->input->get('tglawal')."' AND '".$this->input->get('tglakhir')."' $ketcab")
         ->order_by('no_po','DESC')->find_all();
         }else{
-            $data = $this->Purchaseorder_model->order_by('no_po','DESC')->find_all();
+            $data = $this->Purchaseorder_model->order_by('no_po','DESC')->find_all_by($ket_cab1);
         }
 
         $objPHPExcel    = new PHPExcel();

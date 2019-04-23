@@ -21,6 +21,8 @@
             <tr>
                 <th width="2%">#</th>
                 <th>NO. PR</th>
+                <th>NO. PO</th>
+                <th>NO. RC</th>
                 <th>Cabang</th>
                 <th>Tanggal PR</th>
                 <th>Supplier</th>
@@ -33,10 +35,14 @@
            if (@$results) {
                $n = 1;
                foreach (@$results as $kp => $vp) {
+                 $cek_po = $this->db->select('no_po')->where(array('no_pr'=>$vp->nopr))->group_by('no_pr')->get('trans_po_detail')->row();
+                 $cek_rc = $this->db->select('no_receiving')->where(array('po_no'=>$cek_po->no_po))->group_by('no_receiving')->get('trans_receive')->row();
                    $no = $n++; ?>
            <tr>
              <td><center><?php echo $no; ?></center></td>
              <td><center><?php echo $vp->nopr; ?></center></td>
+             <td><center><?php echo $cek_po->no_po; ?></center></td>
+             <td><center><?php echo $cek_rc->no_receiving; ?></center></td>
              <td><?php echo $vp->kdcab.' / '.$vp->namacabang; ?></td>
              <td><center><?php echo date('d/m/Y', strtotime($vp->tgl_pr)); ?></center></td>
              <td><?php echo $vp->id_supplier; ?> / <?= get_supplier($vp->id_supplier); ?></td>

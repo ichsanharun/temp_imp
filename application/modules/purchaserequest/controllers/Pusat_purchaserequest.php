@@ -24,10 +24,16 @@ class Pusat_purchaserequest extends Admin_Controller {
         $data = $this->Purchaserequest_model
         ->select("*,trans_pr_header.no_pr AS nopr")
         ->join('cabang','trans_pr_header.kdcab = cabang.kdcab','left')
+        //->where_in('trans_pr_header.proses_po',  array('Proses','REVISI'))
+        ->order_by('trans_pr_header.no_pr','ASC')->find_all();
+        $datan = $this->Purchaserequest_model
+        ->select("*,trans_pr_header.no_pr AS nopr")
+        ->join('cabang','trans_pr_header.kdcab = cabang.kdcab','left')
         ->where_in('trans_pr_header.proses_po',  array('Proses','REVISI'))
         ->order_by('trans_pr_header.no_pr','ASC')->find_all();
         //$data = $this->db->query("SELECT * FROM trans_pr_header LEFT JOIN barang_master ON trans_pr_header.id_barang = barang_master.id_barang order by no_pr asc")->result();
         $this->template->set('results', $data);
+        $this->template->set('non', $datan);
         $this->template->title('Purchase Request');
         $this->template->render('pusat/index');
     }

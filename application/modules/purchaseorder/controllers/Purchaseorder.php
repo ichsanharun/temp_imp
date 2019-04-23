@@ -47,7 +47,7 @@ class Purchaseorder extends Admin_Controller
     {
         //$this->auth->restrict($this->viewPermission);
 
-        $data = $this->Purchaseorder_model->order_by('no_po', 'DESC')->find_all();
+        $data = $this->Purchaseorder_model->order_by('no_po', 'DESC')->find_all_by(array('kdcab'=>$this->auth->user_cab()));
         $this->template->set('results', $data);
         $this->template->title('List Status Purchase Request');
         $this->template->render('list');

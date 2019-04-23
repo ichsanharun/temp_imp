@@ -70,8 +70,11 @@ thead input {
                 			</td>
                 			<td style="padding-left:20px">
                   			<?php if($ENABLE_MANAGE) : ?>
-                  				<a class="btn bg-primary btn-sm" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record->id_barang?>','<?= $record->qty_avl ?>')">
-                            Unpacking
+                  				<a class="" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record->id_barang?>','<?= $record->qty_avl ?>')">
+                            <i class="fa fa-edit"></i>
+                  				</a>
+                          <a class="detail" href="javascript:void(0)" title="Detail" style="color:red">
+                            <i class="fa fa-eye"></i>
                   				</a>
                   			<?php endif; ?>
                 			</td>
@@ -141,59 +144,59 @@ thead input {
                   		</tr>
                 		</thead>
 
-              		<tbody>
-                		<?php if(empty($colly)){
-                		}else{
-                			$numb=0; foreach($colly AS $record_colly){ $numb++; ?>
-                		<tr>
-                			<?php
-                				if($record_colly->satuan==''){
-                					$satuan = $record_colly->setpcs;
-                				}else{
-                					$satuan = $record_colly->satuan;
-                				}
-                			?>
-                		    <td><?= $numb; ?></td>
-                	        <td><?= $record_colly->id_barang ?></td>
+                		<tbody>
+                  		<?php if(empty($colly)){
+                  		}else{
+                  			$numb=0; foreach($colly AS $record_colly){ $numb++; ?>
+                  		<tr>
+                  			<?php
+                  				if($record_colly->satuan==''){
+                  					$satuan = $record_colly->setpcs;
+                  				}else{
+                  					$satuan = $record_colly->satuan;
+                  				}
+                  			?>
+                  		    <td><?= $numb; ?></td>
+                  	        <td><?= $record_colly->id_barang ?></td>
 
-                			<td><?= strtoupper($record_colly->nm_jenis) ?></td>
-                			<td><?= strtoupper($record_colly->nm_group) ?></td>
-                			<td><?= $record_colly->nm_barang ?></td>
-                			<td><?= $record_colly->satuan ?></td>
-                			<td><?= $record_colly->qty_stock ?></td>
-                			<td>
-                				<?php if($record_colly->sts_aktif == 'aktif'){ ?>
-                					<label class="label label-success">Aktif</label>
-                				<?php }else{ ?>
-                					<label class="label label-danger">Non Aktif</label>
-                				<?php } ?>
-                			</td>
-                			<td style="padding-left:20px">
+                  			<td><?= strtoupper($record_colly->nm_jenis) ?></td>
+                  			<td><?= strtoupper($record_colly->nm_group) ?></td>
+                  			<td><?= $record_colly->nama ?></td>
+                  			<td><?= $record_colly->satuan ?></td>
+                  			<td><?= $record_colly->qty_stock ?></td>
+                  			<td>
+                  				<?php if($record_colly->sts_aktif == 'aktif'){ ?>
+                  					<label class="label label-success">Aktif</label>
+                  				<?php }else{ ?>
+                  					<label class="label label-danger">Non Aktif</label>
+                  				<?php } ?>
+                  			</td>
+                  			<td style="padding-left:20px">
+                    			<?php if($ENABLE_MANAGE) : ?>
+                    				<a class="btn bg-primary btn-sm" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record_colly->id_barang?>')">
+                              Unpacking
+                    				</a>
+                    			<?php endif; ?>
+                  			</td>
+                  		</tr>
+                  		<?php } }  ?>
+                		</tbody>
+
+                		<tfoot>
+                  		<tr>
+                  			<th width="5">#</th>
+                  			<th>Kode Produk</th>
+                  			<th>Jenis</th>
+                  			<th>Group</th>
+                  			<th>Nama Koli</th>
+                  			<th>Satuan</th>
+                  			<th>Qty</th>
+                  			<th>Status</th>
                   			<?php if($ENABLE_MANAGE) : ?>
-                  				<a class="btn bg-primary btn-sm" href="javascript:void(0)" title="Edit" onclick="unpacking('<?=$record_colly->id_barang?>')">
-                            Unpacking
-                  				</a>
+                  			<th width="50">Action</th>
                   			<?php endif; ?>
-                			</td>
-                		</tr>
-                		<?php } }  ?>
-              		</tbody>
-
-              		<tfoot>
-                		<tr>
-                			<th width="5">#</th>
-                			<th>Kode Produk</th>
-                			<th>Jenis</th>
-                			<th>Group</th>
-                			<th>Nama Koli</th>
-                			<th>Satuan</th>
-                			<th>Qty</th>
-                			<th>Status</th>
-                			<?php if($ENABLE_MANAGE) : ?>
-                			<th width="50">Action</th>
-                			<?php endif; ?>
-                		</tr>
-              		</tfoot>
+                  		</tr>
+                		</tfoot>
               		</table>
 
 
@@ -310,13 +313,79 @@ thead input {
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
 <!-- End Modal Bidus-->
 <script type="text/javascript">
+$(document).ready(function() {
+  var table = $('#example1').DataTable();
+
+  // Add event listener for opening and closing details
+  $('#example1 tbody').on('click', 'a.detail', function () {
+      var tr = $(this).closest('tr');
+      var row = table.row( tr );
+
+      if ( row.child.isShown() ) {
+          // This row is already open - close it
+          row.child.hide();
+          tr.removeClass('shown');
+      }
+      else {
+          // Open this row
+          var d = row.data();
+
+          $.ajax({
+            type:"GET",
+            url:siteurl+"barang_packing/get_item_barang",
+            data:"idbarang="+d[1],
+            success:function(result){
+              //var data = JSON.parse(result);
+              //cetak(result,row,tr);
+              //console.log(data.satuan);
+              // `d` is the original data object for the row
+              row.child( result ).show();
+              tr.addClass('shown');
+              }
+            });
 
 
+      }
+  } );
+} );
+function format ( d,row,tr ) {
+  var flag = true;
+  $.ajax({
+    type:"GET",
+    url:siteurl+"barang_packing/get_item_barang",
+    data:"idbarang="+d[1],
+    success:function(result){
+      //var data = JSON.parse(result);
+      cetak(result,row,tr);
+      //console.log(data.satuan);
+      // `d` is the original data object for the row
+      }
+    });
+    //console.log(flag);
+    /*
+    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+    '<tr>'+
+    '<td>Full name:</td>'+
+    '<td>wew</td>'+
+    '</tr>'+
+    '<tr>'+
+    '<td>Extension number:</td>'+
+    '<td>'+d[1]+'</td>'+
+    '</tr>'+
+    '<tr>'+
+    '<td>Extra info:</td>'+
+    '<td>And any further details here (images etc)...</td>'+
+    '</tr>'+
+    '</table>';*/
+
+
+}
+  function cetak(a,row,tr){
+    row.child( a ).show();
+    tr.addClass('shown');
+  }
     $(function() {
-      var table = $('#example1').DataTable( {
-	        orderCellsTop: true,
-	        fixedHeader: true
-	    } );
+
       var koli = $('#table_koli').DataTable( {
 	        orderCellsTop: true,
 	        fixedHeader: true

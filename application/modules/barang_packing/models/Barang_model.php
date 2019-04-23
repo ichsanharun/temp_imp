@@ -83,6 +83,17 @@ class Barang_model extends BF_Model
         return $this->db->query($query);
     }
 
+    function get_item_barang($idbarang,$kdcab){
+        $query="SELECT
+                *
+                FROM
+                barang_stock
+
+                WHERE barang_stock.id_barang='$idbarang' AND barang_stock.kdcab ='$kdcab'";
+        return $this->db->query($query);
+        //LEFT JOIN barang_master ON `barang_stock`.`id_barang` = `barang_master`.`id_barang`
+    }
+
     public function get_barang($id_barang){
         $query=$this->db->query("SELECT
                 barang_master.nm_barang

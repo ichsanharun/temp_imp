@@ -20,7 +20,7 @@
           <tr>
               <th width="2%">#</th>
               <th>NO. DO</th>
-              <th>NO. DO LAMA</th>
+
               <th>NO. SO</th>
               <th>Nama Customer</th>
               <th>Tanggal</th>
@@ -41,7 +41,7 @@
             <tr>
               <td><center><?php echo $no?></center></td>
               <td><?php echo $vso->no_do?></td>
-              <td><?php echo $vso->nd?></td>
+
               <td><?php echo $so->no_so?></td>
               <td><?php echo $vso->nm_customer?></td>
               <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_do))?></td>
@@ -69,7 +69,7 @@
           <tr>
               <th width="2%">#</th>
               <th>NO. DO</th>
-              <th>NO. DO LAMA</th>
+
               <th>NO. SO</th>
               <th>Nama Customer</th>
               <th>Tanggal</th>
@@ -151,6 +151,7 @@
 <!-- page script -->
 <script type="text/javascript">
 $(document).ready(function(){
+  $("#type_return").val();
   $("#type_return").select2({
       placeholder: "Pilih",
       allowClear: true
@@ -169,7 +170,7 @@ $(document).ready(function(){
           }
           //var tabledetail = $('#example1').DataTable();
           //alert(cabang);
-          $('#example1').DataTable().column(9).search(cek).draw();
+          $('#example1').DataTable().column(8).search(cek).draw();
           //window.location.href = siteurl+"reportso/filter/"+type_so;
         }
     function omover(no){

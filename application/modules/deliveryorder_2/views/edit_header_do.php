@@ -19,10 +19,13 @@
                     <?php $tglso=date('Y-m-d')?>
                     <label for="tgldo" class="col-sm-4 control-label">Tanggal DO </label>
                     <div class="col-sm-8" style="padding-top: 8px;">
-                        <?php echo ": ".date('d M Y',strtotime($do_data->tgl_do))?>
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                      <input type="text" name="tgl_do" id="tgl_do" class="form-control input-sm datepicker" value="<?php echo $do_data->tgl_do?>">
+                    </div>
                     </div>
                 </div>
-            </div>  
+            </div>
             <div class="col-sm-6">
                 <div class="form-group">
                     <label for="tipekirim_edit" class="col-sm-4 control-label">Tipe Kirim</label>
@@ -122,3 +125,10 @@
         </form>
     </div>
 </div>
+<script>
+$(".datepicker").datepicker({
+  format : "yyyy-mm-dd",
+  showInputs: true,
+  autoclose:true
+});
+</script>

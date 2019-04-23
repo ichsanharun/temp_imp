@@ -17,9 +17,9 @@
         </thead>
         <tbody>
           <?php if(@$results){ ?>
-            <?php 
+            <?php
             $n = 1;
-            foreach(@$results as $kso=>$vso){ 
+            foreach(@$results as $kso=>$vso){
                 $no = $n++;
                 $status = '<span class="badge bg-green">IN TRANSIT</span>';
                 $disabled='';
@@ -41,14 +41,14 @@
                   <button type="button" title="Proses Receiving" class="btn btn-primary btn-sm" onclick="prosesrecmutasi('<?php echo $vso->no_mutasi?>')" <?php echo $disabled?>>
                     <i class="fa fa-check"></i>
                   </button>
-                  <button type="button" title="Cetak Receiving" class="btn btn-success btn-sm" onclick="PreviewPdf('<?php echo $vso->no_mutasi?>')">
+                  <!--button type="button" title="Cetak Receiving" class="btn btn-success btn-sm" onclick="PreviewPdf('<?php echo $vso->no_mutasi?>')">
                     <i class="fa fa-print"></i>
-                  </button>
-                  <!--
-                    <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php //echo $vso->no_mutasi?>')">
-                    <span class="glyphicon glyphicon-print"></span>
+                  </button-->
+
+                    <a href="#dialog-popup-cetak" data-toggle="modal" class="btn btn-success btn-sm" onclick="PreviewPdf('<?php echo $vso->no_mutasi?>')">
+                    <i class="fa fa-print"></i>
                     </a>
-                    -->
+
               </td>
             </tr>
             <?php } ?>

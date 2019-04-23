@@ -472,6 +472,12 @@ class Reportso extends Admin_Controller {
     function downloadExcel_old()
     {
       $session = $this->session->userdata('app_session');
+      $status = $this->uri->segment(3);
+      $tgl = $this->uri->segment(4);
+      $tgl_con = "trans_so_header.tanggal != '' ";
+      if ($tgl != "All") {
+        $tgl_con = "trans_so_header.tanggal like '%".$tgl."%'";
+      }
       if ($this->uri->segment(3) == "ALL") {
         $data_so = $this->Salesorder_model
         ->where(array(
@@ -480,7 +486,7 @@ class Reportso extends Admin_Controller {
         ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
         ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
         ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
-        ->get_data("1=1","trans_so_header");
+        ->get_data("$tgl_con","trans_so_header");
       }else {
 
         $data_so = $this->Salesorder_model
@@ -490,7 +496,7 @@ class Reportso extends Admin_Controller {
         ->join("trans_so_detail", "trans_so_detail.no_so = trans_so_header.no_so", "left")
         ->join("barang_jenis", "LEFT(trans_so_detail.id_barang,2) = barang_jenis.id_jenis", "left")
         ->join("barang_group", "MID(trans_so_detail.id_barang,3,2) = barang_group.id_group", "left")
-        ->get_data("LEFT(trans_so_header.no_so,3) = '".$session['kdcab']."' AND trans_so_header.tanggal like '%".$this->uri->segment(4)."%'","trans_so_header");
+        ->get_data("LEFT(trans_so_header.no_so,3) = '".$session['kdcab']."' AND $tgl_con","trans_so_header");
       }
       if ($this->uri->segment(3) == "CLOSE") {
         $sts = " CLOSE PERIODE ".date("M Y", strtotime($this->uri->segment(4)));

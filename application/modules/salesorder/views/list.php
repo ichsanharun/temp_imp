@@ -50,21 +50,24 @@
             <tr>
                 <th width="2%">#</th>
                 <th>NO. SO</th>
-                <th>NO. SO LAMA</th>
+                <th>NO. Surat Jalan</th>
+                <th>NO. Inv</th>
                 <th>Nama Customer</th>
                 <th>Tanggal</th>
                 <th>Nama Salesman</th>
                 <th>Total</th>
                 <th width="5%">Status</th>
-                <th width="5%">Picking</th>
-                <th>Aksi</th>
+                <!--th width="5%">Picking</th-->
+                <th width="10%">Aksi</th>
             </tr>
         </thead>
         <tbody>
-            <?php if(@$results){ ?>
             <?php
+            if(@$results){
             $n = 1;
             foreach(@$results as $kso=>$vso){
+              $cek_do = $this->db->query("SELECT no_do FROM trans_so_detail WHERE no_so = '$vso->no_so' GROUP BY no_do")->row();
+              $cek_inv = $this->db->query("SELECT no_invoice FROM trans_invoice_detail WHERE no_do = '$cek_do->no_do' GROUP BY no_do")->row();
                 $no = $n++;
                 //$sts = "OPEN";
                 $badge = "bg-green";
@@ -93,46 +96,44 @@
             <tr>
                 <td class="text-center"><?php echo $no?></td>
                 <td class="text-center"><?php echo $vso->no_so?></td>
-                <td class="text-center"><?php echo $vso->ns?></td>
+                <td class="text-center"><?php echo $cek_do->no_do?></td>
+                <td class="text-center"><?php echo $cek_invoice->no_invoice?></td>
                 <td><?php echo $vso->nm_customer?></td>
                 <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tanggal))?></td>
                 <td><?php echo $vso->nm_salesman?></td>
                 <td class="text-right"><?php echo formatnomor($vso->total)?></td>
                 <td class="text-center"><span class="badge <?php echo $badge?>"><?php echo $vso->stsorder?></span></td>
                 <!--<td class="text-center"><?php //echo $cancel?></td>-->
-                <td class="text-right">
-                  <?php if($vso->stsorder != "CANCEL"){
-                    if ($vso->stsorder == "PENDING") {
-                      ?>
-                      <center>
-                      <a onclick="create_pending_so('<?php echo $vso->no_so ?>')" href="javascript:void(0)">
-                        <span class='badge bg-green' id='cso' title='Create SO' data-toggle='tooltip' data-placement='bottom'>
-                        <i class='fa fa-arrow-circle-right'></i> SO
-                        </span>
-                    </a>
+                <!--td class="text-right">
 
-                      </center>
-                      <?php
-                    }elseif ($vso->stsorder == "CLS PENDING") {
 
-                    }else { ?>
-                      <center>
-                        <a href="#dialog-popup" data-toggle="modal" onclick="PickingList('<?php echo $vso->no_so?>')">
-                        <span class="glyphicon glyphicon-file"></span>
-                      </center>
-                    <?php } } ?>
 
-                    <!--
-                    <select class="form-control input-sm width-100" id="status_so" onchange="setstatusso()">
-                      <option value="0">-</option>
-                      <option value="1">Konfirm</option>
-                      <option value="2">Pending</option>
-                      <option value="3">Cancel</option>
-                    </select>
-                    -->
-                </td>
+                </td-->
 
                  <td class="text-center">
+                   <?php if($vso->stsorder != "CANCEL"){
+                     if ($vso->stsorder == "PENDING") {
+                       ?>
+
+                       <a onclick="create_pending_so('<?php echo $vso->no_so ?>')" href="javascript:void(0)">
+                         <span class='badge bg-green' id='cso' title='Create SO' data-toggle='tooltip' data-placement='bottom'>
+                         <i class='fa fa-arrow-circle-right'></i> SO
+                         </span>
+                       </a>
+
+
+                       <?php
+                     }elseif ($vso->stsorder == "CLS PENDING") {
+
+                     }else { ?>
+
+                         <a href="#dialog-popup" data-toggle="modal" onclick="PickingList('<?php echo $vso->no_so?>')">
+                         <span class="glyphicon glyphicon-file"></span>
+
+                     <?php } } ?>
+
+
+
                     <?php if($vso->stsorder != "CANCEL"){ ?>
                       <?php if($ENABLE_MANAGE) {
                         if ($vso->stsorder != "CLOSE") {
@@ -165,12 +166,14 @@
             <tr>
             <th width="50">#</th>
             <th>NO. SO</th>
+            <th>NO. Surat Jalan</th>
+            <th>NO. Inv</th>
             <th>Nama Customer</th>
             <th>Tanggal</th>
             <th>Nama Salesman</th>
             <th>Total</th>
             <th>Status</th>
-            <th width="5%">Picking</th>
+            <!--th width="5%">Picking</th-->
 
             <th>Aksi</th>
         </tr>
@@ -230,7 +233,7 @@
         window.location.href = siteurl+"salesorder/editso/"+noso+"/start";
     }
     function create_pending_so(noso){
-        window.location.href = siteurl+"salesorder/create_pso/"+noso;
+        window.location.href = siteurl+"salesorder/cps/"+noso;
     }
     function delete_data(noso){
         swal({

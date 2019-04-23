@@ -119,7 +119,7 @@ class Purchaserequest_model extends BF_Model
           $kode_bln = $v;
         }
       }
-      $cek = $kdcab.'-PR-'.date('y').$kode_bln;
+      $cek = $kdcab.'-PR-'.date('y',strtotime($tgl)).$kode_bln;
       /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
       WHERE no_so LIKE '%$cek%'")->num_rows();*/
       $query = "SELECT MAX(no_pr) as max_id
@@ -130,7 +130,7 @@ class Purchaserequest_model extends BF_Model
       if ($query_cek == 0) {
         $kode = 1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
-        $fin = $kdcab.'-PR-'.date('y').$kode_bln.$next_kode;
+        $fin = $kdcab.'-PR-'.date('y',strtotime($tgl)).$kode_bln.$next_kode;
       }else {
         $query = "SELECT MAX(no_pr) as max_id
         FROM
@@ -139,7 +139,7 @@ class Purchaserequest_model extends BF_Model
         $r = $q->row();
         $kode = (int)substr($r->max_id,10)+1;
         $next_kode = str_pad($kode, 5, "0", STR_PAD_LEFT);
-        $fin =  $kdcab.'-PR-'.date('y').$kode_bln.$next_kode;
+        $fin =  $kdcab.'-PR-'.date('y',strtotime($tgl)).$kode_bln.$next_kode;
       }
 
       return $fin;

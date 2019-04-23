@@ -45,7 +45,7 @@ class Reportstok_trans extends Admin_Controller {
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $data = $this->Reportstok_model
         ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")
-        ->find_all();
+        ->find_all_by(array('barang_stock.kdcab'=>$this->auth->user_cab()));
         $this->template->set('results', $data);
         $this->template->set('cabang', $cabang);
         $this->template->render('list');

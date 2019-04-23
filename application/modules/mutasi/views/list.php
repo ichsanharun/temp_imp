@@ -4,62 +4,23 @@
         <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
     </div>
     <div class="box-body">
-        <table id="example1" class="table table-bordered table-striped">
-        <thead>
-	        <tr>
-	            <th width="2%">#</th>
-              <th>NO. Mutasi</th>
-	            <th>Tgl Mutasi</th>
-              <th>Asal</th>
-              <th>Tujuan</th>
-              <th>Nama Supir</th>
-              <th>Kendaraan</th>
-	            <th>Status</th>
-	            <th>Aksi</th>
-	        </tr>
-        </thead>
-        <tbody>
-          <?php if(@$results){ ?>
-            <?php 
-            $n = 1;
-            foreach(@$results as $kso=>$vso){ 
-                $no = $n++;
-                $status = '<span class="badge bg-green">IN TRANSIT</span>';
-                if($vso->status_mutasi == "REC"){
-                  $status = '<span class="badge bg-red">RECEIVED</span>';
-                }
-            ?>
-            <tr>
-              <td><center><?php echo $no?></center></td>
-              <td><?php echo $vso->no_mutasi?></td>
-              <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_mutasi))?></td>
-              <td><?php echo $vso->cabang_asal?></td>
-              <td><?php echo $vso->cabang_tujuan?></td>
-              <td><?php echo $vso->nm_supir?></td>
-              <td><?php echo $vso->ket_kendaraan?></td>
-              <td><center><?php echo $status?></center></td>
-              <td class="text-center">
-                    <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_mutasi?>')">
-                    <span class="glyphicon glyphicon-print"></span>
-                    </a>
-              </td>
-            </tr>
-            <?php } ?>
-          <?php } ?>
-        </tbody>
-        <tfoot>
-          <tr>
-              <th width="2%">#</th>
-              <th>NO. Mutasi</th>
-              <th>Tgl Mutasi</th>
-              <th>Asal</th>
-              <th>Tujuan</th>
-              <th>Nama Supir</th>
-              <th>Kendaraan</th>
-              <th>Status</th>
-              <th>Aksi</th>
-          </tr>
-        </tfoot>
+        <table id="my-grid" class="table table-bordered table-striped">
+			<thead>
+				<tr class="bg-blue">
+					<th class="text-center">No Mutasi</th>
+					<th class="text-center">Tgl Mutasi</th>
+					<th class="text-center">Asal</th>
+					<th class="text-center">Tujuan</th>
+					<th class="text-center">Nama Supir</th>
+					<th class="text-center">Kendaraan</th>
+					<th class="text-center">Status</th>
+					<th class="text-center">Aksi</th>
+				</tr>
+			</thead>
+			<tbody id="list_detail">
+			
+         
+			</tbody>       
         </table>
     </div>
 </div>
@@ -89,16 +50,62 @@
 
 <!-- page script -->
 <script type="text/javascript">
+	var base_url			= '<?php echo base_url(); ?>';
+	var active_controller	= '<?php echo($this->uri->segment(1)); ?>';
+	var cabang_user			= '<?php echo $cabs_user;?>';
+	var arr_cabang			= <?php echo json_encode($Arr_Cabang);?>;
     $(function() {
-      var dataTable = $("#example1").DataTable();
+		get_data();
     });
     function add_data(){
-        window.location.href = siteurl+"mutasi/create";
+        window.location.href = base_url+active_controller+"/create";
     }
-    function PreviewPdf(nomutasi)
-    {
-      tujuan = 'mutasi/print_request/'+nomutasi;
-
-        $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-    }
+   
+	function get_data(){
+		
+		var my_table = $('#my-grid').dataTable( {
+			"processing"	: true,
+			"serverSide"	: true,
+			"destroy"	: true,
+			"ajax"			: {
+				"url"	:  base_url + active_controller +'/display_data_json',
+				"type"	: "POST"		
+			},		
+			"columns": [				
+				{"data":"no_mutasi","sClass":"text-left"},
+				{"data":"tgl_mutasi","sClass":"text-center"},
+				{"data":"cabang_asal","sClass":"text-center"},				
+				{"data":"cabang_tujuan","sClass":"text-left"},				
+				{"data":"nm_supir","sClass":"text-left"},
+				{"data":"ket_kendaraan","sClass":"text-left"},
+				{"data":"status_mutasi","sClass":"text-center"},
+				{"data":"action","sClass":"text-center","searchable":false,"sortable":false},
+			],
+			"rowCallback": function(row,data,index,iDisplayIndexFull){			
+				var kode_asal	= data.kdcab_asal;
+				var kode_tujuan	= data.kdcab_tujuan;
+				var sts_data	= data.status_mutasi;
+				if(sts_data=='IT'){
+					var status	='<span class="badge bg-green">INTRANSIT</span>';
+				}else if(sts_data=='REC'){
+					var status	='<span class="badge bg-maroon">RECEIVED</span>';
+				}
+				var Template	='<a href="'+base_url+active_controller+'/view_data/'+data.no_mutasi+'" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-search"></span></a>';
+				if(cabang_user==kode_asal && sts_data=='IT'){
+					Template	+='<a href="#" class="btn btn-sm btn-danger" onClick="previewPDF('+'\''+data.no_mutasi+'\''+');"><span class="glyphicon glyphicon-print"></span></a>';
+				}
+				$('td:eq(6)',row).html(status);  
+				$('td:eq(7)',row).html(Template);
+				
+			},
+			"order": [[1,"desc"]]
+		});
+	}
+	
+	function previewPDF(jurnal){
+		tujuan = active_controller+'/print_request/'+jurnal;
+		//console.log(tujuan);
+		$("#MyModalBody").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+		$('#dialog-popup').show();
+	}
 </script>

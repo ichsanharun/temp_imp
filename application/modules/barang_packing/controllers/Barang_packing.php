@@ -51,10 +51,10 @@ class Barang_packing extends Admin_Controller {
                 barang_jenis.nm_jenis,
                 barang_group.nm_group,
                 barang_stock.satuan AS setpcs,
-                barang_master.qty as qty")
-                ->join("barang_master","barang_stock.id_barang = barang_master.id_barang","left")
-                ->join("barang_group","barang_group.id_group = barang_master.id_group","left")
-                ->join("barang_jenis","barang_stock.jenis = barang_jenis.id_jenis","left")
+                barang_stock.qty_stock as qty")
+                //->join("barang_master","barang_stock.id_barang = barang_master.id_barang","left")
+                ->join("barang_group","MID(barang_stock.id_barang,3,2) = barang_group.id_group","left")
+                ->join("barang_jenis","LEFT(barang_stock.id_barang,2) = barang_jenis.id_jenis","left")
                 //->join("supplier","barang_master.id_supplier = supplier.id_supplier","left")
                 ->group_by('barang_stock.id_barang')
                 ->where(array(
@@ -66,7 +66,8 @@ class Barang_packing extends Admin_Controller {
         $colly = $this->Barang_stock_model
                   ->select("barang_stock.*,
                   barang_jenis.nm_jenis,
-                  barang_group.nm_group")
+                  barang_group.nm_group,
+                  barang_stock.nm_barang as nama" )
                 ->join("barang_koli","barang_stock.id_barang = barang_koli.id_koli","left")
                 ->join("barang_group","barang_group.id_group = MID(barang_stock.id_barang,3,2)","left")
                 ->join("barang_jenis","barang_jenis.id_jenis = LEFT(barang_stock.id_barang,2)","left")
@@ -84,6 +85,26 @@ class Barang_packing extends Admin_Controller {
         $this->template->set('component', $component);
         $this->template->title('Produk Set');
         $this->template->render('list_index');
+    }
+
+    function get_item_barang(){
+      $kdcab = $this->auth->user_cab();
+        $idbarang = $_GET['idbarang'];
+        $session  = $this->session->userdata('app_session');
+        $datbarang= $this->db->query("SELECT * FROM barang_stock WHERE barang_stock.id_barang LIKE '%$idbarang%' AND barang_stock.kdcab ='$kdcab' AND barang_stock.kategori = 'colly'")->result();
+        $det ='<table cellpadding="5" cellspacing="0" border="0" class="table table-bordered" style="padding-left:50px;">';
+        foreach ($datbarang as $key => $value) {
+          $det .= '<tr>
+                <td></td>
+                <td>'.$value->id_barang.'</td>
+                <td>'.$value->nm_barang.'</td>
+                <td>'.$value->qty_stock.' PCS </td>
+              </tr>';
+        }
+        $det .= '</table>';
+
+        //echo json_encode($datbarang);
+        echo $det;
     }
 
    	//Create New barang

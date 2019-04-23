@@ -893,7 +893,7 @@ class Barang extends Admin_Controller
         $id = $this->uri->segment(3);
 
         if ($id != '') {
-            $result = $this->Barang_koli_model->delete($id);
+            $result = $this->Barang_koli_model->delete($id,"koli");
 
             $keterangan = 'SUKSES, Delete data Koli '.$id;
             $status = 1;

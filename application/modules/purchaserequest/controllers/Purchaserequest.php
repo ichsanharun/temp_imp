@@ -42,14 +42,14 @@ class Purchaserequest extends Admin_Controller
           $data = $this->Purchaserequest_model
           ->select('*,trans_pr_header.no_pr AS nopr')
           ->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')
-          ->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
+          //->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
           ->order_by('trans_pr_header.no_pr', 'ASC')->find_all();
         }else {
           $data = $this->Purchaserequest_model
           ->select('*,trans_pr_header.no_pr AS nopr')
           ->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')
           ->where(array('trans_pr_header.kdcab'=>$this->auth->user_cab()))
-          ->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
+          //->where_in('trans_pr_header.proses_po', array('Proses', 'REVISI'))
           ->order_by('trans_pr_header.no_pr', 'ASC')->find_all();
         }
         //$data = $this->db->query("SELECT * FROM trans_pr_header LEFT JOIN barang_master ON trans_pr_header.id_barang = barang_master.id_barang order by no_pr asc")->result();
@@ -78,7 +78,7 @@ class Purchaserequest extends Admin_Controller
         $cbm_sup = $this->db->get()->result();
 
         //$supplier = $this->Purchaserequest_model->get_data('1=1','supplier');
-        $supplier = $this->Purchaserequest_model->get_data('1=1', 'supplier');
+        $supplier = $this->Purchaserequest_model->get_data(array('sts_aktif'=>'aktif'), 'supplier');
         $cabang = $this->Purchaserequest_model->find_all_by(array('kdcab' => $session['kdcab']));
         $this->template->set('itembarang', $itembarang);
         $this->template->set('supplier', $supplier);
@@ -713,8 +713,8 @@ class Purchaserequest extends Admin_Controller
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
-        //$pr_data = $this->Purchaserequest_model->find_data('trans_pr_header',$nopr,'no_pr');
-        $pr_data = $this->Purchaserequest_model->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')->find_data('trans_pr_header', $nopr, 'no_pr');
+        $pr_data = $this->Purchaserequest_model->find_data('trans_pr_header',$nopr,'no_pr');
+        //$pr_data = $this->Purchaserequest_model->join('cabang', 'trans_pr_header.kdcab = cabang.kdcab', 'left')->find_data('trans_pr_header', $nopr, 'no_pr');
         //$pr_data = $this->Purchaserequest_model->query("SELECT * FROM trans_pr_header LEFT JOIN cabang ON trans_pr_header.kdcab = cabang.kdcab WHERE trans_pr_header.no_pr = '$nopr'")->result();
         //$detail = $this->Detailpurchaserequest_model->find_all_by(array('no_pr' => $nopr));
         $detail = $this->db->query("SELECT * FROM trans_pr_detail INNER JOIN barang_master ON trans_pr_detail.id_barang = barang_master.id_barang WHERE no_pr = '$nopr'")->result();

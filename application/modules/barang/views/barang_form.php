@@ -298,7 +298,7 @@ img:hover {
         </div>
 
         <div class="tab-pane" id="koli">
-        <!-- Data Koli -->
+          <!-- Data Koli -->
             <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;">
             </div>
             <!-- form start-->
@@ -467,7 +467,7 @@ img:hover {
               <?= form_close(); ?>
             </div>
             <div id="list_koli"></div>
-        <!-- Data Koli -->
+            <!-- Data Koli -->
         </div>
 
         <div class="tab-pane" id="komponen">
@@ -715,7 +715,7 @@ img:hover {
             dataType : "json",
             success:function(msg){
                $("#nm_group").val(msg['nm_group']);
-               setNapro();
+               //setNapro();
             }
         });
     }

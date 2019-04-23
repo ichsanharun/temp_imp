@@ -5,112 +5,352 @@
     $ENABLE_DELETE  = has_permission('Deliveryorder.Delete');
 ?>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
-<div class="box">
-  	<div class="box-header">
-          <?php if ($ENABLE_ADD) : ?>
-              <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
-              <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
-          <?php endif; ?>
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#DO" data-toggle="tab" aria-expanded="true" id="data">List DO</a></li>
+        <li class=""><a href="#INV" data-toggle="tab" aria-expanded="false" id="data_inv">List DO->INV</a></li>
+        <li class=""><a href="#CCL" data-toggle="tab" aria-expanded="false" id="data_ccl">List CCL</a></li>
+    </ul>
+    <!-- /.tab-content -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="DO">
+            <!-- form start-->
+            <div class="box">
+              	<div class="box-header">
+                      <?php if ($ENABLE_ADD) : ?>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                      <?php endif; ?>
 
-          <span class="pull-right">
-                  <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-          </span>
-    </div>
-    <div class="box-body">
-        <table id="example1" class="table table-bordered table-striped">
-        <thead>
-	        <tr>
-	            <th width="2%">#</th>
-              <th>NO. DO</th>
-              <th>NO. DO LAMA</th>
-	            <th>Nama Customer</th>
-              <th>Tanggal</th>
-              <th>Nama Salesman</th>
-              <th>Nama Supir</th>
-              <th>Helper</th>
-	            <th>Kendaraan</th>
-              <th>Status</th>
-	            <th>Aksi</th>
-              <th>Cetak</th>
-	        </tr>
-        </thead>
-        <tbody>
-          <?php if(@$results){ ?>
-            <?php
-            $n = 1;
-            foreach(@$results as $kso=>$vso){
-                $no = $n++;
-                $cancel = '-';
-                if($vso->status != 'INV'){
-                  if($vso->status != "CCL"){
-                    $cancel = '<span class="badge bg-orange" style="cursor:pointer;" onclick="setcanceldo(\''.$vso->no_do.'\')">CANCEL DO</span>';
-                  }else if($vso->status == "CCL"){
-                    $cancel = '<span class="badge bg-green">YA</span>';
-                  }
-                }
-            ?>
-            <tr>
-              <td><center><?php echo $no?></center></td>
-              <td><?php echo $vso->no_do?></td>
-              <td><?php echo $vso->nd?></td>
-              <td><?php echo $vso->nm_customer?></td>
-              <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_do))?></td>
-              <td><?php echo $vso->nm_salesman?></td>
-              <td><?php echo $vso->nm_supir?></td>
-              <td><?php echo $vso->nm_helper?></td>
-              <td><center><?php echo $vso->ket_kendaraan?></center></td>
-              <td><center><?php echo $vso->status?></center></td>
-              <!--<td><center><?php //echo $cancel?></center></td>-->
-                <td class="text-center">
-                  <?php if($vso->status != "CCL"){ ?>
-                     <?php if($vso->status != "INV"){ ?>
-                     <a title="Edit DO" class="text-green" href="#dialog-edit" data-toggle="modal" onclick="editheader('<?php echo $vso->no_do?>')">
-                      <span class="glyphicon glyphicon-edit"></span>
-                      </a>
+                      <span class="pull-right">
+                              <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+                      </span>
+                </div>
+                <div class="box-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                    <thead>
+            	        <tr>
+            	            <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>NO. SO</th>
+            	            <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+            	            <th>Kendaraan</th>
+                          <th>Status</th>
+            	            <th>Aksi</th>
+                          <th>Cetak</th>
+            	        </tr>
+                    </thead>
+                    <tbody>
+                      <?php if(@$results){ ?>
+                        <?php
+                        $n = 1;
+                        foreach(@$results as $kso=>$vso){
+                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                            $no = $n++;
+                            $cancel = '-';
+                            if($vso->status != 'INV'){
+                              if($vso->status != "CCL"){
+                                $cancel = '<span class="badge bg-orange" style="cursor:pointer;" onclick="setcanceldo(\''.$vso->no_do.'\')">CANCEL DO</span>';
+                              }else if($vso->status == "CCL"){
+                                $cancel = '<span class="badge bg-green">YA</span>';
+                              }
+                            }
+                        ?>
+                        <tr>
+                          <td><center><?php echo $no?></center></td>
+                          <td><?php echo $vso->no_do?></td>
+                          <td><?php echo $noso->no_so?></td>
+                          <td><?php echo $vso->nm_customer?></td>
+                          <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_do))?></td>
+                          <td><?php echo $vso->nm_salesman?></td>
+                          <td><?php echo $vso->nm_supir?></td>
+                          <td><?php echo $vso->nm_helper?></td>
+                          <td><center><?php echo $vso->ket_kendaraan?></center></td>
+                          <td><center><?php echo $vso->status?></center></td>
+                          <!--<td><center><?php //echo $cancel?></center></td>-->
+                            <td class="text-center">
+                              <?php if($vso->status != "CCL"){ ?>
+                                 <?php if($vso->status != "INV"){ ?>
+                                 <a title="Edit DO" class="text-green" href="#dialog-edit" data-toggle="modal" onclick="editheader('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-edit"></span>
+                                  </a>
+                                  <?php } ?>
+                                 <?php if($vso->status != "INV"){ ?>
+
+                                <a class="text-red" href="javascript:void(0)" title="Cancel DO" onclick="setcanceldo('<?php echo $vso->no_do?>')"><i class="fa fa-times"></i>
+                                </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                            <td>
+                              <?php if($vso->status != "CCL"){ ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-print"></span>
+                                  </a>
+                                <?php } ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewProforma('<?php echo $vso->no_do?>')" title="Proforma Invoice">
+                                  <span class="fa fa-ticket"></span>
+                                  </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
                       <?php } ?>
-                     <?php if($vso->status != "INV"){ ?>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                          <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+                          <th>Kendaraan</th>
+                          <th>Status</th>
+                          <th>Aksi</th>
+                      </tr>
+                    </tfoot>
+                    </table>
+                </div>
+            </div>
+          <!-- Data Produk -->
+        </div>
 
-                    <a class="text-red" href="javascript:void(0)" title="Cancel DO" onclick="setcanceldo('<?php echo $vso->no_do?>')"><i class="fa fa-times"></i>
-                    </a>
-                    <?php } ?>
-                  <?php } ?>
-                </td>
-                <td>
-                  <?php if($vso->status != "CCL"){ ?>
-                    <?php if($ENABLE_VIEW) { ?>
-                      <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
-                      <span class="glyphicon glyphicon-print"></span>
-                      </a>
-                    <?php } ?>
-                    <?php if($ENABLE_VIEW) { ?>
-                      <a href="#dialog-popup" data-toggle="modal" onclick="PreviewProforma('<?php echo $vso->no_do?>')" title="Proforma Invoice">
-                      <span class="fa fa-ticket"></span>
-                      </a>
-                    <?php } ?>
-                  <?php } ?>
-                </td>
-            </tr>
-            <?php } ?>
-          <?php } ?>
-        </tbody>
-        <tfoot>
-          <tr>
-              <th width="2%">#</th>
-              <th>NO. DO</th>
-              <th>Nama Customer</th>
-              <th>Tanggal</th>
-              <th>Nama Salesman</th>
-              <th>Nama Supir</th>
-              <th>Helper</th>
-              <th>Kendaraan</th>
-              <th>Status</th>
-              <th>Aksi</th>
-          </tr>
-        </tfoot>
-        </table>
+        <div class="tab-pane" id="INV">
+            <!-- form start-->
+            <div class="box">
+              	<div class="box-header">
+                      <?php if ($ENABLE_ADD) : ?>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                      <?php endif; ?>
+
+                      <span class="pull-right">
+                              <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+                      </span>
+                </div>
+                <div class="box-body">
+                    <table id="tbl_inv" class="table table-bordered table-striped">
+                    <thead>
+            	        <tr>
+            	            <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>NO. SO</th>
+            	            <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+            	            <th>Kendaraan</th>
+                          <th>Status</th>
+            	            <th>Aksi</th>
+                          <th>Cetak</th>
+            	        </tr>
+                    </thead>
+                    <tbody>
+                      <?php if(@$results_INV){ ?>
+                        <?php
+                        $n = 1;
+                        foreach(@$results_INV as $kso=>$vso){
+                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                            $no = $n++;
+                            $cancel = '-';
+                            if($vso->status != 'INV'){
+                              if($vso->status != "CCL"){
+                                $cancel = '<span class="badge bg-orange" style="cursor:pointer;" onclick="setcanceldo(\''.$vso->no_do.'\')">CANCEL DO</span>';
+                              }else if($vso->status == "CCL"){
+                                $cancel = '<span class="badge bg-green">YA</span>';
+                              }
+                            }
+                        ?>
+                        <tr>
+                          <td><center><?php echo $no?></center></td>
+                          <td><?php echo $vso->no_do?></td>
+                          <td><?php echo $noso->no_so?></td>
+                          <td><?php echo $vso->nm_customer?></td>
+                          <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_do))?></td>
+                          <td><?php echo $vso->nm_salesman?></td>
+                          <td><?php echo $vso->nm_supir?></td>
+                          <td><?php echo $vso->nm_helper?></td>
+                          <td><center><?php echo $vso->ket_kendaraan?></center></td>
+                          <td><center><?php echo $vso->status?></center></td>
+                          <!--<td><center><?php //echo $cancel?></center></td>-->
+                            <td class="text-center">
+                              <?php if($vso->status != "CCL"){ ?>
+                                 <?php if($vso->status != "INV"){ ?>
+                                 <a title="Edit DO" class="text-green" href="#dialog-edit" data-toggle="modal" onclick="editheader('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-edit"></span>
+                                  </a>
+                                  <?php } ?>
+                                 <?php if($vso->status != "INV"){ ?>
+
+                                <a class="text-red" href="javascript:void(0)" title="Cancel DO" onclick="setcanceldo('<?php echo $vso->no_do?>')"><i class="fa fa-times"></i>
+                                </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                            <td>
+                              <?php if($vso->status != "CCL"){ ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-print"></span>
+                                  </a>
+                                <?php } ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewProforma('<?php echo $vso->no_do?>')" title="Proforma Invoice">
+                                  <span class="fa fa-ticket"></span>
+                                  </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                      <?php } ?>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                          <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+                          <th>Kendaraan</th>
+                          <th>Status</th>
+                          <th>Aksi</th>
+                      </tr>
+                    </tfoot>
+                    </table>
+                </div>
+            </div>
+          <!-- Data Produk -->
+        </div>
+
+        <div class="tab-pane" id="CCL">
+            <!-- form start-->
+            <div class="box">
+              	<div class="box-header">
+                      <?php if ($ENABLE_ADD) : ?>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                      <?php endif; ?>
+
+                      <span class="pull-right">
+                              <?php //echo anchor(site_url('customer/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
+                      </span>
+                </div>
+                <div class="box-body">
+                    <table id="tbl_ccl" class="table table-bordered table-striped">
+                    <thead>
+            	        <tr>
+            	            <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>NO. SO</th>
+            	            <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+            	            <th>Kendaraan</th>
+                          <th>Status</th>
+            	            <th>Aksi</th>
+                          <th>Cetak</th>
+            	        </tr>
+                    </thead>
+                    <tbody>
+                      <?php if(@$results_CCL){ ?>
+                        <?php
+                        $n = 1;
+                        foreach(@$results_CCL as $kso=>$vso){
+                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                            $no = $n++;
+                            $cancel = '-';
+                            if($vso->status != 'INV'){
+                              if($vso->status != "CCL"){
+                                $cancel = '<span class="badge bg-orange" style="cursor:pointer;" onclick="setcanceldo(\''.$vso->no_do.'\')">CANCEL DO</span>';
+                              }else if($vso->status == "CCL"){
+                                $cancel = '<span class="badge bg-green">YA</span>';
+                              }
+                            }
+                        ?>
+                        <tr>
+                          <td><center><?php echo $no?></center></td>
+                          <td><?php echo $vso->no_do?></td>
+                          <td><?php echo $noso->no_so?></td>
+                          <td><?php echo $vso->nm_customer?></td>
+                          <td class="text-center"><?php echo date('d/m/Y',strtotime($vso->tgl_do))?></td>
+                          <td><?php echo $vso->nm_salesman?></td>
+                          <td><?php echo $vso->nm_supir?></td>
+                          <td><?php echo $vso->nm_helper?></td>
+                          <td><center><?php echo $vso->ket_kendaraan?></center></td>
+                          <td><center><?php echo $vso->status?></center></td>
+                          <!--<td><center><?php //echo $cancel?></center></td>-->
+                            <td class="text-center">
+                              <?php if($vso->status != "CCL"){ ?>
+                                 <?php if($vso->status != "INV"){ ?>
+                                 <a title="Edit DO" class="text-green" href="#dialog-edit" data-toggle="modal" onclick="editheader('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-edit"></span>
+                                  </a>
+                                  <?php } ?>
+                                 <?php if($vso->status != "INV"){ ?>
+
+                                <a class="text-red" href="javascript:void(0)" title="Cancel DO" onclick="setcanceldo('<?php echo $vso->no_do?>')"><i class="fa fa-times"></i>
+                                </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                            <td>
+                              <?php if($vso->status != "CCL"){ ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
+                                  <span class="glyphicon glyphicon-print"></span>
+                                  </a>
+                                <?php } ?>
+                                <?php if($ENABLE_VIEW) { ?>
+                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewProforma('<?php echo $vso->no_do?>')" title="Proforma Invoice">
+                                  <span class="fa fa-ticket"></span>
+                                  </a>
+                                <?php } ?>
+                              <?php } ?>
+                            </td>
+                        </tr>
+                        <?php } ?>
+                      <?php } ?>
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                          <th width="2%">#</th>
+                          <th>NO. DO</th>
+                          <th>Nama Customer</th>
+                          <th>Tanggal</th>
+                          <th>Nama Salesman</th>
+                          <th>Nama Supir</th>
+                          <th>Helper</th>
+                          <th>Kendaraan</th>
+                          <th>Status</th>
+                          <th>Aksi</th>
+                      </tr>
+                    </tfoot>
+                    </table>
+                </div>
+            </div>
+          <!-- Data Produk -->
+        </div>
+
+
     </div>
+    <!-- /.tab-content -->
 </div>
-<!-- Modal -->
+
 <div class="modal modal-primary" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -157,6 +397,8 @@
 <script type="text/javascript">
     $(function() {
       var dataTable = $("#example1").DataTable();
+      var tbl_inv = $("#tbl_inv").DataTable();
+      var tbl_ccl = $("#tbl_ccl").DataTable();
     });
 
     function add_data(){
