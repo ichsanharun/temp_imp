@@ -415,6 +415,7 @@
         $('#tgl_inv').datepicker({
             //startDate: 'm',
             //endDate: '+2d',
+            endDate: '+0d',
             format : "yyyy-mm-dd",
             showInputs: true,
             autoclose:true,

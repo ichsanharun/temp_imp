@@ -373,7 +373,7 @@ class Deliveryorder_2 extends Admin_Controller {
   			$data_adj_trans 	= array(
   				'id_st'				=> $id_st,
   				'tipe'				=> 'OUT',
-  				'jenis_trans'		=> 'OUT_Pembelian',
+  				'jenis_trans'		=> 'OUT_PENJUALAN',
   				'noreff'			=> $Nomor_DO,
   				'id_barang'			=> $getitemso->id_barang,
   				'nm_barang'			=> $getitemso->nm_barang,

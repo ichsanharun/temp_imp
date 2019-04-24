@@ -16,6 +16,7 @@
                   <th>NO. DO</th>
                   <th>NAMA CUSTOMER</th>
                   <th>TANGGAL DO</th>
+                  <th>STATUS</th>
                   <th>NAMA SALESMAN</th>
                   <th>NAMA SUPIR</th>
                   <th>NAMA HELPER</th>
@@ -43,6 +44,7 @@
                   <td><?= $row->no_do ?> </td>
                   <td><?= $row->nm_customer ?> </td>
                   <td><?= $row->tgl_do ?> </td>
+                  <td><?= $row->status ?> </td>
                   <td><?= $row->nm_salesman ?> </td>
                   <td><?= $row->nm_supir ?> </td>
                   <td><?= $row->nm_helper ?> </td>

@@ -69,6 +69,22 @@ class Receivingmutasi extends Admin_Controller {
             );
         $this->db->trans_begin();
         for($i=0;$i < count($this->input->post('id_barang_rec_mutasi'));$i++){
+
+          $idb = $this->input->post('id_barang_rec_mutasi')[$i];
+
+          $cek_nama_asal = $this->db->query("SELECT * FROM barang_stock WHERE id_barang = '$idb' AND kdcab = '$kdcab_asal'")->row();
+          $qty_stock_awal_asal   = $cek_nama->qty_stock
+          $qty_avl_awal_asal     = $cek_nama->qty_avl
+          $qty_stock_akhir_asal  = $cek_nama->qty_stock-$this->input->post('qty_rec_mutasi')[$i];
+          $qty_avl_akhir_asal    = $cek_nama->qty_avl-$this->input->post('qty_rec_mutasi')[$i];
+
+          $cek_nama_tujuan = $this->db->query("SELECT * FROM barang_stock WHERE id_barang = '$idb' AND kdcab = '$kdcab_tujuan'")->row();
+          $qty_stock_awal_tujuan   = $cek_nama->qty_stock
+          $qty_avl_awal_tujuan     = $cek_nama->qty_avl
+          $qty_stock_akhir_tujuan  = $cek_nama->qty_stock+$this->input->post('qty_rec_mutasi')[$i];
+          $qty_avl_akhir_tujuan    = $cek_nama->qty_avl+$this->input->post('qty_rec_mutasi')[$i];
+
+
             $datadetail = array(
                 'qty_received'    => $this->input->post('qty_rec_mutasi')[$i],
                 'received_on'    => date('Y-m-d H:i:s'),
@@ -97,6 +113,49 @@ class Receivingmutasi extends Admin_Controller {
             $this->db->where(array('id_barang'=>$this->input->post('id_barang_rec_mutasi')[$i],'kdcab'=>$kdcab_tujuan));
             $this->db->update('barang_stock',$datatujuan);
             //Update STOK REAL
+
+
+            $id_st 			= $this->Trans_stock_model->gen_st($kdcab_asal).$i;
+      			$data_adj_trans 	= array(
+      				'id_st'				=> $id_st,
+      				'tipe'				=> 'OUT',
+      				'jenis_trans'		=> 'OUT_MUTASI',
+      				'noreff'			=> $no_mutasi,
+      				'id_barang'			=> $this->input->post('id_barang_rec_mutasi')[$i],
+      				'nm_barang'			=> $cek_nama_asal->nm_barang,
+      				'kdcab'				=> $kdcab_asal,
+      				'date_stock'		=> date('Y-m-d H:i:s'),
+      				'qty'				=> $this->input->post('qty_rec_mutasi')[$i],
+      				'nilai_barang'		=> $cek_nama_asal->harga,
+      				'notes'				=> 'MUTASI',
+      				'qty_stock_awal'	=> $qty_stock_awal_asal,
+      				'qty_avl_awal' 		=> $qty_avl_awal_asal,
+      				'qty_stock_akhir'	=> $qty_stock_akhir_asal,
+      				'qty_avl_akhir' 	=> $qty_avl_akhir_asal
+      			);
+      			$this->Trans_stock_model->insert($data_adj_trans);
+
+            $id_st 			= $this->Trans_stock_model->gen_st($kdcab_tujuan).$i;
+      			$data_adj_trans 	= array(
+      				'id_st'				=> $id_st,
+      				'tipe'				=> 'IN',
+      				'jenis_trans'		=> 'IN_MUTASI',
+      				'noreff'			=> $no_mutasi,
+      				'id_barang'			=> $this->input->post('id_barang_rec_mutasi')[$i],
+      				'nm_barang'			=> $cek_nama_tujuan->nm_barang,
+      				'kdcab'				=> $kdcab_tujuan,
+      				'date_stock'		=> date('Y-m-d H:i:s'),
+      				'qty'				=> $this->input->post('qty_rec_mutasi')[$i],
+      				'nilai_barang'		=> $cek_nama_tujuan->harga,
+      				'notes'				=> 'MUTASI',
+      				'qty_stock_awal'	=> $qty_stock_awal_tujuan,
+      				'qty_avl_awal' 		=> $qty_avl_awal_tujuan,
+      				'qty_stock_akhir'	=> $qty_stock_akhir_tujuan,
+      				'qty_avl_akhir' 	=> $qty_avl_akhir_tujuan
+      			);
+      			$this->Trans_stock_model->insert($data_adj_trans);
+
+
         }
         $this->db->where(array('no_mutasi'=>$no_mutasi));
         $this->db->update('trans_mutasi_header',$dataheader);

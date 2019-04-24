@@ -472,10 +472,10 @@ class Adjusment extends Admin_Controller {
         }
         $data_adj_h = array(
                     'id_adjusment'=>$id_adjusment,
-                    'date'        =>$date,
+                    'date'        =>$this->input->post("tgladjust"),
                     'kdcab'       =>$this->auth->user_cab(),
                     'noreff'      =>$noreff,
-                    'notes'       =>$notes,
+                    'notes'       =>$this->input->post("keterangan"),
                     'created_by'  =>$session['id_user'],
                     'created_on'  =>date("Y-m-d H:i:s"),
                     'modified_on' =>date("Y-m-d H:i:s"),

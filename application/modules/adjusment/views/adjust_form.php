@@ -7,14 +7,52 @@
     $ENABLE_DELETE  = has_permission('Setup_stock.Delete');
 ?>
 <!-- END FORM HEADER SO-->
+<form id="form-adjus" method="post">
 <div class="box box-default ">
   <div class="box-header">
+    <div class="col-sm-3">
 		<?php if ($ENABLE_ADD) : ?>
 			<a class="btn btn-success" href="#dialog-popup" data-toggle="modal" title="Add" onclick="add_list()"><i class="fa fa-plus">&nbsp;</i>Add List</a>
 
 		<?php endif; ?>
+    </div>
+    <div class="col-sm-4">
+      <!-- Data Tanggal SO -->
+        <div class="form-group ">
+            <?php
+              $tglso=date('Y-m-d');
+            ?>
+            <label for="tglso" class="col-sm-4 control-label">Tanggal <font size="4" color="red"><B>*</B></font></label>
+            <div class="col-sm-8">
+                <div class="input-group">
+                    <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                    <input type="text" name="tgladjust" id="tgladjust" class="form-control input-sm datepicker" value="<?php echo $tglso?>" required>
+                </div>
+            </div>
+        </div>
+      <!-- Data Tanggal SO -->
+
+    </div>
+
+    <div class="col-sm-5">
+      <div class="form-horizontal">
+
+        <!-- Data Keterangan -->
+        <div class="form-group ">
+          <label for="keterangan" class="col-sm-4 control-label">Keterangan<font size="4" color="red"><B>*</B></font></label>
+          <div class="col-sm-8">
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-file"></i></span>
+              <textarea name="keterangan" id="keterangan" class="form-control input-sm" placeholder="Keterangan"><?php echo $data->keterangan?></textarea>
+            </div>
+          </div>
+        </div>
+        <!-- Data Keterangan -->
+
+      </div>
+    </div>
 	</div>
-  <form id="form-adjus" method="post">
+
     <div class="box-body">
         <div id="div-form">
         <table id="listadjust" class="table table-bordered table-striped" width="100%">
@@ -55,8 +93,8 @@
         </table>
         </div>
     </div>
-  </form>
 </div>
+</form>
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
 
@@ -134,7 +172,19 @@
     }
 
     function save(){
-        var formdata = $("#form-adjus").serialize();
+      var table = $('#listadjust').DataTable();
+        //var formdata = $("#form-adjus").serialize();
+        var formdata = table.$('input, select').serialize();
+        /*console.log("----------------------------------");
+        table.$("input, select").each(function(){
+         var input = $(this); // This is the jquery object of the input, do what you will
+         console.log($(this).attr('name') + " = " + $(this).val());
+         console.log("----------------------------------");
+        });
+        console.log("----------------------------------");*/
+
+
+        //console.log(formdata);
         $.ajax({
             url: siteurl+"adjusment/save_data_adjus",
             dataType : "json",

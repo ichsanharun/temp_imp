@@ -91,7 +91,7 @@ class Adjusment_stock_model extends BF_Model
         $query="SELECT
                 *
                 FROM
-                barang_stock WHERE kdcab='$kdcab'";
+                barang_stock WHERE kdcab='$kdcab' AND kategori = 'set'";
         return $this->db->query($query);
     }
 

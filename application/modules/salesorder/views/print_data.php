@@ -96,6 +96,11 @@ date_default_timezone_set("Asia/Bangkok");
         }else {
           $harga_net = (($vs->harga_normal*((100-$vs->diskon_persen)/100))*((100-$vs->diskon_promo_persen)/100))*((100-$vs->diskon_so)/100);
         }
+        if ($so_data->stsorder == 'PENDING') {
+          $qty = $vs->qty_order;
+        }else {
+          $qty = $vs->qty_booked;
+        }
         $total += $harga_net*$vs->qty_booked;
         $colly = $this->Salesorder_model->get_data(array('id_barang' => $vs->id_barang),'barang_koli');
         ?>
@@ -132,9 +137,9 @@ date_default_timezone_set("Asia/Bangkok");
                 </center>
             </td>
             <td width="8%" style="vertical-align: top;"><center><?php echo $vs->satuan?></center></td>
-            <td width="5%" style="vertical-align: top;"><center><?php echo $vs->qty_order?></center></td>
+            <td width="5%" style="vertical-align: top;"><center><?php echo $qty?></center></td>
             <td width="15%" style="text-align: right;vertical-align: top;"><?php echo formatnomor($harga_net)?></td>
-            <td width="15%" style="text-align: right;vertical-align: top;"><?php echo formatnomor($harga_net*$vs->qty_booked)?></td>
+            <td width="15%" style="text-align: right;vertical-align: top;"><?php echo formatnomor($harga_net*$qty)?></td>
 
         </tr>
         <?php }

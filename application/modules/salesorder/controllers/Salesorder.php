@@ -2622,7 +2622,11 @@ class Salesorder extends Admin_Controller {
             $harga_net = (($value->harga_normal*((100-$value->diskon_persen)/100))*((100-$value->diskon_promo_persen)/100))*((100-$value->diskon_so)/100);
           }
           $tot += $harga_net*$value->qty_booked;
+          if ($so_data->stsorder == 'PENDING') {
+            $tot += $harga_net*$value->qty_order;
+          }
         }
+
         $header = '
         <table width="100%" border="0" id="header-tabel">
           <?php  ?>
@@ -2702,7 +2706,16 @@ class Salesorder extends Admin_Controller {
               $disto = "1. Disc - %";
             }
 
-            $disc_toko = @$so_data->persen_diskon_toko*@$tot/100;
+            if ($so_data->stsorder == 'PENDING') {
+              $totality = $tot;
+              $disc_toko = 0;
+              $disc_cash = 0;
+            }else {
+              $totality = $so_data->total;
+              $disc_toko = @$so_data->persen_diskon_toko*@$tot/100;
+              $disc_cash = @$so_data->persen_diskon_cash*(@$tot-$disc_toko)/100;
+            }
+
 
             if (@$so_data->diskon_cash != 0) {
               $disca = "2. Diskon Cash";
@@ -2754,7 +2767,7 @@ class Salesorder extends Admin_Controller {
                     </td>
                     <td width="1%">:</td>
                     <td width="10%" style="text-align: right;">
-                      '.formatnomor(@$so_data->persen_diskon_cash*@$so_data->dpp/100).'
+                      '.formatnomor($disc_cash).'
                     </td>
                     <td width="8%" style="text-align: right;">31-60</td>
                     <td width="1%">:</td>
@@ -2792,7 +2805,7 @@ class Salesorder extends Admin_Controller {
                     <td width="15%"></td>
                     <td width="15%"><b>GRAND TOTAL</b></td>
                     <td width="1%">:</td>
-                    <td style="border:solid 1px #000;text-align: right;margin-right: 10px;"><b> '.formatnomor(@$so_data->total).'</b></td>
+                    <td style="border:solid 1px #000;text-align: right;margin-right: 10px;"><b> '.formatnomor($totality).'</b></td>
                     <td width="8%" style="text-align: right;">TOTAL</td>
                     <td width="1%">:</td>
                     <td></td>

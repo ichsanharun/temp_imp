@@ -234,7 +234,7 @@ class Reportstok_trans extends Admin_Controller {
         $mpdf->SetImportUse();
         //$mpdf->RestartDocTemplate();
         $session = $this->session->userdata('app_session');
-        $trans = $this->Trans_stock_model->order_by('date_stock','DESC')->find_all_by(array('id_barang'=>$id,'kdcab'=>$session['kdcab']));
+        $trans = $this->Trans_stock_model->order_by('created_on','DESC')->find_all_by(array('id_barang'=>$id,'kdcab'=>$session['kdcab']));
         //$customer = $this->Salesorder_model->cek_data(array('id_customer'=>$so_data->id_customer),'customer');
         //$detail = $this->Detailsalesorder_model->find_all_by(array('no_so' => $no_so, 'qty_booked >'=>0));
 

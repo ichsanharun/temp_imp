@@ -18,6 +18,8 @@
                   <th>NAMA CUSTOMER</th>
                   <th>TANGGAL INVOICE</th>
                   <th>NAMA SALES</th>
+                  <th>DISKON TOKO</th>
+                  <th>DISKON CASH</th>
                   <th>TOTAL INVOICE</th>
                   <th>NAMA PRODUK</th>
                   <th>JENIS PRODUK</th>
@@ -78,6 +80,8 @@
               <td><?php echo $vr->nm_customer?></td>
               <td><center><?php echo $vr->tanggal_invoice?></center></td>
               <td><?php echo $vr->nm_salesman?></td>
+              <td><?php echo $vr->diskon_toko_persen?></td>
+              <td><?php echo $vr->diskon_cash_persen?></td>
               <td class="text-right"><?php echo $vr->hargajualtotal?></td>
 
               <td><?= $vr->nm_barang ?> </td>
@@ -119,8 +123,10 @@
                   <th style="text-align: right;"><?php echo $total?></th>
                   <th style="text-align: left;" colspan="14">
                     <?php
-                    foreach ($arr_nama as $key => $val) {
-                      echo 'PENJUALAN '.$key.' = '.($val*100/$tc).'%<br>';
+                    if ($arr_nama) {
+                      foreach ($arr_nama as $key => $val) {
+                        echo 'PENJUALAN '.$key.' = '.($val*100/$tc).'%<br>';
+                      }
                     }
                      ?>
                   </th>

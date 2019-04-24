@@ -49,7 +49,7 @@
                         <?php
                         $n = 1;
                         foreach(@$results as $kso=>$vso){
-                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                          $noso = $this->db->query("SELECT no_so FROM trans_do_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
                             $no = $n++;
                             $cancel = '-';
                             if($vso->status != 'INV'){
