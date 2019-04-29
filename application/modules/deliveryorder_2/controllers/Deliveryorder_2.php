@@ -54,16 +54,7 @@ class Deliveryorder_2 extends Admin_Controller {
     //Create New Delivery Order
     public function create(){
       $session = $this->session->userdata('app_session');
-        //$this->auth->restrict($this->addPermission);
-        /*
-        $nodo = $this->Deliveryorder_model->generate_nodo($session['kdcab']);
 
-        $marketing = $this->Deliveryorder_model->pilih_marketing()->result();
-        $getitemdo = $this->Detaildeliveryorder_model->find_all_by(array('no_do'=>$nodo));
-
-        $this->template->set('marketing',$marketing);
-        $this->template->set('detaildo',$getitemdo);
-        */
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$session['kdcab']));
         $this->template->set('customer',$customer);
 
@@ -391,6 +382,7 @@ class Deliveryorder_2 extends Admin_Controller {
   			$this->Trans_stock_model->insert($data_adj_trans);
 
   		}
+      /*
   		for($x=0;$x < count($detail['noso_todo']);$x++){
   			$getkeyso 		= $this->db->where(array('no_so' => $_POST['noso_todo'][$x]))
                                    ->from('trans_so_detail')
@@ -404,7 +396,16 @@ class Deliveryorder_2 extends Admin_Controller {
   				$this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
   				$this->db->update('trans_so_header',array('pending_counter'=>$getkeyso.$csosupplied));
               }
-  		}
+  		}*/
+      for($x=0;$x < count($detail['noso_todo']);$x++){
+        $cek_pendingan = $this->db->where(array('qty_booked != qty_supply'))
+                                   ->from('trans_so_detail')
+                                   ->count_all_results();
+        if ($cek_pendingan == 0) {
+          $this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
+          $this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
+        }
+      }
 
   		## JURNAL PERSEDIAAN ##
   		if($Total_Landed > 0){
@@ -488,7 +489,11 @@ class Deliveryorder_2 extends Admin_Controller {
             $kdcab = substr($nodo,0,3);
             $session = $this->session->userdata('app_session');
             $this->db->trans_begin();
+            $head = $this->db->where(array('no_do'=>$nodo))->get('trans_do_header')->row();
            $getitemdo = $this->Salesorder_model->get_data(array('no_do'=>$nodo),'trans_do_detail');
+            $Harga_Landed   = 0;
+            $Qty_Supp       = 0;
+            $Total_Landed   = 0;
            foreach($getitemdo as $k=>$v){
                 //Update STOK REAL
                 $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$v->id_barang,'kdcab'=>$kdcab),'barang_stock');
@@ -498,15 +503,75 @@ class Deliveryorder_2 extends Admin_Controller {
 
                 //Update QTY SUPPLY SO
                 $qtysuppso = $this->Salesorder_model->cek_data(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so),'trans_so_detail');
-                $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
-                $this->db->update('trans_so_detail',array('proses_do'=>NULL,'qty_supply'=>$qtysuppso->qty_supply - $v->qty_supply - $v->return_do - $v->return_do_rusak - $v->return_do_hilang));
+                $hitung_sup = $qtysuppso->qty_supply - $v->qty_supply - $v->return_do - $v->return_do_rusak - $v->return_do_hilang ;
+                if ($hitung_sup > 0) {
+                  $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
+                  $this->db->update('trans_so_detail',array('proses_do'=>"PENDING",'qty_supply'=>$hitung_sup));
+                }else {
+                  // code...
+                }
                 $this->db->where(array('no_so'=>$v->no_so));
                 $this->db->update('trans_so_header',array('do_supplied'=>NULL));
                 //Update QTY SUPPLY SO
 
                 $this->db->where(array('no_so'=>$v->no_so));
                 $this->db->update('trans_so_header',array('stsorder'=>'OPEN'));
+                $Harga_Landed = $v->harga_landed;
+                $Qty_Supp = $v->qty_supply;
+                $Total_Landed		+= ($Harga_Landed * $Qty_Supp);
+
            }
+
+          if($Total_Landed > 0){
+       			$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Memorial($Kode_Cabang,$Tgl_DO);
+       			$Keterangan_JV			= ' BATAL HPP#DO '.$nodo.'#'.$head->nm_customer;
+
+       			$dataJVhead = array(
+       				'nomor' 	    	=> $Nomor_JV,
+       				'tgl'	         	=> date("Y-m-d"),
+       				'jml'	          	=> $Total_Landed,
+       				'koreksi_no'		=> '',
+       				'kdcab'				=> $kdcab,
+       				'jenis'			    => 'V',
+       				'keterangan' 		=> $Keterangan_JV,
+       				'bulan'				=> date('n'),
+       				'tahun'				=> date('Y'),
+       				'user_id'			=> $session['id_user'],
+       				'memo'			    => '',
+       				'tgl_jvkoreksi'		=> date("Y-m-d"),
+       				'ho_valid'			=> ''
+       			);
+
+       			$det_Jurnal				= array();
+       			$det_Jurnal[0]			= array(
+       				  'nomor'         => $Nomor_JV,
+       				  'tanggal'       => date("Y-m-d"),
+       				  'tipe'          => 'JV',
+       				  'no_perkiraan'  => '5201-01-01',
+       				  'keterangan'    => $Keterangan_JV,
+       				  'no_reff'       => $nodo,
+       				  'debet'         => 0,
+       				  'kredit'        => $Total_Landed
+       			);
+
+       			$det_Jurnal[1]			= array(
+       				  'nomor'         => $Nomor_JV,
+       				  'tanggal'       => date("Y-m-d"),
+       				  'tipe'          => 'JV',
+       				  'no_perkiraan'  => '1105-01-01',
+       				  'keterangan'    => $Keterangan_JV,
+       				  'no_reff'       => $nodo,
+       				  'debet'         => $Total_Landed,
+       				  'kredit'        => 0
+       			);
+
+       			$this->db->insert('javh',$dataJVhead);
+       			$this->db->insert_batch('jurnal',$det_Jurnal);
+       			$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Kode_Cabang,'JM');
+       		}
+
+
+
            $this->db->where(array('no_do'=>$nodo));
            $this->db->update('trans_do_header',array('status'=>'CCL'));
             if ($this->db->trans_status() === FALSE){
