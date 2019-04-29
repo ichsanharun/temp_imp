@@ -105,8 +105,8 @@ date_default_timezone_set("Asia/Bangkok");
         $colly = $this->Salesorder_model->get_data(array('id_barang' => $vs->id_barang),'barang_koli');
         ?>
         <tr>
-            <td width="1%" style="vertical-align: top;"><center><?php echo $no?></center></td>
-            <td width="40%" style="vertical-align: top;"><?php echo $vs->nm_barang?></td>
+            <td width="5%" style="vertical-align: top;"><center><?php echo $no.". "?></center></td>
+            <td width="40%" style="vertical-align: top;padding-left:5px"><?php echo $vs->nm_barang?></td>
             <td width="20%">
                  <?php
                 $sn = 1;

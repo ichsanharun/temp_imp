@@ -41,6 +41,7 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
               <select class="form-control input-sm" id="filterbulan">
                 <option value="">Pilih Bulan</option>
+                <option value="All">All</option>
                 <?php
                 foreach(the_bulan() as $kb=>$vb){
                   $selectedbln = '';

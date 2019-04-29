@@ -2,7 +2,7 @@
 date_default_timezone_set("Asia/Bangkok");
 header("Content-type: application/vnd-ms-excel");
 
-header("Content-Disposition: attachment; filename=x.xls");
+header("Content-Disposition: attachment; filename=REPORT_PIUTANG_".date("d-M-Y_H:i:s").".xls");
 
 header("Pragma: no-cache");
 
@@ -14,7 +14,7 @@ header("Expires: 0");
     <title></title>
     <style>
 
-        
+
 
         #header-tabel tr {
             padding: 0px;
@@ -177,12 +177,14 @@ header("Expires: 0");
     <hr />
     <table width="100%" id="tabel-laporan">
         <tr>
+            <td></td>
             <td width="10%"><center>DIPERIKSA</center></td>
             <td width="10%"><center>FISIK UANG TUNAI/GIRO</center></td>
             <td width="40%" colspan="2"><center>PENGEMBALIAN FAKTUR</center></td>
             <td width="40%" colspan="2"><center>PENYERAHAN FAKTUR</center></td>
         </tr>
         <tr>
+            <td></td>
             <td width="20%" style="border-bottom: none;"><center></center></td>
             <td width="20%"><center>DITERIMA</center></td>
             <td width="20%"><center>DITERIMA</center></td>
@@ -191,6 +193,7 @@ header("Expires: 0");
             <td width="20%"><center>DISERAHKAN</center></td>
         </tr>
         <tr>
+            <td></td>
             <td width="20%" style="height: 80px;border-top: none;" valign="bottom"><center>(..................................................)<br>SALES SPV</center></td>
             <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>KASIR</center></td>
             <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>ADM. PENAGIHAN</center></td>
@@ -199,6 +202,7 @@ header("Expires: 0");
             <td width="20%" style="height: 80px;" valign="bottom"><center>(..................................................)<br>ADM. PENAGIHAN</center></td>
         </tr>
         <tr>
+            <td></td>
             <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
             <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
             <td width="20%">&nbsp;&nbsp;&nbsp;TGL : </td>
@@ -210,10 +214,12 @@ header("Expires: 0");
     <br>
     <div id="footer">
     <table>
-        <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
+        <tr>
+          <td colspan="7">PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td>
+        </tr>
     </table>
     </div>
 </htmlpagefooter>
-<sethtmlpagefooter name="footer" value="on" />
+
 </body>
 </html>

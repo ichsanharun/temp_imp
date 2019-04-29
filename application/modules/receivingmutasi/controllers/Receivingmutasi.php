@@ -73,14 +73,14 @@ class Receivingmutasi extends Admin_Controller {
           $idb = $this->input->post('id_barang_rec_mutasi')[$i];
 
           $cek_nama_asal = $this->db->query("SELECT * FROM barang_stock WHERE id_barang = '$idb' AND kdcab = '$kdcab_asal'")->row();
-          $qty_stock_awal_asal   = $cek_nama->qty_stock
-          $qty_avl_awal_asal     = $cek_nama->qty_avl
+          $qty_stock_awal_asal   = $cek_nama->qty_stock;
+          $qty_avl_awal_asal     = $cek_nama->qty_avl;
           $qty_stock_akhir_asal  = $cek_nama->qty_stock-$this->input->post('qty_rec_mutasi')[$i];
           $qty_avl_akhir_asal    = $cek_nama->qty_avl-$this->input->post('qty_rec_mutasi')[$i];
 
           $cek_nama_tujuan = $this->db->query("SELECT * FROM barang_stock WHERE id_barang = '$idb' AND kdcab = '$kdcab_tujuan'")->row();
-          $qty_stock_awal_tujuan   = $cek_nama->qty_stock
-          $qty_avl_awal_tujuan     = $cek_nama->qty_avl
+          $qty_stock_awal_tujuan   = $cek_nama->qty_stock;
+          $qty_avl_awal_tujuan     = $cek_nama->qty_avl;
           $qty_stock_akhir_tujuan  = $cek_nama->qty_stock+$this->input->post('qty_rec_mutasi')[$i];
           $qty_avl_akhir_tujuan    = $cek_nama->qty_avl+$this->input->post('qty_rec_mutasi')[$i];
 

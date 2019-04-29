@@ -119,6 +119,17 @@
                               </div>
                             </div>
                         </div>
+                        <!-- Data Keterangan -->
+                        <div class="form-group ">
+                          <label for="keterangan" class="col-sm-4 control-label">Keterangan<font size="4" color="red"><B>*</B></font></label>
+                          <div class="col-sm-8">
+                            <div class="input-group">
+                              <span class="input-group-addon"><i class="fa fa-file"></i></span>
+                              <textarea name="keterangan" id="keterangan" class="form-control input-sm" placeholder="Keterangan"></textarea>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Data Keterangan -->
                     </div>
                 </div>
 

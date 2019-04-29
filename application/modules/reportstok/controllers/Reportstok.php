@@ -267,7 +267,7 @@ class Reportstok extends Admin_Controller {
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
-        $stok_data = $this->Reportstok_model->find_all_by( array('kdcab'=>$this->auth->user_cab(), 'deleted'=>0) );
+        $stok_data = $this->Reportstok_model->find_all_by( array('kdcab'=>$this->auth->user_cab(), 'deleted'=>0, 'kategori'=>'set') );
 
         $this->template->set('stok_data', $stok_data);
 
@@ -298,7 +298,7 @@ class Reportstok extends Admin_Controller {
     {
       $session = $this->session->userdata('app_session');
       $kdcab = $session['kdcab'];
-      
+
 
       $dataexcel = $this->Reportstok_model
       ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")

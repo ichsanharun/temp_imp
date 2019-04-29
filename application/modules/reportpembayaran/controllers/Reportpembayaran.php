@@ -54,9 +54,14 @@ class Reportpembayaran extends Admin_Controller {
 
     public function filter()
       {
+        if ($this->uri->segment(4) == "All") {
+          $per = $this->uri->segment(5)."-";
+        }else {
+          $per = $this->uri->segment(5)."-".$this->uri->segment(4);
+        }
         $data = $this->Reportpembayaran_model
         ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
-        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$this->uri->segment(5)."-".$this->uri->segment(4)."%"));
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$per."%"));
 
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $this->template->title('Report Pembayaran Piutang');
@@ -181,10 +186,15 @@ class Reportpembayaran extends Admin_Controller {
       $filter = $this->input->get('filter');
       $param = $this->input->get('param');
       $where ='';
+      if ($this->uri->segment(4) == "All") {
+        $per = $this->uri->segment(5)."-";
+      }else {
+        $per = $this->uri->segment(5)."-".$this->uri->segment(4);
+      }
       if(!empty($this->uri->segment(5))){
         $data = $this->Reportpembayaran_model
         ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
-        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$this->uri->segment(5)."-".$this->uri->segment(4)."%"));
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'tgl_pembayaran LIKE'=> "%".$per."%"));
       }else {
         $data = $this->Reportpembayaran_model
         ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")

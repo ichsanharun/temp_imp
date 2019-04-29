@@ -21,6 +21,7 @@
 	        <tr>
 	            <th width="2%">#</th>
               <th width="15%">NO. Invoice</th>
+              <th width="15%">NO. SJ</th>
               <th>Nama Customer</th>
               <th>Tanggal</th>
               <th>Jatuh Tempo</th>
@@ -36,10 +37,26 @@
         if(@$results){
         foreach(@$results as $kr=>$vr){
           $no = $n++;
+          $cek_do = $this->db->query("SELECT no_do FROM trans_invoice_detail WHERE no_invoice = '$vr->no_invoice' GROUP BY no_do");
+          $res = $cek_do->result();
+          $num = $cek_do->num_rows();
         ?>
         <tr>
           <td><center><?php echo $no?></center></td>
           <td><center><?php echo $vr->no_invoice?></center></td>
+          <?php if ($num>1) {
+            foreach ($res as $key => $value) {
+              ?>
+                <td>
+                  <?php echo $value->no_do?><br>
+                </td>
+              <?php
+            }
+          }else {
+            ?>
+            <td><?php echo $res[0]->no_do?></td>
+            <?php
+          } ?>
           <td><?php echo $vr->nm_customer?></td>
           <td><center><?php echo date('d M Y',strtotime($vr->tanggal_invoice))?></center></td>
           <td><center><?php echo date('d M Y',strtotime($vr->tgljatuhtempo))?></center></td>
@@ -77,6 +94,7 @@
           <tr>
               <th width="2%">#</th>
               <th width="15%">NO. Invoice</th>
+              <th width="">NO. SJ</th>
               <th>Nama Customer</th>
               <th>Tanggal</th>
               <th>Jatuh Tempo</th>

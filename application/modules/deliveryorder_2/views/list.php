@@ -19,7 +19,7 @@
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
                           <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                          <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
                       <span class="pull-right">
@@ -130,7 +130,7 @@
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
                           <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                          <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
                       <span class="pull-right">
@@ -160,7 +160,7 @@
                         <?php
                         $n = 1;
                         foreach(@$results_INV as $kso=>$vso){
-                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                          $noso = $this->db->query("SELECT no_so FROM trans_do_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
                             $no = $n++;
                             $cancel = '-';
                             if($vso->status != 'INV'){
@@ -241,7 +241,7 @@
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
                           <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a>
+                          <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
                       <span class="pull-right">
@@ -271,7 +271,7 @@
                         <?php
                         $n = 1;
                         foreach(@$results_CCL as $kso=>$vso){
-                          $noso = $this->db->query("SELECT no_so FROM trans_so_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
+                          $noso = $this->db->query("SELECT no_so FROM trans_do_detail WHERE no_do = '$vso->no_do' GROUP BY no_so")->row();
                             $no = $n++;
                             $cancel = '-';
                             if($vso->status != 'INV'){

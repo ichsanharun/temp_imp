@@ -284,6 +284,7 @@ class Deliveryorder_2 extends Admin_Controller {
     			  'nm_salesman'	 	  => $this->input->post('nm_salesman'),
     			  'tgl_do' 			    => $Tgl_DO,
     			  'tipe_pengiriman' => $this->input->post('tipekirim'),
+            'keterangan'      => $this->input->post('keterangan'),
     			  'id_supir' 	     	=> $Kode_Driver,
     			  'nm_supir' 	     	=> $Name_Driver,
     			  'id_kendaraan'   	=> $Kode_Kendaraan,

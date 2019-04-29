@@ -33,6 +33,9 @@ class Profroma_invoice extends Admin_Controller
     {
         $sup = $this->uri->segment(3);
         $no = $this->uri->segment(4);
+        if ($this->uri->segment(5) != '') {
+          $no .= "/".$this->uri->segment(5)."/".$this->uri->segment(6);
+        }
         $session = $this->session->userdata('app_session');
         $this->db->select('*');
         $this->db->from('trans_po_detail');

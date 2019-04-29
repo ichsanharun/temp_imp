@@ -110,6 +110,7 @@ date_default_timezone_set("Asia/Bangkok");
        <tr>
             <th width="5%">NO</th>
             <th width="30%">NAMA PRODUK</th>
+            <th width="30%">SURAT JALAN</th>
             <th width="5%">QTY</th>
             <th width="10%">SATUAN<br>(SET/PCS)</th>
             <th width="10%">HARGA</th>
@@ -122,6 +123,7 @@ date_default_timezone_set("Asia/Bangkok");
         $n=1;
         foreach(@$detail as $k=>$v){
             $no=$n++;
+
             $hrg_view = $v->harga_after_diskon_stdr;
             $sub_total_view = $v->subtot_after_diskon;
 
@@ -175,7 +177,8 @@ date_default_timezone_set("Asia/Bangkok");
         ?>
         <tr class="isi" style="">
             <td style="" width="1%"><center><?php echo $no?></center></td>
-            <td style=""><?php echo $v->id_barang.' / '.$v->nm_barang?></td>
+            <td style=" width:20%" width="20%"><?php echo $v->nm_barang?></td>
+            <td style="" width="2%"><center><?php echo $v->no_do?></center></td>
             <td style="" width="1%"><center><?php echo $v->jumlah?></center></td>
             <td style="" width="1%"><center><?php echo $v->satuan?></center></td>
             <td style="text-align: right;"><?php echo formatnomor($v->hargajual)?></td>

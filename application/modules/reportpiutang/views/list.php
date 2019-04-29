@@ -42,6 +42,7 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-user"></i></span>
               <select class="form-control input-sm" id="filtersales" style="width: 200px;">
                 <option value="">Pilih Sales</option>
+                <option value="All">All</option>
                 <?php
                 foreach(@$marketing as $km=>$vm){
                   $selected = '';
@@ -57,6 +58,7 @@ thead input {
               <span class="input-group-addon"><i class="fa fa-users"></i></span>
               <select class="form-control input-sm" id="filtercustomer" style="width: 300px;">
                 <option value="">Pilih Customer</option>
+                <option value="All">All</option>
                 <?php
                 foreach(@$customer as $kc=>$vc){
                   $selected = '';
@@ -234,7 +236,7 @@ thead input {
     var win = window.open(tujuan, '_blank');
     win.focus();
     //alert(tujuan);
-    $("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+    //$("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
   }
 
 </script>

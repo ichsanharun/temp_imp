@@ -64,7 +64,8 @@
               </td>
               <td><center><?php echo $vso->status?></center></td>
               <td class="text-center">
-                <input type="checkbox" class="set_choose_do" name="set_choose_invoice[<?php echo $no;?>]" id="set_choose_invoice<?php echo $no?>" value="<?php echo $vso->no_do?>" onclick="cekcusx('<?php echo $vso->id_customer?>','<?php echo $no?>')">
+                <!--input type="checkbox" class="set_choose_do" name="set_choose_invoice[<?php echo $no;?>]" id="set_choose_invoice<?php echo $no?>" value="<?php echo $vso->no_do?>" onclick="cekcusx('<?php echo $vso->id_customer?>','<?php echo $no?>')"-->
+                <button onclick="proses_do_ind('<?php echo $vso->no_do?>','<?=$vso->id_customer?>')" class="btn btn-primary" <?php // echo $disabled?> type="button"> Proses INV</button>
               </td>
             </tr>
             <?php } ?>
@@ -88,7 +89,8 @@
 	<div class="box-footer">
 		<input type="hidden" name="cekcus" id="cekcus" class="form-control input-sm">
     <input type="hidden" id="cekcustomer" name="cekcustomer" class="form-control input-sm">
-		<button class="btn btn-primary" id="btn-proses-do" type="button"> Proses Invoice</button>&nbsp;&nbsp;<button class="btn btn-danger" id="btn-proses-back" type="button"> Kembali</button>
+		<!--button class="btn btn-primary" id="btn-proses-do" type="button" > Proses Invoice</button-->&nbsp;&nbsp;
+    <button class="btn btn-danger" id="btn-proses-back" type="button"> Kembali</button>
 	</div>
 </div>
 
@@ -155,18 +157,6 @@
 					ints++;
 				}
 			});
-			/*
-			if(customer=='' || customer==null){
-				swal({
-				  title: "Peringatan!",
-				  text: 'Empty Customer. Please Choose Customer First....',
-				  type: "warning",
-				  timer: 5000
-				});
-
-				return false;
-			}
-			*/
 			if(ints==0){
 				swal({
 				  title: "Peringatan!",
@@ -186,6 +176,13 @@
 	  });
 
     });
+
+    function proses_do_ind(ns,cus){
+      var param = ns;
+      var uri3 = '<?php echo $this->uri->segment(3)?>';
+      window.location.href = siteurl+"invoice/prosess/"+param+"/"+cus;
+    }
+
     function cekcusx(idcus,no){
 	    var customer = $('#cekcustomer').val();
 	    var reason = [];

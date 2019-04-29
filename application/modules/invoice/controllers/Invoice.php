@@ -100,6 +100,37 @@ class Invoice extends Admin_Controller {
 
     }
 
+    public function prosess(){
+    	if($this->uri->segment(3)){
+    			$customer		      	= $this->uri->segment(4);
+    			//$getparamdo 		  	= explode(";",$this->input->post('cekcus'));
+    			$data_customer			= $this->Customer_model->find_data('customer',$customer,'id_customer');
+  			  //$header		= $this->db->get_where('trans_do_header',array('no_do'=>$param))->result();
+    			$Arr_Data		      	= array();
+  			$this->db->where_in('no_do',array($this->uri->segment(3)));
+    			$headerdo         		= $this->db->get('trans_do_header')->result_array();
+    			$customer_all    		= $this->Customer_model->find_all_by(array('deleted'=>0));
+    			$Faktur_header	  		= $this->Invoice_model->getFakturMaster();
+
+    			foreach($headerdo as $key=>$vals){
+    				$Arr_Data[$key]					= $vals;
+    				$details						= $this->db->join("trans_so_header","trans_so_header.no_so = trans_do_detail.no_so","left")->get_where('trans_do_detail',array('no_do'=>$vals['no_do'],'qty_supply != '=>0))->result_array();
+    				$Arr_Data[$key]['detail_data']	= $details;
+    			}
+
+    			$this->template->set('data_cust', $data_customer);
+  			  $this->template->set('customer', $customer_all);
+    			$this->template->set('faktur', $Faktur_header);
+    			$this->template->set('records', $Arr_Data);
+  			  //$this->template->set('header', $header);
+    			$this->template->title('Input Invoice');
+    			$this->template->render('invoice_form');
+    	}else{
+    			$this->template->render('list_do');
+  		}
+
+    }
+
     function get_customer(){
         $idcus = $_GET['idcus'];
         $customer = $this->Invoice_model->get_customer($idcus)->row();
@@ -223,13 +254,14 @@ class Invoice extends Admin_Controller {
   					'alamatcustomer' 	      	=> $this->input->post('alamatcustomer'),
   					'npwpcustomer' 		      	=> $this->input->post('npwpcustomer'),
   					'diskon_toko_persen'    	=> $this->input->post('diskon_toko_persen'),
-  					'diskon_toko_rp'	      	=> $this->input->post('dpp')*$this->input->post('diskon_toko_persen')/100,
+  					'diskon_toko_rp'	      	=> $this->input->post('hargajualafterdis')*$this->input->post('diskon_toko_persen')/100,
   					'diskon_cash_persen'    	=> $this->input->post('diskon_cash_persen'),
-  					'diskon_cash_rp'        	=> $this->input->post('dpp')*$this->input->post('diskon_cash_persen')/100,
+  					'diskon_cash_rp'        	=> ($this->input->post('hargajualafterdis')*$this->input->post('diskon_toko_persen')/100)*$this->input->post('diskon_cash_persen')/100,
   					'hargajualbefdis'	      	=> $this->input->post('hargajualbefdis'),
   					'hargajualafterdis'	    	=> $this->input->post('hargajualafterdis'),
   					'hargajualafterdistoko'		=> $this->input->post('hargajualafterdistoko'),
   					'hargajualafterdiscash'		=> $this->input->post('hargajualafterdiscash'),
+            'keterangan'          		=> $this->input->post('keterangan'),
   					'diskon_stdr_rp'	      	=> $this->input->post('diskon_stdr_rp'),
   					//'diskontotal'		        => $this->input->post('diskontotal'),
   					'dpp'				        => $this->input->post('dpp'),
@@ -792,41 +824,41 @@ class Invoice extends Admin_Controller {
   	      	</tr>
         	</table>
           <table width="100%" border="0" id="header-tabel">
-          <tr>
-              <td width="5%">NO. SO</td>
+            <tr>
+                <td width="5%">NO. REFF</td>
 
-              <td colspan="3" width="50%">: '.@$detail->no_do.'</td>
-              <td width="15%">Yogyakarta</td>
-              <td width="1%">,</td>
-              <td>'.date('d/m/Y',strtotime(@$inv_data->tanggal_invoice)).'</td>
-          </tr>
-          <tr>
-              <td width="5%">SALES</td>
+                <td colspan="3" width="50%">: '.@$inv_data->no_invoice.'</td>
+                <td width="15%">Yogyakarta</td>
+                <td width="1%">,</td>
+                <td>'.date('d/m/Y',strtotime(@$inv_data->tanggal_invoice)).'</td>
+            </tr>
+            <tr>
+                <td width="5%">SALES</td>
 
-              <td colspan="3">: '. @$inv_data->nm_salesman.'</td>
-              <td width="15%">Kepada Yth,</td>
-              <td width="1%"></td>
-              <td></td>
-          </tr>
-          <tr>
-              <td width="5%">TOP</td>
+                <td colspan="3">: '. @$inv_data->nm_salesman.'</td>
+                <td width="15%">Kepada Yth,</td>
+                <td width="1%"></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td width="5%">TOP</td>
 
-              <td colspan="3">:
-                  '.$telat->days.' HARI &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime(@$inv_data->tgljatuhtempo)).'
-              </td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$inv_data->nm_customer.'
-              </td>
-          </tr>
-          <tr>
-              <td width="5%">KETERANGAN</td>
+                <td colspan="3">:
+                    '.$telat->days.' HARI &nbsp;&nbsp;&nbsp; TGL JATUH TEMPO : '.date('d/m/Y',strtotime(@$inv_data->tgljatuhtempo)).'
+                </td>
+                <td width="15%" colspan="3" style="font-size:9pt !important;">
+                    '.@$inv_data->nm_customer.'
+                </td>
+            </tr>
+            <tr>
+                <td width="5%">KETERANGAN</td>
 
-              <td colspan="3">:</td>
-              <td width="15%" colspan="3" style="font-size:9pt !important;">
-                  '.@$inv_data->alamatcustomer.'
-              </td>
-          </tr>
-      </table>';
+                <td colspan="3">:</td>
+                <td width="15%" colspan="3" style="font-size:9pt !important;">
+                    '.@$inv_data->alamatcustomer.'
+                </td>
+            </tr>
+          </table>';
 
         $this->mpdf->SetHTMLHeader($header,'0',true);
         $session = $this->session->userdata('app_session');
@@ -847,6 +879,8 @@ class Invoice extends Admin_Controller {
             $diskon_toko_rp = @$inv_data->diskon_toko_rp;
             $grand_total_view = @$inv_data->hargajualbefdis-$diskon_stdr_rp-$diskon_toko_rp;
         }
+        $dis_toko_rp = @$inv_data->hargajualafterdis*(@$inv_data->diskon_toko_persen/100);
+        $dis_cash_rp = (@$inv_data->hargajualafterdis-$dis_toko_rp)*(@$inv_data->diskon_cash_persen/100);
 
         $this->mpdf->SetHTMLFooter('
         <hr>
@@ -876,7 +910,7 @@ class Invoice extends Admin_Controller {
                 <td colspan="3"></td>
                 <td width="15%">DISKON TOKO '.@$inv_data->diskon_toko_persen.' %</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;"> '.formatnomor(ceil(@$inv_data->diskon_toko_rp)).'</td>
+                <td width="15%" style="text-align: right;"> '.formatnomor(ceil($dis_toko_rp)).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
             <tr>
@@ -886,7 +920,7 @@ class Invoice extends Admin_Controller {
 
                 <td width="15%">DISKON CASH '.@$inv_data->diskon_cash_persen.' %</td>
                 <td width="1%">:</td>
-                <td width="15%" style="text-align: right;">'.formatnomor(ceil(@$inv_data->diskon_cash_rp)).'</td>
+                <td width="15%" style="text-align: right;">'.formatnomor(ceil($dis_cash_rp)).'</td>
                 <!--<td width="10%"></td>-->
             </tr>
             <tr>

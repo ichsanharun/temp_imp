@@ -6,7 +6,7 @@ date_default_timezone_set("Asia/Bangkok");
 <head>
     <title></title>
     <style>
-                
+
         {
             margin:0;
             padding:0;
@@ -22,13 +22,13 @@ date_default_timezone_set("Asia/Bangkok");
             margin:0;
             padding:0;
         }
-         
+
         p
         {
             margin:0;
             padding:0;
         }
-                  
+
         .page
         {
             /*height:297mm;
@@ -57,9 +57,9 @@ date_default_timezone_set("Asia/Bangkok");
             border-bottom: solid 1px #000;
             margin: 0px;
         }
-         
+
         #footer
-        {   
+        {
             /*width:180mm;*/
             margin:0 15mm;
             padding-bottom:3mm;
@@ -69,11 +69,11 @@ date_default_timezone_set("Asia/Bangkok");
             width:100%;
             border-left: 1px solid #ccc;
             border-top: 1px solid #ccc;
-             
+
             background:#eee;
-             
+
             border-spacing:0;
-            border-collapse: collapse; 
+            border-collapse: collapse;
         }
         #footer table td
         {
@@ -107,24 +107,24 @@ date_default_timezone_set("Asia/Bangkok");
         }
     </style>
 </head>
-<body> 
-<div id="wrapper"> 
+<body>
+<div id="wrapper">
     <p style="text-align:center; font-weight:bold; padding-top:5mm;">REKAP DATA STOK</p>
     <table width="100%" id="tabel-laporan">
         <tr>
             <th>Kode Produk</th>
 			<th>Nama Set</th>
-			<th>Jenis Produk</th>					
-			<th>Satuan</th>			
+			<th>Jenis Produk</th>
+			<th>Satuan</th>
 			<th>Qty Stock</th>
 			<th>Qty Available</th>
-			<th>Qty Rusak</th>	
+			<th>Qty Rusak</th>
 			<th>Landed Cost</th>
 			<th>Harga</th>
 			<th>Status</th>
-        </tr>        
-        <tr class="border_bottom" id='tabel-laporan'>   
-        <?php                 
+        </tr>
+        <tr class="border_bottom" id='tabel-laporan'>
+        <?php
         if(empty($stok_data)){
 		}else{
 			$numb=0; foreach($stok_data AS $record){ $numb++; ?>
@@ -137,14 +137,14 @@ date_default_timezone_set("Asia/Bangkok");
 				}
 			?>
 	        <td><?= $record->id_barang ?></td>
-			<td><?= $record->nm_barang ?></td>	
+			<td><?= $record->nm_barang ?></td>
 			<td><?= strtoupper($record->jenis) ?></td>
-			<td><?= $satuan ?></td>		
-			<td><?= $record->qty_stock ?></td>	
-			<td><?= $record->qty_avl ?></td>	
-			<td><?= $record->qty_rusak ?></td>			
-			<td><?= number_format($record->landed_cost) ?></td>	
-			<td><?= number_format($record->harga) ?></td>	
+			<td><?= $satuan ?></td>
+			<td><?= $record->qty_stock ?></td>
+			<td><?= $record->qty_avl ?></td>
+			<td><?= $record->qty_rusak ?></td>
+			<td><?= number_format($record->landed_cost) ?></td>
+			<td><?= number_format($record->harga) ?></td>
 			<td>
 				<?php if($record->sts_aktif == 'aktif'){ ?>
 					<label class="label label-success">Aktif</label>
@@ -153,20 +153,20 @@ date_default_timezone_set("Asia/Bangkok");
 				<?php } ?>
 			</td>
         </tr>
-        <?php 
-        } 
+        <?php
+        }
         }
         ?>
-    </table>        
+    </table>
 </div>
-    <?php $tglprint = date("d-m-Y H:i:s");?>     
-<htmlpagefooter name="footer">    
-    <div id="footer"> 
+    <?php $tglprint = date("d-m-Y H:i:s");?>
+<htmlpagefooter name="footer">
+    <div id="footer">
     <table>
         <tr><td>PT IMPORTA JAYA ABADI - Printed By <?php echo ucwords($userData->nm_lengkap) ." On ". $tglprint; ?></td></tr>
     </table>
     </div>
 </htmlpagefooter>
-<sethtmlpagefooter name="footer" value="on" />  
+<sethtmlpagefooter name="footer" value="on" />
 </body>
-</html> 
+</html>

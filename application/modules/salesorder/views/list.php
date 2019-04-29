@@ -137,11 +137,12 @@
                     <?php if($vso->stsorder != "CANCEL"){ ?>
                       <?php if($ENABLE_MANAGE) {
                         if ($vso->stsorder != "CLOSE") {
+                          if ($vso->stsorder != "PENDING") {
                         ?>
                       <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data('<?php echo $vso->no_so?>')">
                       <span class="glyphicon glyphicon-edit"></span>
                       </a>
-                    <?php }} ?>
+                    <?php }}} ?>
                     <?php if($ENABLE_VIEW) { ?>
                     <a href="javascript:void(0)" data-toggle="mod" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
                     <span class="glyphicon glyphicon-print"></span>
@@ -350,7 +351,7 @@
     {
       //$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
       param=noso;
-      window.open('salesorder/print_request/'+param);
+      window.open(siteurl+'salesorder/print_request/'+param);
 
         //$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }

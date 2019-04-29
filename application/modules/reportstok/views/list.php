@@ -330,7 +330,7 @@ $(document).ready(function(){
 
 	function PreviewRekap()
 	{
-		tujuan = 'setup_stock/print_rekap';
+		tujuan = 'reportstok/print_rekap';
 	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 

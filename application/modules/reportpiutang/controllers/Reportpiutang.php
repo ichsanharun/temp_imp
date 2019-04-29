@@ -73,11 +73,13 @@ class Reportpiutang extends Admin_Controller {
         $kdcab = $session['kdcab'];
          $filter = array(
             'piutang >'=>0,
-            'kdcab'=>$this->uri->segment(3),
-            'id_salesman'=>$this->uri->segment(4)
+            'kdcab'=>$this->uri->segment(3)
             );
-        if($this->uri->segment(5) != ''){
+        if($this->uri->segment(5) != 'All' && $this->uri->segment(5) != ''){
             $filter['id_customer'] = $this->uri->segment(5);
+        }
+        if($this->uri->segment(4) != 'All' && $this->uri->segment(4) != ''){
+            $filter['id_salesman'] = $this->uri->segment(4);
         }
         $data = $this->Invoice_model
         ->where($filter)
@@ -103,14 +105,15 @@ class Reportpiutang extends Admin_Controller {
         $mpdf->RestartDocTemplate();
 
         $filter = array(
-            'piutang >'=>0,
-            'kdcab'=>$this->uri->segment(3),
-            'id_salesman'=>$this->uri->segment(4)
-            //'id_customer'=>$this->uri->segment(5)
-            );
-        if($this->uri->segment(5) != ''){
-            $filter['id_customer'] = $this->uri->segment(5);
-        }
+           'piutang >'=>0,
+           'kdcab'=>$this->uri->segment(3)
+           );
+       if($this->uri->segment(5) != 'All' && $this->uri->segment(5) != ''){
+           $filter['id_customer'] = $this->uri->segment(5);
+       }
+       if($this->uri->segment(4) != 'All' && $this->uri->segment(4) != ''){
+           $filter['id_salesman'] = $this->uri->segment(4);
+       }
         $data_inv = $this->Invoice_model->where($filter)->order_by('nm_customer','ASC')->find_all();
 
         $this->template->set('header',$data_inv);
@@ -125,14 +128,15 @@ class Reportpiutang extends Admin_Controller {
     function excel_request(){
 
         $filter = array(
-            'piutang >'=>0,
-            'kdcab'=>$this->uri->segment(3),
-            'id_salesman'=>$this->uri->segment(4)
-            //'id_customer'=>$this->uri->segment(5)
-            );
-        if($this->uri->segment(5) != ''){
-            $filter['id_customer'] = $this->uri->segment(5);
-        }
+           'piutang >'=>0,
+           'kdcab'=>$this->uri->segment(3)
+           );
+       if($this->uri->segment(5) != 'All' && $this->uri->segment(5) != ''){
+           $filter['id_customer'] = $this->uri->segment(5);
+       }
+       if($this->uri->segment(4) != 'All' && $this->uri->segment(4) != ''){
+           $filter['id_salesman'] = $this->uri->segment(4);
+       }
         $data_inv = $this->Invoice_model->where($filter)->order_by('nm_customer','ASC')->find_all();
         $data = array(
     			'header'	=> $data_inv

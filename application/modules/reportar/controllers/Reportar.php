@@ -49,8 +49,9 @@ class Reportar extends Admin_Controller {
         $this->template->set('results', $data);
         $this->template->set('cabang', $cabang);
         */
-        //$data = $this->Reportar_model->order_by('no_invoice','DESC')->find_all();
-        $data = array();
+        $data = $this->Reportar_model->order_by('no_invoice','DESC')->find_all();
+        //$data = array();
+        //$data = $this->Reportar_model->where("kdcab='".$this->uri->segment(3)."' AND bln='".date("m")."' AND thn='".date("Y")."'")->order_by('no_invoice','DESC')->find_all();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $this->template->title('Report AR');
         $this->template->set('cabang', $cabang);
