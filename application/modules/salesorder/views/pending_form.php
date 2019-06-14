@@ -23,6 +23,7 @@
                     <div class="col-sm-6">
                       <!-- Data Customer -->
                         <div class="form-group">
+                          <input type="hidden" name="no_so_pending" value="<?=$this->uri->segment(3)?>">
                             <label for="idcustomer" class="col-sm-4 control-label">Nama Customer <font size="4" color="red"><B>*</B></font></label>
                             <div class="col-sm-8">
                                 <div class="input-group">
@@ -289,7 +290,7 @@
                     }elseif ($value['tipe_diskon_so'] == "rupiah_tambah") {
                       $harga_net = $harga_net_sdisso+$value['diskon_so'];
                     }else {
-                      $harga_net = $harga_net_sdisso-($harga_net*$value['diskon_so']/100);
+                      $harga_net = $harga_net_sdisso-($harga_net_sdisso*$value['diskon_so']/100);
                     }
                     ?>
                     <tr>
@@ -320,7 +321,7 @@
                       </td>
                       <td>
                         <span id="item_brg_so<?=$i?>_qty">
-                          <input type="text" class="form-control input-sm qty_order number" id="qty_order_<?=$db->id_barang?>" onkeyup="qty_order_keyup('<?=$db->id_barang?>',this.value,'item_brg_so<?=$i?>');this.value = this.value.match(/^[0-9]+$/)" name="qty_order[]" style="width:100% !important;" value="<?=$value['qty_booked']?>">
+                          <input type="text" class="form-control input-sm qty_order number" id="qty_order_<?=$db->id_barang?>" onkeyup="qty_order_keyup('<?=$db->id_barang?>',this.value,'item_brg_so<?=$i?>');this.value = this.value.match(/^[0-9]+$/)" name="qty_order[]" style="width:100% !important;" value="<?=$value['qty_pending']?>">
 
 
 
@@ -883,7 +884,7 @@
     var formdata = $("#form-header-so,#form-so").serialize();
     if($('#idcustomer').val() != "" && $('#pic').val() != "" && $('#top').val() != "" && $('#tglso').val() != "" && $('#idsalesman').val() != ""){
       $.ajax({
-        url: siteurl+"salesorder/saveso_edit",
+        url: siteurl+"salesorder/saveso_pending",
         dataType : "json",
         type: 'POST',
         data: formdata,

@@ -61,6 +61,7 @@ thead input {
               <th>Umur Piutang</th>
               <th>Total Jual</th>
               <th>Piutang</th>
+              <th>Status Bayar</th>
               <th width="10%">Aksi</th>
           </tr>
         </thead>
@@ -80,10 +81,20 @@ thead input {
           <td><center><?php echo selisih_hari($vr->tanggal_invoice,date('Y-m-d')).' hari'?></center></td>
           <td class="text-right"><?php echo formatnomor($vr->hargajualtotal)?></td>
           <td class="text-right"><?php echo formatnomor($vr->piutang)?></td>
+          <?php
+          if ($vr->piutang == $vr->hargajualtotal) {
+            $sta = 'Belum pernah ada pembayaran';
+            $cl = 'badge bg-red';
+          }else {
+            $sta = 'Lunas sebagian';
+            $cl = 'badge bg-orange';
+          }
+           ?>
+           <td><center><span class="<?=$cl?>"><?php echo $sta?></span></center></td>
           <td>
             <center>
               <a href="#dialog-pembayaran" title="Pembayaran" data-toggle="modal" class="btn sm-primary" onclick="pembayaran('<?php echo $vr->no_invoice?>')">
-                <span class="glyphicon glyphicon-file"></span>
+                <span class="badge bg-blue"><span class="fa fa-money" style="font-family:arial"> Bayar</span></span>
               </a>
               <a href="#dialog-popup" data-toggle="modal" class="btn sm-primary" onclick="PreviewPdf('<?php echo $vr->no_invoice?>')">
                 <span class="glyphicon glyphicon-print"></span>
@@ -120,7 +131,7 @@ thead input {
 <!-- Modal -->
 <div class="modal modal-primary" id="dialog-pembayaran" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
-    <div class="modal-content">
+    <div class="modal-content" style="overflow-x : auto;max-height:500px !important">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h4 class="modal-title" id="myModalLabelbayar">Pembayaran Piutang</h4>

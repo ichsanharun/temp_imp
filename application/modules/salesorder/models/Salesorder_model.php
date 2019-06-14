@@ -167,9 +167,15 @@ class Salesorder_model extends BF_Model
     function generate_no_pending($param){
         $data = $this->get_data('no_so LIKE "%'.$param.'%"','trans_so_header');
         $no_akhir = count($data);
-        $next_nomor = $no_akhir+1;
+        if ($no_akhir == 0 || $no_akhir == 1) {
+          $next_nomor = $no_akhir+1;
+        }else {
+          $next_nomor = $no_akhir;
+        }
+        //$next_nomor = $no_akhir+1;
         $next_kode = str_pad($next_nomor, 2, "0", STR_PAD_LEFT);
         return $param.'-'.$next_kode;
+        //return $no_akhir;
     }
 
     function generate_no_pl_old($kdcab){

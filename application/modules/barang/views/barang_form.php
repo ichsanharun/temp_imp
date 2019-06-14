@@ -399,7 +399,7 @@ img:hover {
                       <div class="col-sm-3">
                           <div class="input-group">
                           <span class="input-group-addon"><i class="fa fa-user"></i></span>
-                          <input type="text" class="form-control" id="qty_koli" name="qty_koli" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');" maxlength="5" placeholder="Qty Colly" required>
+                          <input type="text" class="form-control" id="qty_koli" name="qty_koli" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'');" maxlength="5" placeholder="Qty Colly" required>
                           </div>
                       </div>
 
@@ -665,7 +665,7 @@ img:hover {
 <!-- End Modal Bidus-->
 <script type="text/javascript">
     $(document).ready(function() {
-      $("#harga").val(formatCurrency($("#harga").val()));
+    //  $("#harga").val(formatCurrency($("#harga").val()));
     });
 
     function filterAngka1(a){

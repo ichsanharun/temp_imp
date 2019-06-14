@@ -497,6 +497,9 @@ class Purchaseorder extends Admin_Controller
 
     public function print_request_cabang($nopo)
     {
+      if (!empty($this->uri->segment(5))) {
+        $nopo = $this->uri->segment(3)."/".$this->uri->segment(4)."/".$this->uri->segment(5);
+      }
         $mpdf = new mPDF('', '', '', '', '', '', '', '', '', '');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();

@@ -245,8 +245,11 @@ date_default_timezone_set('Asia/Bangkok');
             } ?>
                 </center>
             </td-->
+            <?php
+            $stok = $this->db->where(array('kdcab'=>$this->auth->user_cab(),'id_barang'=>$vs->id_barang))->get('barang_stock')->row();
+              ?>
             <td style="vertical-align: top;"><center><?php echo $vs->varian; ?></center></td>
-            <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
+            <td style="vertical-align: top;"><center><?php echo $stok->qty_stock; ?></center></td>
             <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
             <td style="vertical-align: top;"><center><?php echo '0'; ?></center></td>
             <td style="vertical-align: top;"><center><?php echo $vs->qty_pr; ?></center></td>

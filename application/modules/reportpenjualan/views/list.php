@@ -16,75 +16,69 @@ thead input {
 
 <div class="box">
 	<div class="col-lg-12">
-    <div class="box-header text-left"><b>Pilih Periode : </b>
-      <?php
-      if (!empty($this->uri->segment(3)) AND !empty($this->uri->segment(4))) {
-        $pawal = $this->uri->segment(3);
-        $pakhir = $this->uri->segment(4);
-      }
-      else {
-        $pawal = "";
-        $pakhir = "";
-      }
+		<div class="box-header text-left"><b>Pilih Periode : </b>
+			<?php
+		  if (!empty($this->uri->segment(3)) AND !empty($this->uri->segment(4))) {
+				$pawal = $this->uri->segment(3);
+				$pakhir = $this->uri->segment(4);
+		  }else {
+				$pawal = "";
+				$pakhir = "";
+		  }
        ?>
-      <div class="form-inline">
-        <div class="form-group">
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-              <input type="text" id="periode_awal" name="periode_awal" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
-          </div>
-          s.d
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-              <input type="text" id="periode_akhir" name="periode_akhir" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
-          </div>
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-share"></i></span>
-
-              <select class="form-control input-md" id="filterby" onchange="filterby()" >
-                <option value="">Pilih Filter</option>
-                <?php
-                  foreach(is_filter_report_jual() as $kf=>$vf){
-                    $selected ='';
-                    if($kf == $this->input->get('filter')){
-                      $selected = 'selected="selected"';
-                    }
-                ?>
-                <option value="<?php echo $kf?>" <?php echo $selected?>><?php echo $vf?></option>
-                <?php } ?>
-              </select>
-          </div>
-          <div class="input-group" id="div-filter-by"></div>
-          <input type="button" id="submit" class="btn btn-md btn-warning" value="Tampilkan">
-        </div>
-      </div>
-    </div>
-  </div>
+		<div class="form-inline">
+			<div class="form-group">
+				<div class="input-group">
+					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+					<input type="text" id="periode_awal" name="periode_awal" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Awal Pencarian" value="<?php echo $pawal?>">
+				</div>
+				s.d
+				<div class="input-group">
+					<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+					<input type="text" id="periode_akhir" name="periode_akhir" class="form-control input-md datepicker col-md-6" tabindex="-1" required placeholder="Tanggal Akhir Pencarian" value="<?php echo $pakhir?>">
+				</div>
+				<div class="input-group">
+					<span class="input-group-addon"><i class="fa fa-share"></i></span>
+					<select class="form-control input-md" id="filterby" onchange="filterby()" >
+						<option value="">Pilih Filter</option>
+						<?php
+						  foreach(is_filter_report_jual() as $kf=>$vf){
+							$selected ='';
+							if($kf == $this->input->get('filter')){
+							  $selected = 'selected="selected"';
+							}
+						?>
+						<option value="<?php echo $kf?>" <?php echo $selected?>><?php echo $vf?></option>
+						<?php } ?>
+					</select>
+				</div>
+				<div class="input-group" id="div-filter-by"></div>
+					<input type="button" id="submit" class="btn btn-md btn-warning" value="Tampilkan">
+				</div>
+			</div>
+		</div>
+	</div>
 	<!-- /.box-header -->
-  <div class="col-sm-12" style="padding-bottom: 20px;">
-
-			<span class="pull-right">
-
-				<a data-toggle="modal" href="#dialog-rekap" class="btn btn-primary btn-sm" title="Excel"><i class="fa fa-download">&nbsp;</i>Excel  </a>
+	<div class="col-sm-12" style="padding-bottom: 20px;">
+		<span class="pull-right">
+			<a data-toggle="modal" href="#dialog-rekap" class="btn btn-primary btn-sm" title="Excel"><i class="fa fa-download">&nbsp;</i>Excel  </a>
 				<!--a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a-->
-			</span>
-
-    </span>
-  </div>
+		</span>
+	</div>
 	<div class="box-body" style="overflow-x:auto">
 		<table id="example1" class="table table-bordered table-striped">
-        <thead>
-	        <tr>
-						<th width="2%">NO</th>
-						<th width="15%">NO. INVOICE</th>
-						<th width="15%">NO. SO</th>
-						<th>NAMA CUSTOMER</th>
-						<th>TANGGAL INVOICE</th>
-						<th>NAMA SALES</th>
-						<th>TOTAL INVOICE</th>
-
-						<th>STATUS</th>
-	        </tr>
+			<thead>
+				<tr>
+					<th class="text-center">No</th>
+					<th class="text-center">No Invoice</th>
+					<th class="text-center">No SO</th>
+					<th class="text-center">Customer</th>
+					<th class="text-center">Tgl Invoice</th>
+					<th class="text-center">Salesman</th>
+					<th class="text-center">DPP</th>
+					<th class="text-center">PPN</th>
+					<th class="text-center">Total</th>					
+				</tr>
         </thead>
         <tbody>
         <?php
@@ -181,7 +175,7 @@ thead input {
 										          <div class="input-group ">
 																<span class="input-group-addon"><i class="fa fa-share"></i></span>
 
-																<select class="form-control input-md" id="filterby_ex">
+																<select class="form-control input-md" id="filterby_ex" onchange="filterby_exx()" >
 																	<option value="">Pilih Filter</option>
 																	<option value="all">All</option>
 																	<option value="by_customer">Per Customer</option>
@@ -191,6 +185,7 @@ thead input {
 										          </div>
 														</div>
 									      </div>
+												<div class="input-group" id="div-filter-by_exx"></div>
 											</div>
 										</div>
         		</div>
@@ -236,7 +231,8 @@ thead input {
 		var pawal = $("#periode_awal_ex").val();
 		var pakhir = $("#periode_akhir_ex").val();
 		var fb = $('#filterby_ex').val();
-		window.location.href = siteurl+'reportpenjualan/downloadExcel_old/'+pawal+'/'+pakhir+'/'+fb;
+		var sf = $('#filter-select').val();
+		window.location.href = siteurl+'reportpenjualan/downloadExcel_old/'+pawal+'/'+pakhir+'/'+fb+'/'+sf;
 
 		//	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
@@ -266,6 +262,16 @@ thead input {
     $.post(url,{'FILTER':fb},function(result){
       //console.log(result);
       $('#div-filter-by').html(result);
+    });
+  }
+
+	function filterby_exx(){
+    var fb = $('#filterby_ex').val();
+    var param = '<?php echo $this->input->get('param')?>';
+    var url = siteurl+'reportpenjualan/getfilterby?param='+param;
+    $.post(url,{'FILTER':fb},function(result){
+      //console.log(result);
+      $('#div-filter-by_exx').html(result);
     });
   }
 </script>

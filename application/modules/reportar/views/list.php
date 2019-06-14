@@ -1,4 +1,5 @@
 <?php
+//print_r(@$results);
 /*
     $ENABLE_ADD     = has_permission('Reportstok.Add');
     $ENABLE_MANAGE  = has_permission('Reportstok.Manage');
@@ -8,167 +9,162 @@
 ?>
 <style type="text/css">
 thead input {
-  width: 100%;
+	width: 100%;
 }
 </style>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 
 <div class="box">
-  <div class="col-lg-12">
-  
-    <div class="box-header text-left">
-      <div class="form-inline">
-        <div class="form-group">
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-sm" id="filtercabang" disabled="disabled">
-                <option value="">Pilih Cabang</option>
-                <?php 
-                foreach(@$cabang as $k=>$v){ 
-                  $selected = '';
-                  $session = $this->session->userdata('app_session');
-                  $kdcab = $session['kdcab'];
-                  if($this->uri->segment(3) == $v->kdcab){
-                    $selected='selected="selected"';
-                  }
-                  if($kdcab == $v->kdcab){
-                    $selected='selected="selected"';
-                  }
-                ?>
-                <option value="<?php echo $v->kdcab?>" <?php echo $selected?>><?php echo $v->kdcab.', '.$v->namacabang?></option>
-                <?php } ?>
-              </select>
-              <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-              <select class="form-control input-sm" id="filterbulan">
-                <option value="">Pilih Bulan</option>
-                <?php 
-                foreach(the_bulan() as $kb=>$vb){ 
-                  $selectedbln = '';
-                  if($this->uri->segment(4) == $kb){
-                    $selectedbln='selected="selected"';
-                  }
-                ?>
-                <option value="<?php echo $kb?>" <?php echo $selectedbln?>><?php echo $vb?></option>
-                <?php } ?>
-              </select>
-              <span class="input-group-addon">Tahun</span>
-              <?php
-              $filter_th = date('Y');
-              if($this->uri->segment(5) != ""){
-                $filter_th = $this->uri->segment(5);
-              }
-              ?>
-              <input value="<?php echo $filter_th?>" type="text" name="filtertahun" id="filtertahun" class="form-control input-sm" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
-          </div>
-          <input type="button" id="submit" class="btn btn-sm btn-warning" value="Tampilkan">
-        </div>
-      </div>
-      <span class="pull-right">
-      <?php echo anchor(site_url('reportar/downloadExcel').'?idcabang='.$this->uri->segment(3),'<i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-      <!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>-->
-    </span>
-    </div>
-  </div>
-  <!-- /.box-header -->
-  <div class="box-body">
-    <table id="example1" class="table table-bordered table-striped">
-        <thead>
-          <tr>
-              <th width="2%">#</th>
-              <th width="15%">NO. Invoice</th>
-              <th>Customer</th>
-              <th>Bulan</th>
-              <th>Tahun</th>
-              <th>Saldo Awal</th>
-              <th>Debet</th>
-              <th>Kredit</th>
-              <th>Saldo Akhir</th>
-          </tr>
+	<form action="<?= site_url(strtolower($this->uri->segment(1).'/index'))?>" method="POST" id='form_proses'>
+		<div class="col-lg-12">
+			
+		
+			<div class="box-header text-left"><b>Pilih Cabang : </b>				
+				<div class="form-inline">
+					<div class="form-group">
+						<div class="input-group">
+							<?php
+								if($rows_cab_user=='100'){
+									if($cabang){
+										echo"<select name='kdcab' id='kdcab' class='form-control input-sm'>";
+										foreach($cabang as $key=>$vals){
+											$nama_cabang	= $key.', '.$vals;
+											$yuup=($key==$cab_pilih)?'selected':'';
+											echo"<option value='$key' $yuup>".$nama_cabang."</option>";
+										}
+										echo"</select>";
+									}
+								}else{
+									$Cabang_data	= $rows_cab_user.', '.$cabang[$rows_cab_user];
+									echo"<input type='text' class='form-control input-sm' name='nama_cabang' id='nama_cabang' value='$Cabang_data' disabled>";
+									echo"<input type='hidden' class='form-control input-sm' name='kdcab' id='kdcab' value='$rows_cab_user'>";
+								}
+							?>
+						</div>
+						<div class="input-group">
+							<?php
+							echo"<select name='bulan' id='bulan' class='form-control input-sm'>";
+							 foreach(the_bulan() as $kb=>$vb){
+								
+								$yuup=($kb==$bulan_pilih)?'selected':'';
+								echo"<option value='$kb' $yuup>".$vb."</option>";
+							}
+							echo"</select>";
+							?>
+						</div>
+						<div class="input-group">
+							<input value="<?php echo $tahun_pilih?>" type="text" name="tahun" id="tahun" class="form-control input-sm" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+						</div>
+						
+						<input type="button" id="btn-submit" class="btn btn-md btn-warning" value="Tampilkan">
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<!-- /.box-header -->
+	<div class="col-sm-12" style="padding-bottom: 20px;">
+		<span class="pull-right">
+			<button type="button" id="btn-excel" class="btn btn-md btn-success"><i class="fa fa-download">&nbsp;</i>Excel</button>
+			
+				
+		</span>
+	</div>
+	<div class="box-body" style="overflow-x:auto">
+		<table id="example1" class="table table-bordered table-striped">
+			<thead>
+				<tr class="bg-blue">
+					<th class="text-center">No</th>
+					<th class="text-center">No Invoice</th>
+					<th class="text-center">Customer</th>					
+					<th class="text-center">Bulan</th>
+					<th class="text-center">Tahun</th>
+					<th class="text-center">Saldo Awal</th>
+					<th class="text-center">Debet</th>
+					<th class="text-center">Kredit</th>
+					<th class="text-center">Saldo Akhir</th>					
+				</tr>
         </thead>
         <tbody>
         <?php
-        $n=1;
-        if(@$results){
-        foreach(@$results as $kr=>$vr){
-          $no = $n++;
-          $debet=0;
-          if($vr->debet != 0){
-              $debet=formatnomor($vr->debet);
-          }
-          $kredit=0;
-          if($vr->kredit != 0){
-              $kredit=formatnomor($vr->kredit);
-          }
-        ?>
-        <tr>
-          <td><center><?php echo $no?></center></td>
-          <td><center><?php echo $vr->no_invoice?></center></td>
-          <td><?php echo $vr->customer_code.', '.$vr->customer?></td>
-          <td><?php echo the_bulan($vr->bln)?></td>
-          <td><?php echo $vr->thn?></td>
-          <td class="text-right"><?php echo formatnomor($vr->saldo_awal)?></td>
-          <td class="text-right"><?php echo $debet?></td>
-          <td class="text-right"><?php echo $kredit?></td>
-          <td class="text-right"><?php echo formatnomor($vr->saldo_akhir)?></td>
-        </tr>
-        <?php } ?>
-        <?php } ?>
-        </tbody>
+		$intL	= 0;
+		$Total_Awal	= $Total_Debet	= $Total_Kredit	= $Total_Akhir = 0;
+		if(@$results){
+			foreach($results as $key=>$vals){
+				$intL++;
+				$saldo_awal				= $vals->saldo_awal;
+				$debet					= $vals->debet;
+				$kredit					= $vals->kredit;
+				$saldo_akhir			= $vals->saldo_akhir;
+				
+				$Total_Awal		+= $saldo_awal;
+				$Total_Debet	+= $debet;
+				$Total_Kredit	+= $kredit;
+				$Total_Akhir	+= $saldo_akhir;
+				echo"<tr>";
+					echo"<td class='text-center'>".$intL."</td>";
+					echo"<td class='text-center'>".$vals->no_invoice."</td>";
+					echo"<td class='text-left'>".$vals->customer."</td>";
+					echo"<td class='text-center'>".the_bulan($vals->bln)."</td>";
+					echo"<td class='text-center'>".$vals->thn."</td>";
+					echo"<td class='text-right'>".number_format($saldo_awal)."</td>";
+					echo"<td class='text-right'>".number_format($debet)."</td>";
+					echo"<td class='text-right'>".number_format($kredit)."</td>";
+					echo"<td class='text-right'>".number_format($saldo_akhir)."</td>";
+				echo"</tr>";
+			}
+			
+		}
+		echo"</tbody>";
+		echo"<tfoot>";
+			echo"<tr class='bg-gray text-red'>";
+				echo"<td class='text-right' colspan='5'><b>Grand Total</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Awal)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Debet)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Kredit)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Akhir)."</b></td>";
+				
+			echo"</tr>";
+		echo"</tfoot>";
+		?>
         </table>
-  </div>
-  <!-- /.box-body -->
+	</div>
+	<!-- /.box-body -->
 </div>
-<!-- Modal -->
-<div class="modal modal-primary" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
-      </div>
-      <div class="modal-body" id="MyModalBody">
-    ...
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">
-        <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
-        </div>
-    </div>
-  </div>
-</div>
+
+
 <!-- DataTables -->
 <script src="<?= base_url('assets/plugins/datatables/jquery.dataTables.min.js')?>"></script>
 <script src="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.min.js')?>"></script>
 
 <!-- page script -->
 <script type="text/javascript">
-  $(document).ready(function(){
-    $("#submit").on('click', function(){
-      var cabang = $("#filtercabang").val();
-      var bln = $('#filterbulan').val();
-      var thn = $('#filtertahun').val();
-      if(cabang == "" || bln == "" || thn == ""){
-        swal({
-          title: "Peringatan!",
-          text: "Filter Cabang, Bulan dan Tahun harus diisi",
-          type: "warning",
-          //timer: 2000,
-          showConfirmButton: true
-        });
-      }else{
-        window.location.href = siteurl+"reportar/filter/"+cabang+"/"+bln+"/"+thn;
-      }
-    });
-  });
+	$(document).ready(function(){
+		var dataTable = $("#example1").DataTable().draw();
+		$(".datepicker").datepicker({
+			todayHighlight: true,
+			format : "yyyy-mm-dd",
+			showInputs: true,
+			autoclose:true
+		});
+		$("#btn-submit").on('click', function(){
+			$('#form_proses').submit();
+		});
+		
+   
+	});
+	$('#btn-excel').click(function(){
+		var cabang	= $('#kdcab').val();
+		var bulan	= $('#bulan').val();
+		var tahun		= $('#tahun').val();
+		
+		var Links		= siteurl+'reportar/excel_piutang/'+cabang+'/'+bulan+'/'+tahun;
+		//alert(Links);
+		window.open(Links,'_blank');
+	});
+	
+	
 
-  $(function() {
-      var dataTable = $("#example1").DataTable().draw();
-    });
 
-  function PreviewPdf(no_inv)
-  {
-    tujuan = 'reportar/print_request/'+no_inv;
-    $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-  }
-
+	
 </script>

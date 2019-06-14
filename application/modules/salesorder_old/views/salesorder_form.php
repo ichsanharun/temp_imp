@@ -879,7 +879,7 @@
         var diskon = parseInt($('#diskon').val());
         var bonus = parseInt($('#qty_bonus').val());
         var poin_per_item = parseInt($('#poin_per_item').val());
-        var landed_cost = (parseFloat($('#landed_cost').val())).toFixed(2);
+        var landed_cost = parseInt($('#landed_cost').val());
 
         var sub_total_lc = landed_cost*qty;
 

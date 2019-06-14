@@ -1,4 +1,4 @@
-<?php 
+<?php
     $ENABLE_ADD     = has_permission('Koli.Add');
     $ENABLE_MANAGE  = has_permission('Koli.Manage');
     $ENABLE_VIEW    = has_permission('Koli.View');
@@ -8,13 +8,13 @@
 
 <div class="box">
 	<div class="box-header">
-		<?php if ($ENABLE_ADD) : ?>		
-			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>			
+		<?php if ($ENABLE_ADD) : ?>
+			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
 		<?php endif; ?>
 	</div>
 	<!-- /.box-header -->
 	<div class="box-body">
-		<?php print_r(@$results)?>
+		<?php //print_r(@$results)?>
 		<table id="example1" class="table table-bordered table-striped" width="100%">
 		<thead>
 		<tr>
@@ -22,14 +22,14 @@
 			<th width="10%">Kode</th>
 			<th width="10%">No. Invoice</th>
 			<th width="10%">Jenis Bayar</th>
-			<th width="10%">Nama Bank</th>			
+			<th width="10%">Nama Bank</th>
 			<th width="10%">No. Reff</th>
 			<th width="10%">Nominal</th>
 			<th width="5%">Status</th>
 			<th width="5%">Aksi</th>
 		</tr>
 		</thead>
-        
+
 		<tbody>
 			<?php
 			$n=1;
@@ -57,14 +57,14 @@
 			<?php } ?>
 			<?php } ?>
 		</tbody>
-		
+
 		<tfoot>
 		<tr>
 			<th width="2%">#</th>
 			<th width="15%">Kode</th>
 			<th width="10%">No. Invoice</th>
 			<th width="10%">Jenis Bayar</th>
-			<th width="10%">Nama Bank</th>			
+			<th width="10%">Nama Bank</th>
 			<th width="10%">No. Reff</th>
 			<th width="10%">Nominal</th>
 			<th width="5%">Status</th>
@@ -104,8 +104,8 @@
 <!-- page script -->
 <script type="text/javascript">
 
-  	$(function() {  	
-    	$("#example1").DataTable(); 
+  	$(function() {
+    	$("#example1").DataTable();
   	});
 
   	function PreviewPdf(id)

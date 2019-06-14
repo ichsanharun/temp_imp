@@ -29,6 +29,7 @@ class Reportar extends Admin_Controller {
         $this->load->model(array('Barang/Barang_model',
                                  'Reportar/Reportar_model',
                                  'Cabang/Cabang_model',
+								 'Piutang_cabang/Piutang_cabang_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
 
@@ -37,27 +38,54 @@ class Reportar extends Admin_Controller {
         $this->template->title('Report AR');
         $this->template->page_icon('fa fa-table');
     }
-
+	/*
+	## ORIGINAL ##
     public function index()
     {
-        /*
-        $this->auth->restrict($this->viewPermission);
-        $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
-        $data = $this->Reportstok_model
-        ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")
-        ->find_all();
-        $this->template->set('results', $data);
-        $this->template->set('cabang', $cabang);
-        */
+
         $data = $this->Reportar_model->order_by('no_invoice','DESC')->find_all();
-        //$data = array();
-        //$data = $this->Reportar_model->where("kdcab='".$this->uri->segment(3)."' AND bln='".date("m")."' AND thn='".date("Y")."'")->order_by('no_invoice','DESC')->find_all();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $this->template->title('Report AR');
         $this->template->set('cabang', $cabang);
         $this->template->set('results', $data);
         $this->template->render('list');
     }
+	*/
+	function index(){
+		$session 	= $this->session->userdata('app_session');
+        $cab_user	= $session['kdcab'];
+		if($this->input->post()){
+			$Bulan		= $this->input->post('bulan');
+			$Tahun		= $this->input->post('tahun');
+			$kdcab		= $this->input->post('kdcab');
+		}else{
+			$Bulan		= date('n');
+			$Tahun		= date('Y');
+			$kdcab 		= $session['kdcab'];
+		}
+		$data			= $this->db->get_where('ar',array('kdcab'=>$kdcab,'bln'=>$Bulan,'thn'=>$Tahun))->result();
+		$cabang 		= $this->Piutang_cabang_model->get_data_Cabang();
+        $this->template->title('Report AR');
+        $this->template->set('cabang', $cabang);
+        $this->template->set('results', $data);
+		$this->template->set('rows_cab_user', $cab_user);
+		$this->template->set('cab_pilih', $kdcab);
+		$this->template->set('bulan_pilih', $Bulan);
+		$this->template->set('tahun_pilih', $Tahun);
+        $this->template->render('list');
+	}
+
+	function excel_piutang($kdcab,$Bulan,$Tahun){
+		$Judul		= "LAPORAN PIUTANG ";
+		$Month		= date('F',mktime(0,0,0,$Bulan,1,date('Y')));
+		$data			= $this->db->get_where('ar',array('kdcab'=>$kdcab,'bln'=>$Bulan,'thn'=>$Tahun))->result();
+		$cabang 		= $this->Piutang_cabang_model->get_data_Cabang();
+		$Judul		.=strtoupper($cabang[$kdcab])." ".strtoupper($Month)." ".$Tahun;
+		
+        $this->template->set('results', $data);
+		$this->template->set('judul', $Judul);
+        $this->template->render('excel_piutang');
+	}
 
     public function filter()
       {
@@ -92,7 +120,44 @@ class Reportar extends Admin_Controller {
         $this->mpdf->Output();
     }
 
-     function downloadExcel()
+    function downloadExcel()
+    {
+      $session = $this->session->userdata('app_session');
+      $kdcab = $this->input->get('idcabang');
+      $bln = $this->input->get('bln');
+      $thn = $this->input->get('thn');
+      if (!empty($bln) && empty($thn)) {
+        $thn = date("Y");
+      }
+      if(!empty($kdcab)){
+        if (!empty($bln)) {
+          $data = $this->Reportar_model
+          ->where("kdcab='".$kdcab."' AND bln='".$bln."' AND thn='".$thn."'")
+          ->order_by('no_invoice','DESC')->find_all();
+        }else {
+          $data = $this->Reportar_model->where("kdcab='".$this->input->get('idcabang')."'")->order_by('no_invoice','DESC')->find_all();
+        }
+      }else{
+        $data = $this->Reportar_model->order_by('no_invoice','DESC')->find_all();
+      }
+
+
+
+
+
+      $data = array(
+        'title2'		=> 'Report',
+        'results'	=> $data
+      );
+      /*$this->template->set('results', $data_so);
+      $this->template->set('head', $sts);
+      $this->template->title('Report SO');*/
+      $this->load->view('view_report',$data);
+
+
+    }
+
+     function downloadExcel_old()
     {
         if(!empty($this->input->get('idcabang'))){
             $data = $this->Reportar_model->where("kdcab='".$this->input->get('idcabang')."'")->order_by('no_invoice','DESC')->find_all();
@@ -151,7 +216,7 @@ class Reportar extends Admin_Controller {
             $ex->setCellValue('A'.$counter, $no++);
             $ex->setCellValue('B'.$counter, strtoupper($row->no_invoice));
             $ex->setCellValue('C'.$counter, strtoupper($row->customer_code.', '.$row->customer));
-            $ex->setCellValue('D'.$counter, the_bulan($row->bln));
+            $ex->setCellValue('D'.$counter, "a");
             $ex->setCellValue('E'.$counter, $row->thn);
             $ex->setCellValue('F'.$counter, $row->saldo_awal);
             $ex->setCellValue('G'.$counter, $row->debet);

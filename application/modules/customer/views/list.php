@@ -40,6 +40,7 @@ thead input {
 			<th>Kredibilitas</th>
 			<th>Alamat</th>
 			<th>Status</th>
+			<th>Limit Piutang</th>
 			<?php if($ENABLE_MANAGE) : ?>
 			<th width="25">Action</th>
 			<?php endif; ?>
@@ -66,6 +67,7 @@ thead input {
 					<label class="label label-danger">Non Aktif</label>
 				<?php } ?>
 			</td>
+			<td><?= number_format($record->limit_piutang) ?></td>
 			<td style="padding-left:20px">
 			<?php if($ENABLE_VIEW) : ?>
 				<a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?=$record->id_customer?>')">
@@ -83,6 +85,7 @@ thead input {
 				</a>
 			<?php endif; ?>
 			</td>
+			
 		</tr>
 		<?php } }  ?>
 		</tbody>

@@ -43,7 +43,7 @@ thead input {
                 <option value="">Pilih Bulan</option>
                 <option value="All">All</option>
                 <?php
-                foreach(the_bulan() as $kb=>$vb){
+                foreach(bulan() as $kb=>$vb){
                   $selectedbln = '';
                   if($this->uri->segment(4) == $kb){
                     $selectedbln='selected="selected"';
@@ -67,6 +67,9 @@ thead input {
       <span class="pull-right">
       <?php echo anchor(site_url('reportpembayaran/downloadExcel_old').'/'.$this->uri->segment(3).'/'.$this->uri->segment(4).'/'.$this->uri->segment(5),'<i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
       <!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>-->
+      <?php if ($this->uri->segment(2) == 'get_filter') { ?>
+      <a class="btn btn-danger btn-sm" href="javascript:void(0)" title="Kembali Ke Kartu Piutang" onclick="window.location.href=siteurl+'report_kartupiutang'"><i class="fa fa-arrow-circle-left">&nbsp;</i>Kembali</a>
+      <?php } ?>
     </span>
     </div>
   </div>
@@ -79,7 +82,9 @@ thead input {
               <th width="15%">No. Pembayaran</th>
               <th>No. Invoice</th>
               <th>Customer</th>
+              <th>Jenis Bayar</th>
               <th>Tanggal Pembayaran</th>
+              <th>Status</th>
               <th>Jumlah</th>
           </tr>
         </thead>
@@ -89,13 +94,33 @@ thead input {
         if(@$results){
         foreach(@$results as $kr=>$vr){
           $no = $n++;
+          if ($vr->jenis_reff == 'BG') {
+            $jenis = 'GIRO';
+            $class = 'badge bg-blue';
+          }elseif ($vr->jenis_reff == 'TRANSFER') {
+            $jenis = 'TRANSFER';
+            $class = 'badge bg-orange';
+          }elseif ($vr->jenis_reff == 'CASH') {
+            $jenis = 'CASH';
+            $class = 'badge bg-green';
+          }
+
+          if ($vr->status_bayar != 'LUNAS') {
+            $status = 'BELUM LUNAS BAYAR';
+            $cl = 'badge bg-red';
+          }else {
+            $status = 'LUNAS';
+            $cl = 'badge bg-green';
+          }
         ?>
         <tr>
           <td><center><?php echo $no?></center></td>
           <td><center><?php echo $vr->kd_pembayaran?></center></td>
           <td><?php echo $vr->no_invoice?></td>
           <td><?php echo $vr->nm_customer?></td>
+          <td><center><span class="<?=$class?>"><?php echo $jenis?></span></center></td>
           <td><?php echo date("d M Y",strtotime($vr->tgl_pembayaran))?></td>
+          <td><center><span class="<?=$cl?>"><?php echo $status?></span></center></td>
           <td class="text-right"><?php echo formatnomor($vr->jumlah_pembayaran)?></td>
         </tr>
         <?php } ?>

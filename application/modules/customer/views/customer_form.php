@@ -12,7 +12,7 @@ img:hover {
 </style>
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#biodata" data-toggle="tab" aria-expanded="true" id="data">Master Customer</a></li>                
+        <li class="active"><a href="#biodata" data-toggle="tab" aria-expanded="true" id="data">Master Customer</a></li>
         <li class=""><a href="#cust_pic" data-toggle="tab" aria-expanded="false" id="data_pic">PIC Customer</a></li>
         <!--<li class=""><a href="#foto" data-toggle="tab" aria-expanded="false" id="data_foto">Foto Customer</a></li>-->
         <li class=""><a href="#toko" data-toggle="tab" aria-expanded="false" id="data_toko">Toko</a></li>
@@ -21,7 +21,7 @@ img:hover {
     <!-- /.tab-content -->
     <div class="tab-content">
         <div class="tab-pane active" id="biodata">
-        <!-- Biodata Mitra -->
+          <!-- Biodata Mitra -->
             <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;">
             </div>
             <!-- form start-->
@@ -250,6 +250,15 @@ img:hover {
                         <input type="text" class="form-control" id="diskon_toko" name="diskon_toko" placeholder="Diskon Toko" value="<?php echo set_value('diskon_toko', isset($data->diskon_toko) ? $data->diskon_toko : ''); ?>" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
                         </div>
                     </div>
+					 <label for="diskon_toko" class="col-sm-2 control-label">Limit Piutang</label>
+                    <div class="col-sm-3">
+                        <div class="input-group">
+                        <span class="input-group-addon"><i class="fa fa-money"></i></span>
+                        <?php
+							echo form_input(array('id'=>'limit_piutang','name'=>'limit_piutang','class'=>'form-control input-sm harga','data-decimal'=>'.','data-thousand'=>'','data-precision'=>'0','data-allow-zero'=>false,'value'=>set_value('nm_customer', isset($data->limit_piutang) ? number_format($data->limit_piutang) :0)));
+						?>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="box-footer">
@@ -265,11 +274,11 @@ img:hover {
                 </div>
             <?= form_close() ?>
             </div>
-        <!-- Biodata Mitra -->
+            <!-- Biodata Mitra -->
         </div>
 
         <div class="tab-pane" id="toko">
-        <!-- Toko Kerja -->
+          <!-- Toko Kerja -->
             <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;">
             </div>
             <!-- form start-->
@@ -385,18 +394,18 @@ img:hover {
                         <span class="input-group-addon"><i class="fa fa-building"></i></span>
                         <input type="text" style="text-transform:uppercase" class="form-control" id="email" name="email" maxlength="45" value="<?php echo set_value('email', isset($data->email) ? $data->email : ''); ?>" placeholder="Email">
                         </div>
-                    </div>                    
+                    </div>
                 </div>
                 </div>
 
                 <div class="box-footer">
-                <div class="form-group ">                    
+                <div class="form-group ">
                     <label for="jam_tagih" class="col-sm-2 control-label">Jam Penagihan</label>
                     <div class="col-sm-3">
                     <div class="input-group bootstrap-timepicker timepicker">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-time"></i></span>
                         <input type="text" class="form-control" id="jam_tagih" name="jam_tagih" maxlength="45" value="<?php echo set_value('jam_tagih', isset($data->jam_tagih) ? $data->jam_tagih : ''); ?>" placeholder="Jam Penagihan">
-                    </div>                    
+                    </div>
                     </div>
 
                     <label for="alamat_tagih" class="col-sm-2 control-label">Alamat Penagihan <font size="4" color="red"><B>*</B></font></label>
@@ -405,7 +414,7 @@ img:hover {
                         <span class="input-group-addon"><i class="fa fa-street-view"></i></span>
                         <textarea style="text-transform:uppercase" class="form-control" id="alamat_tagih" name="alamat_tagih" maxlength="255" placeholder="Alamat Penagihan" required="" style="margin: 0px; height: 49px; width: 216px;"><?php echo set_value('alamat_tagih', isset($data->alamat_tagih) ? $data->alamat_tagih : ''); ?></textarea>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -417,11 +426,11 @@ img:hover {
                         <option value="Rabu">Rabu</option>
                         <option value="Kamis">Kamis</option>
                         <option value="Jum'at">Jum'at</option>
-                    </select>                 
+                    </select>
                     </div>
 
                     <label for="syarat_dokumen" class="col-sm-2 control-label">Persyaratan Penagihan <font size="4" color="red"><B>*</B></font></label>
-                    <div class="col-md-3">                      
+                    <div class="col-md-3">
                         <div class="input-group">
                             <select id="syarat_dokumen" name="syarat_dokumen[]" class="form-control" style="width: 100%;" tabindex="-1" multiple="multiple" required>
                                 <option value=""></option>
@@ -452,12 +461,12 @@ img:hover {
                 <div class="box-footer">
                 <div class="form-group ">
                     <label for="metode_bayar" class="col-sm-2 control-label">Metode Pembayaran <font size="4" color="red"><B>*</B></font></label>
-                    <div class="col-sm-3">                     
+                    <div class="col-sm-3">
                      <select id="metode_bayar" name="metode_bayar[]" style="width: 100%;" tabindex="-1" multiple="multiple"  aria-hidden="true" required>
                         <option value="TRANSFER">TRANSFER</option>
                         <option value="CASH">CASH</option>
                         <option value="GIRO">GIRO</option>
-                    </select> 
+                    </select>
                     </div>
 
                     <label for="sistem_bayar" class="col-sm-2 control-label">Sistem Pembayaran <font size="4" color="red"><B>*</B></font></label>
@@ -473,7 +482,7 @@ img:hover {
                          </option>
                      </select>
                     </div>
-                </div> 
+                </div>
 
                 <div class="form-group" id="row_kredit">
                     <label for="kredit_limit" class="col-sm-2 control-label">Kredit Limit</label>
@@ -495,7 +504,7 @@ img:hover {
                         </div>
                         </div>
                     </div>
-                </div>               
+                </div>
                 </div>
 
                 <!--
@@ -506,7 +515,7 @@ img:hover {
                         <input class="form-control" id="foto_toko" name="foto_toko" type="file">
                         <p class="help-block">Max Image 2 MB</p>
                         </div>
-                    </div>      
+                    </div>
                 </div>
                 -->
                 <div class="box-footer">
@@ -527,11 +536,11 @@ img:hover {
             <?= form_close() ?>
             <div id="list_toko"></div>
             </div>
-        <!-- Toko Kerja -->
+          <!-- Toko Kerja -->
         </div>
 
         <div class="tab-pane" id="cust_pic">
-        <!-- PIC Kerja -->
+          <!-- PIC Kerja -->
             <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;">
             </div>
             <!-- form start-->
@@ -561,7 +570,7 @@ img:hover {
                     </div>
                 </div>
 
-                <div class="form-group ">                    
+                <div class="form-group ">
                     <label for="hp" class="col-sm-2 control-label">HP <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
                         <div class="input-group">
@@ -602,16 +611,16 @@ img:hover {
 
         <div class="tab-pane" id="foto">
         <!-- Data foto -->
-        <div class="box box-primary"> 
-            <form role="form" name="frm_foto" id="frm_foto" 
+        <div class="box box-primary">
+            <form role="form" name="frm_foto" id="frm_foto"
                   action="javascript:add_foto();" method="post" enctype="multipart/form-data">
 
             <div class="box-body">
 
                 <div class="form-group ">
-                    <input type="hidden" id="id_customer" name="id_customer" value="<?php echo set_value('id_customer', isset($data->id_customer) ? $data->id_customer : ''); ?>"> 
+                    <input type="hidden" id="id_customer" name="id_customer" value="<?php echo set_value('id_customer', isset($data->id_customer) ? $data->id_customer : ''); ?>">
                     <!-- file gambar kita buat pada field hidden -->
-                    <input type="hidden" name="filelama" id="filelama" class="form-control" value="<?php echo set_value('filelama', isset($data->foto) ? $data->foto : ''); ?>"> 
+                    <input type="hidden" name="filelama" id="filelama" class="form-control" value="<?php echo set_value('filelama', isset($data->foto) ? $data->foto : ''); ?>">
 
                     <label for="foto" class="col-sm-2 control-label">Foto</label>
                     <div class="col-sm-3">
@@ -619,7 +628,7 @@ img:hover {
                         <input id="foto" name="foto" type="file">
                         <p class="help-block">Max Image 2 MB</p>
                         </div>
-                    </div>            
+                    </div>
 
                     <div class="col-sm-offset-2 col-sm-10">
 
@@ -627,31 +636,31 @@ img:hover {
                         <span class="glyphicon glyphicon-plus"></span>&nbsp;Upload
                         </button>
 
-                        <a class="btn btn-danger" href="javascript:void(0)" title="Cancel" onclick="cancel()"><i class="fa fa-minus-circle">&nbsp;</i>Cancel</a>                            
-                    </div>   
+                        <a class="btn btn-danger" href="javascript:void(0)" title="Cancel" onclick="cancel()"><i class="fa fa-minus-circle">&nbsp;</i>Cancel</a>
+                    </div>
                     <p>
                     <div class="col-sm-offset-2 col-sm-10">
-                         <div id='list_foto'></div>   
-                    </div>                                          
-                </div> 
+                         <div id='list_foto'></div>
+                    </div>
+                </div>
             </div>
-            </form>           
+            </form>
         </div>
 
         </div>
 
         <div class="tab-pane" id="pic_toko">
         <!-- Data foto -->
-        <div class="box box-primary"> 
-            <form role="form" name="frm_foto_toko" id="frm_foto_toko" 
+        <div class="box box-primary">
+            <form role="form" name="frm_foto_toko" id="frm_foto_toko"
                   action="javascript:add_foto_toko();" method="post" enctype="multipart/form-data">
 
-            <div class="box-body">                
+            <div class="box-body">
 
                 <div class="form-group ">
                     <input type="hidden" id="customer" name="customer" value="<?php echo set_value('customer', isset($data->id_customer) ? $data->id_customer : ''); ?>">
                     <!-- file gambar kita buat pada field hidden -->
-                    <input type="hidden" name="filelama_toko" id="filelama_toko" class="form-control" value="<?php echo set_value('filelama_toko', isset($data->foto_toko) ? $data->foto_toko : ''); ?>"> 
+                    <input type="hidden" name="filelama_toko" id="filelama_toko" class="form-control" value="<?php echo set_value('filelama_toko', isset($data->foto_toko) ? $data->foto_toko : ''); ?>">
 
                     <label for="id_toko" class="col-sm-2 control-label">Toko <font size="4" color="red"><B>*</B></font></label>
                     <div class="col-sm-3">
@@ -671,7 +680,7 @@ img:hover {
                         <input id="foto_toko" name="foto_toko" type="file">
                         <p class="help-block">Max Image 2 MB</p>
                         </div>
-                    </div>            
+                    </div>
 
                     <div class="col-sm-offset-2 col-sm-10">
 
@@ -679,15 +688,15 @@ img:hover {
                         <span class="glyphicon glyphicon-plus"></span>&nbsp;Upload
                         </button>
 
-                        <a class="btn btn-danger" href="javascript:void(0)" title="Cancel" onclick="cancel()"><i class="fa fa-minus-circle">&nbsp;</i>Cancel</a>                            
-                    </div>   
+                        <a class="btn btn-danger" href="javascript:void(0)" title="Cancel" onclick="cancel()"><i class="fa fa-minus-circle">&nbsp;</i>Cancel</a>
+                    </div>
                     <p>
                     <div class="col-sm-offset-2 col-sm-10">
-                         <div id='list_foto_toko'></div>   
-                    </div>                                          
-                </div> 
+                         <div id='list_foto_toko'></div>
+                    </div>
+                </div>
             </div>
-            </form>           
+            </form>
         </div>
 
         </div>
@@ -718,14 +727,14 @@ img:hover {
             </div>
             <div class="form-group">
                 <iframe onload="ListBD()" hidden="true"></iframe>
-            </div> 
+            </div>
             </form>
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-outline" onclick="javascript:save_bidus();">Save</button>
             <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
             </div>
-            <div id="list_bd"></div> 
+            <div id="list_bd"></div>
             <div class="modal-footer"></div>
         </div>
     </div>
@@ -748,15 +757,15 @@ img:hover {
             </div>
             <div class="form-group">
                 <iframe onload="ListSD()" hidden="true"></iframe>
-            </div> 
+            </div>
             </form>
             </div>
             <div class="modal-footer">
             <button type="button" class="btn btn-outline" onclick="javascript:save_syardok();">Save</button>
             <button type="button" class="btn btn-outline pull-left" data-dismiss="modal">Close</button>
             </div>
-            <div id="list_sd"></div>   
-            <div class="modal-footer"></div>          
+            <div id="list_sd"></div>
+            <div class="modal-footer"></div>
         </div>
     </div>
 </div>
@@ -789,16 +798,18 @@ img:hover {
     </div>
 </div>
 <!-- End Modal Reff-->
+<script src="<?= base_url('assets/js/jquery.maskMoney.js')?>"></script>
 <script type="text/javascript">
 
     $(function() {
-        $('#row_kredit').hide(); 
+		$('.harga').maskMoney();
+        $('#row_kredit').hide();
         $('#sistem_bayar').change(function(){
         if($('#sistem_bayar').val() == 'Kredit') {
-            $('#row_kredit').show(); 
+            $('#row_kredit').show();
         } else {
-            $('#row_kredit').hide(); 
-        } 
+            $('#row_kredit').hide();
+        }
         });
     });
 
@@ -806,7 +817,7 @@ img:hover {
     $('#jam_tagih').timepicker({
         showInputs: true
     });
-    
+
     $("#hari_tagih").select2({
         placeholder: "Pilih Hari"//,
         //allowClear: true
@@ -829,7 +840,7 @@ img:hover {
         }else{
             HideOtherButton();
         }
-        
+
         $(".pil_bidus").select2({
             placeholder: "Pilih Bidang Usaha",
             allowClear: true
@@ -892,7 +903,7 @@ img:hover {
             }else{
                 load_foto(id);
             }
-        });    
+        });
 
         $('#data_foto_toko').click(function(){
             var id = $('#id_customer').val();
@@ -902,9 +913,9 @@ img:hover {
                 load_id_toko(id);
                 //load_foto_toko(id);
             }
-        });                        
+        });
 
-        
+
     });
 
     //Bidang Usaha
@@ -938,7 +949,7 @@ img:hover {
 
     }
 
-    
+
     //save_syardok
     function save_syardok(){
 
@@ -1003,7 +1014,7 @@ img:hover {
                 $('#idbidus').val(data.id_bidang_usaha);
             }
         })
-    }   
+    }
     }
 
     function edit_sd(id){
@@ -1018,7 +1029,7 @@ img:hover {
                 $('#add_id_syarat').val(data.id_syarat);
             }
         })
-    }   
+    }
     }
 /*
     function get_LisBidus() {
@@ -1033,7 +1044,7 @@ img:hover {
                set_nmcolly();
             }
         });
-    }    
+    }
 */
     function get_bidus(){
         $.ajax({
@@ -1043,7 +1054,7 @@ img:hover {
                $("#bidang_usaha").html(html);
             }
         });
-    }    
+    }
 
     function get_syardok(){
         $.ajax({
@@ -1053,7 +1064,7 @@ img:hover {
                $("#syarat_dokumen").html(html);
             }
         });
-    }   
+    }
 
     function load_id_toko(id){
         $.ajax({
@@ -1214,7 +1225,7 @@ img:hover {
         })
     }
     }
-    
+
     //Toko
     function get_idtoko(customer){
      $.ajax({
@@ -1227,7 +1238,7 @@ img:hover {
              $("#id_toko").val(id_toko);
          }
      })
-    }    
+    }
 
     $('#frm_toko').on('submit', function(e){
         e.preventDefault();
@@ -1259,9 +1270,9 @@ img:hover {
                         ShowOtherButton();
                         $("#frm_toko")[0].reset();
                       } else {
-                        load_toko_temp(customer);  
+                        load_toko_temp(customer);
                         $('#id_customer').val(customer);
-                        get_idtoko(customer);   
+                        get_idtoko(customer);
                         $("#frm_toko")[0].reset();
                       }
                     });
@@ -1313,7 +1324,7 @@ img:hover {
                     function(isConfirm){
                       if (isConfirm) {
                         $('[href="#toko"]').tab('show');
-                        $('#customer').val(customer);                        
+                        $('#customer').val(customer);
                         load_foto(customer);
                         load_pic_toko(customer);
                         ShowOtherButton();
@@ -1347,12 +1358,12 @@ img:hover {
             }
         });
     });
-    
+
     //FOTO CUST
     function add_foto(){
     var foto        =   $('#foto').val();
     var id_customer =   $('#id_customer').val();
-    
+
     $('#frm_foto').ajaxForm({
      url:siteurl+"customer/add_datafoto",
      dataType : "json",
@@ -1361,7 +1372,7 @@ img:hover {
      success:function(msg){
         var pesan = msg['save'];
         var gambar = msg['gambar'];
-        if(msg['save']=='1'){    
+        if(msg['save']=='1'){
             swal({
                 title: "SUKSES!",
                 text: "Sukses Upload Foto Customer",
@@ -1381,9 +1392,9 @@ img:hover {
                 //timer: 1500,
                 showConfirmButton: true
             });
-        };//alert(msg); 
+        };//alert(msg);
     },
-        error: function(){            
+        error: function(){
             swal({
                 title: "Gagal!",
                 text: "Gagal Eksekusi Ajax",
@@ -1392,16 +1403,16 @@ img:hover {
                 showConfirmButton: false
             });
         }
-    });     
+    });
 
-    }    
+    }
 
     //FOTO TOKO
     function add_foto_toko(){
     var foto_toko       =   $('#foto_toko').val();
     var id_toko_foto    =   $('#id_toko_foto').val();
     var filelama_toko   =   $('#filelama_toko').val();
-    
+
     $('#frm_foto_toko').ajaxForm({
      url:siteurl+"customer/add_datafoto_toko",
      dataType : "json",
@@ -1411,7 +1422,7 @@ img:hover {
         var pesan = msg['save'];
         var gambar = msg['gambar'];
         var id = $('#id_customer').val();
-        if(msg['save']=='1'){    
+        if(msg['save']=='1'){
             swal({
                 title: "SUKSES!",
                 text: "Sukses Upload Foto Toko",
@@ -1430,9 +1441,9 @@ img:hover {
                 //timer: 1500,
                 showConfirmButton: true
             });
-        };//alert(msg); 
+        };//alert(msg);
     },
-        error: function(){            
+        error: function(){
             swal({
                 title: "Gagal!",
                 text: "Gagal Eksekusi Ajax",
@@ -1441,9 +1452,9 @@ img:hover {
                 showConfirmButton: false
             });
         }
-    });     
+    });
 
-    }    
+    }
 
     function cancel(){
         $(".box").show();
@@ -1473,7 +1484,7 @@ img:hover {
         }
     })
     }
-    
+
     function load_foto(id_customer){
     $.ajax({
         type:"GET",
@@ -1629,6 +1640,5 @@ img:hover {
             //cancel();
           }
         });
-    } 
+    }
 </script>
-

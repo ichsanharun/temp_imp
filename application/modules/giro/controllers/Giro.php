@@ -71,7 +71,7 @@ class Giro extends Admin_Controller {
 
         $session = $this->session->userdata('app_session');
         $bank = $this->Giro_model->get_data('1=1','bank');
-        $customer = $this->Giro_model->get_data(array('kdcab'=>$session['kdcab']),'customer');
+        $customer = $this->Giro_model->get_data(array('kdcab'=>$session['kdcab'],'deleted'=>0),'customer');
         $this->template->set('bank', $bank);
         $this->template->set('customer', $customer);
         $this->template->title('Tambah Data Giro');
@@ -91,11 +91,11 @@ class Giro extends Admin_Controller {
             'msg' => "Data harus lengkap..!!!"
             );
         }else{
-        if(!empty($this->input->post('girobank'))){
+        /*if(!empty($this->input->post('girobank'))){
             $bank = explode('|',$this->input->post('girobank'));
             $kdbank = $bank[0];
             $nmbank = $bank[1];
-        }
+        }*/
 
         if(!empty($this->input->post('customer_giro'))){
             $cus = explode('|',$this->input->post('customer_giro'));
@@ -106,12 +106,13 @@ class Giro extends Admin_Controller {
         $datagiro = array(
             'no_giro' => $this->input->post('no_giro'),
             'kdcab' => $session['kdcab'],
-            'id_bank' => $kdbank,
-            'nm_bank' => $nmbank,
+            'id_bank' => '',
+            'nm_bank' => $this->input->post('girobank'),
             'id_customer' => $idcus,
             'nm_customer' => $nmcus,
             'tgl_giro' => $this->input->post('tgl_transaksi_giro'),
-            'nilai_fisik' => $this->input->post('nilai_fisik_giro'),
+            'nilai_fisik' => str_replace(",","",$this->input->post('nilai_fisik_giro')),
+            'nilai_sisa' => str_replace(",","",$this->input->post('nilai_fisik_giro')),
             'tgl_jth_tempo' => $this->input->post('tgl_jth_tempo_giro'),
             'status_giro' => 'N',
             'status' => 'OPEN',
@@ -121,6 +122,42 @@ class Giro extends Admin_Controller {
 
         $this->db->trans_begin();
         $this->db->insert('giro',$datagiro);
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            $param = array(
+            'save' => 0,
+            'msg' => "GAGAL, simpan data..!!!"
+            );
+        }
+        else
+        {
+            $this->db->trans_commit();
+            $param = array(
+            'save' => 1,
+            'msg' => "SUKSES, simpan data..!!!"
+            );
+        }
+        }//tutup IF empty
+        echo json_encode($param);
+    }
+
+    function simpandatabank(){
+        $session = $this->session->userdata('app_session');
+
+        $kdbank = $this->Giro_model->generate_bank();
+        $nmbank = $this->input->post('nama_bank');
+        if(empty($this->input->post('id_bank')) || empty($this->input->post('nama_bank'))){
+            $param = array(
+            'save' => 0,
+            'msg' => "Data harus lengkap..!!!"
+            );
+        }else{
+        $this->db->trans_begin();
+        if(!empty($this->input->post('id_bank'))){
+          $this->db->insert('bank',array('kd_bank'=>$kdbank,'nama_bank'=>$nmbank));
+        }
+
         if ($this->db->trans_status() === FALSE)
         {
             $this->db->trans_rollback();

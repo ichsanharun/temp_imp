@@ -135,9 +135,9 @@
                       <?php if($ENABLE_MANAGE) {
                         if ($vso->stsorder != "CLOSE") {
                         ?>
-                      <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data('<?php echo $vso->no_so?>')">
+                      <!--a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data('<?php echo $vso->no_so?>')">
                       <span class="glyphicon glyphicon-edit"></span>
-                      </a>
+                    </a-->
                     <?php }} ?>
                     <?php if($ENABLE_VIEW) { ?>
                     <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_so?>')">
@@ -228,7 +228,7 @@
         window.location.href = siteurl+"salesorder/edit/"+noso;
     }
     function create_pending_so(noso){
-        window.location.href = siteurl+"salesorder/create_pso/"+noso;
+        window.location.href = siteurl+"salesorder/cps/"+noso;
     }
     function delete_data(noso){
         swal({

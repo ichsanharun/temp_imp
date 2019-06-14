@@ -1,4 +1,5 @@
 <form id="form-detail-do-konfirm" method="post">
+  <input type="hidden" name="no_invoice" value="<?php echo @$header->no_invoice?>">
 <table class="table table-bordered" width="100%">
   <tr>
     <th colspan="4"><?php echo @$header->nm_customer?></th>
@@ -40,10 +41,48 @@
             <option value="RETURN">RETURN</option>
           </select>-->
         </td>
-        <td>
-          <input type="text" name="return_do_rusak[]" id="return_do_rusak<?php echo $no?>" class="form-control return_do" onkeyup="cekreturn('<?php echo $no?>')">
-          <input type="hidden" name="id_barang_do_konfirm[]" class="form-control" value="<?php echo $vd->id_barang?>">
-          <input type="hidden" name="qty_supply_do[]" id="qty_supply_do<?php echo $no?>" class="form-control" value="<?php echo $vd->jumlah?>">
+        <td width="30%">
+          <div class="col-sm-12">
+            <div class="row" id="rowganti<?=$no-1?>" style="display:none !important">
+              <div class="form-group ">
+                <label for="ganti" class="col-sm-4 control-label">Ganti</label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+
+                    <input name="ganti[<?=$no-1?>]" id="ganti<?=$no-1?>" class="form-control" onkeyup="this.value = this.value.match(/^[0-9]+$/)" value="0" placeholder="QTY Ganti">
+
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:7px;display:none !important" id="rowuang<?=$no-1?>">
+              <div class="form-group ">
+                <label for="uang" class="col-sm-4 control-label">Uang Kembali</label>
+                <div class="col-sm-8">
+                  <div class="input-group">
+                    <input name="qty[<?=$no-1?>]" id="qty<?=$no-1?>" class="form-control" onkeyup="this.value = this.value.match(/^[0-9]+$/)" value="0" placeholder="QTY">
+                    <span class="input-group-addon" style="padding:0;margin:0;" id="spanx<?=$no-1?>">X</span>
+                    <input name="uang[<?=$no-1?>]" id="uang<?=$no-1?>" class="form-control" onkeyup="this.value = this.value.match(/^[0-9]+$/)" value="0" style="width:100%" placeholder="NOMINAL">
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="row" style="margin-top:7px">
+              <div class="form-inline">
+                <label>
+                  <input type="checkbox" value="close" id="<?=$no-1?>" onclick="setclose(this.id)" name="cekclose[<?=$no-1?>]" class="checkbox" checked> Tidak Retur
+                </label>
+              </div>
+            </div>
+          </div>
+
+
+
+          <input type="hidden" name="id_barang_do_konfirm[<?=$no-1?>]" class="form-control" value="<?php echo $vd->id_barang?>">
+          <input type="hidden" name="nm_barang_do_konfirm[<?=$no-1?>]" class="form-control" value="<?php echo $vd->nm_barang?>">
+          <input type="hidden" name="return_do_rusak[<?=$no-1?>]" id="return_do_rusak<?php echo $no?>" class="form-control return_do" onkeyup="this.value=this.value.replace(/[^0-9.]/g,'');cekreturn('<?php echo $no?>');">
+          <input type="hidden" name="qty_supply_do[<?=$no-1?>]" id="qty_supply_do<?php echo $no?>" class="form-control" value="<?php echo $vd->jumlah?>">
+
         </td>
         <!--td>
           <input type="text" name="return_do_hilang[]" id="return_do_hilang<?php echo $no?>" class="form-control return_do" onkeyup="cekreturn('<?php echo $no?>')">
@@ -57,24 +96,22 @@
   $(document).ready(function() {
     $('.return_do').val(0);
   });
-    function setclose(no,val){
-
-      var val = $('#konfirm_do'+no).val();
-      if (val == "CLOSE") {
-        $('#return_do_bagus'+no).show();
-        $('#return_do_rusak'+no).show();
-        $('#return_do_hilang'+no).show();
-        $('#return_do_bagus'+no).hide();
-        $('#return_do_rusak'+no).hide();
-        $('#return_do_hilang'+no).hide();
+    function setclose(id){
+      //console.log();
+      if (document.getElementById(id).checked == true) {
+        document.getElementById("rowganti"+id).style.display = "none";
+        document.getElementById("rowuang"+id).style.display = "none";
+        //document.getElementById("ganti"+id).style.display = "none";
+        //document.getElementById("uang"+id).style.display = "none";
+        //document.getElementById("spanx"+id).style.display = "none";
       }else {
-        $('#return_do_bagus'+no).hide();
-        $('#return_do_rusak'+no).hide();
-        $('#return_do_hilang'+no).hide();
-        $('#return_do_bagus'+no).show();
-        $('#return_do_rusak'+no).show();
-        $('#return_do_hilang'+no).show();
+        document.getElementById("rowganti"+id).style.display = "block";
+        document.getElementById("rowuang"+id).style.display = "block";
+        //document.getElementById("ganti"+id).style.display = "block";
+        //document.getElementById("uang"+id).style.display = "block";
+        //document.getElementById("spanx"+id).style.display = "block";
       }
+
     }
 
 </script>

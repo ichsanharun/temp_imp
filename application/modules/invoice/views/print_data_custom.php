@@ -6,10 +6,12 @@ date_default_timezone_set("Asia/Bangkok");
 <head>
     <title></title>
     <style>
-
+    @font-face { font-family: kitfont; src: url('1979 Dot Matrix Regular.TTF'); }
+      html
         {
             margin:0;
             padding:0;
+            font-style: kitfont;
             font-family:Arial;
             font-size:10pt;
             color:#000;
@@ -18,6 +20,7 @@ date_default_timezone_set("Asia/Bangkok");
         {
             width:100%;
             font-family:Arial;
+            font-style: kitfont;
             font-size:10pt;
             margin:0;
             padding:0;
@@ -31,10 +34,8 @@ date_default_timezone_set("Asia/Bangkok");
 
         .page
         {
-            /*height:297mm;
-            width:210mm;*/
-            width: 297mm;
-            height: 210mm;
+            width: 210mm;
+            height: 145mm;
             page-break-after:always;
         }
 
@@ -106,17 +107,17 @@ date_default_timezone_set("Asia/Bangkok");
 
     <?php $diskon = explode("|", $set_custom);
     ?>
-    <table width="100%" id="tabel-laporan" style="font-size:8.5pt !important; padding: 0 !important;font-weight:bold">
+    <table width="100%" id="tabel-laporan" style="font-size:10.5pt !important; padding: 0 !important;font-weight:bold">
        <tr>
             <th width="5%">NO</th>
-            <th width="30%">NAMA PRODUK</th>
-            <th width="30%">SURAT JALAN</th>
+            <th width="30%">NAMA BARANG</th>
+            <!--<th width="30%">SURAT JALAN</th>-->
             <th width="5%">QTY</th>
             <th width="10%">SATUAN<br>(SET/PCS)</th>
-            <th width="10%">HARGA</th>
+            <th width="10%">HARGA SATUAN (Rp.)</th>
             <th width="1%">DISKON(%)</th>
-            <th>HARGA NETT</th>
-            <th width="10%">JUMLAH</th>
+            <th>HARGA NETT (Rp.)</th>
+            <th width="10%">SUBTOTAL (Rp.)</th>
             <!--<th width="20%">KETERANGAN</th>-->
         </tr>
         <?php
@@ -178,7 +179,7 @@ date_default_timezone_set("Asia/Bangkok");
         <tr class="isi" style="">
             <td style="" width="1%"><center><?php echo $no?></center></td>
             <td style=" width:20%" width="20%"><?php echo $v->nm_barang?></td>
-            <td style="" width="2%"><center><?php echo $v->no_do?></center></td>
+            <!--<td style="" width="2%"><center><?php echo $v->no_do?></center></td>-->
             <td style="" width="1%"><center><?php echo $v->jumlah?></center></td>
             <td style="" width="1%"><center><?php echo $v->satuan?></center></td>
             <td style="text-align: right;"><?php echo formatnomor($v->hargajual)?></td>

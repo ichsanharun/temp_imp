@@ -20,7 +20,6 @@ class Mutasi extends Admin_Controller {
     {
         parent::__construct();
         $this->load->library(array('Mpdf','upload','Image_lib'));
-		
 
         $this->load->model(array('Mutasi/Mutasi_model',
                                  'Mutasi/Detailmutasi_model',
@@ -36,144 +35,50 @@ class Mutasi extends Admin_Controller {
 
     public function index()
     {
-        
-		$session 			= $this->session->userdata('app_session');
-		$Cabang_User		= $session['kdcab'];
-		$det_Cabang			= $this->db->get('pastibisa_tb_cabang')->result();
-		$Arr_Cabang			= array();
-		if($det_Cabang){
-			foreach($det_Cabang as $key=>$vals){
-				$kode_cab				= $vals->nocab;
-				$Arr_Cabang[$kode_cab]	= $kode_cab;
-			}
-		}
-		$this->template->set('Arr_Cabang', $Arr_Cabang);
-        $this->template->set('cabs_user', $Cabang_User);
+        $data = $this->Mutasi_model->order_by('no_mutasi','ASC')->find_all();
+
+        $this->template->set('results', $data);
         $this->template->title('Data Mutasi Produk');
         $this->template->render('list');
     }
-	
-	function display_data_json(){
-		include APPPATH.'libraries/ssp.class.php';
-		include APPPATH.'helpers/extend_helper.php';
-		$session 			= $this->session->userdata('app_session');
-		$Cabang_User		= $session['kdcab'];
-		$det_Akses			= akses_server_side();
-		$table 				= 'trans_mutasi_header';
-		$primaryKey 		= 'no_mutasi';
-		$WHERE				="";
-		if($Cabang_User !='100'){
-			$WHERE				= "(kdcab_asal='$Cabang_User' OR kdcab_tujuan='$Cabang_User')";
-		}
-		
-		
-		$columns = array(
-			array( 'db' => 'no_mutasi', 'dt' => 'no_mutasi'),
-			array( 'db' => 'kdcab_tujuan', 'dt' => 'kdcab_tujuan'),
-			array( 'db' => 'cabang_tujuan', 'dt' => 'cabang_tujuan'),				
-			array('db' => 'kdcab_asal','dt' => 'kdcab_asal'),
-			array( 'db' => 'cabang_asal', 'dt' => 'cabang_asal'),
-			array( 'db' => 'id_supir', 'dt' => 'id_supir'),
-			array( 'db' => 'nm_supir', 'dt' => 'nm_supir'),
-			array( 'db' => 'id_kendaraan', 'dt' => 'id_kendaraan'),
-			array( 'db' => 'ket_kendaraan', 'dt' => 'ket_kendaraan'),
-			array( 'db' => 'status_mutasi', 'dt' => 'status_mutasi'),
-			array( 
-				'db' => 'tgl_mutasi', 
-				'dt'=> 'tgl_mutasi',
-				'formatter' => function($d,$row){
-					return date('d F Y',strtotime($d));
-				}
-			),
-			array( 
-				'db' => 'no_mutasi', 
-				'dt'=> 'action',
-				'formatter' => function($d,$row){
-					return '';
-				}
-			)
-		);
-		$sql_details = array(
-			'user' => $det_Akses['hostuser'],
-			'pass' => $det_Akses['hostpass'],
-			'db'   => $det_Akses['hostdb'],
-			'host' => $det_Akses['hostname']
-		);
-		
-		
-		
-		echo json_encode(
-			SSP::complex ( $_POST, $sql_details, $table, $primaryKey, $columns, null, $WHERE )
-		);
-	}
 
     public function create()
     {
-        
-		$session 			= $this->session->userdata('app_session');
-		$Cabang_User		= $session['kdcab'];
-		$det_Cabang			= $this->db->get_where('pastibisa_tb_cabang',array('nocab !='=>'100'))->result();
-		$Arr_Cabang			= array();
-		if($det_Cabang){
-			foreach($det_Cabang as $key=>$vals){
-				$kode_cab				= $vals->nocab;
-				$Arr_Cabang[$kode_cab]	= $vals->cabang;
-			}
-		}
-		$stok_cabang	= array();
-		if($Cabang_User !='100'){
-			$stok_cabang 	= $this->Mutasi_model->get_data(array('kdcab'=>$Cabang_User,'qty_avl >'=>0),'barang_stock');						
-		}
-       
-        
-       
-       
-        
-      
-		$this->template->set('Arr_Cabang', $Arr_Cabang);
-        $this->template->set('cabs_user', $Cabang_User);
+        $session = $this->session->userdata('app_session');
+        $driver = $this->Mutasi_model->pilih_driver($session['kdcab'])->result();
+        $Arr_Driver	= array();
+    		if($driver){
+    			foreach($driver as $keyD=>$valD){
+    				$Kode_Driver		= $valD->id_karyawan;
+    				$Name_Driver		= $valD->nama_karyawan;
+    				$Arr_Driver[$Kode_Driver]	= $Name_Driver;
+    			}
+    			unset($driver);
+    		}
+        $kendaraan = $this->Mutasi_model->pilih_kendaraan($session['kdcab'])->result();
+        $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
+        $stok_cabang = $this->Mutasi_model->get_data(array('kdcab'=>$session['kdcab']),'barang_stock');
+        $cabang_now = $this->Mutasi_model->get_cabang($session['kdcab']);
+        $Arr_Kendaraan = array();
+        if($kendaraan){
+            foreach($kendaraan as $keyK=>$valK){
+                $Id_kendaraan        = $valK->id_kendaraan;
+                $Nama_kendaraan        = $valK->nm_kendaraan;
+                $Arr_Kendaraan[$Id_kendaraan]   = $Nama_kendaraan;
+            }
+            unset($kendaraan);
+        }
+        //$this->template->set('driver',$driver);
+        $this->template->set('arr_driver',$Arr_Driver);
+        $this->template->set('kendaraan',$Arr_Kendaraan);
+        //$this->template->set('kendaraan',$kendaraan);
+        $this->template->set('cabang',$cabang);
+        $this->template->set('kdcab',$cabang_now);
         $this->template->set('stok_cabang',$stok_cabang);
         $this->template->title('Create Mutasi Produk');
         $this->template->render('mutasi_form');
     }
-	
-	function get_stock_item(){
-		$Cabang			= $this->input->post('cabang');
-		$stok_cabang 	= $this->Mutasi_model->get_data(array('kdcab'=>$Cabang,'qty_avl >'=>0),'barang_stock');
-		$data			= array(
-			'rows_data'		=> $stok_cabang
-		);
-		//echo"<pre>";print_r($stok_cabang);exit;
-		$this->template->set('rows_data', $stok_cabang);
-		$this->template->render('list_stock');
-	}
-	function get_Driver($cabang=''){
-		$driver 	= $this->Mutasi_model->pilih_driver($cabang)->result();
-		$Arr_Driver	= array();
-		if($driver){
-			foreach($driver as $keyD=>$valD){
-				$Kode_Driver		= $valD->id_karyawan;
-				$Name_Driver		= $valD->nama_karyawan;
-				$Arr_Driver[$Kode_Driver]	= $Name_Driver;
-			}
-			unset($driver);
-		}
-		echo json_encode($Arr_Driver);
-	}
-	function get_Kendaraan($cabang=''){
-		$Arr_Kendaraan 	= array();
-		$kendaraan 		= $this->Mutasi_model->pilih_kendaraan($cabang)->result();
-		if($kendaraan){
-			foreach($kendaraan as $keyK=>$valK){
-				$Id_kendaraan        			= $valK->id_kendaraan;
-				$Nama_kendaraan        			= $valK->nm_kendaraan;
-				$Arr_Kendaraan[$Id_kendaraan]   = $Nama_kendaraan;
-			}
-			unset($kendaraan);
-		}
-		echo json_encode($Arr_Kendaraan);
-	}
-	
+
     public function savemutasi(){
         $session = $this->session->userdata('app_session');
         $cabang_asal = explode('|',$this->input->post('cabang_asal'));
@@ -259,15 +164,7 @@ class Mutasi extends Admin_Controller {
         }
         echo json_encode($param);
     }
-	function view_data($kode=''){
-		$header = $this->Mutasi_model->find_data('trans_mutasi_header',$kode,'no_mutasi');
-		$detail = $this->Detailmutasi_model->find_all_by(array('no_mutasi' => $kode));
 
-		$this->template->set('header', $header);
-		$this->template->set('detail', $detail);
-		$this->template->title('View Mutasi Produk');
-		$this->template->render('view_detail');
-	}
     function print_request($mutasi){
         $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();

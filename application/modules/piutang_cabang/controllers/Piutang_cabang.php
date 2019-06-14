@@ -36,9 +36,9 @@ class Piutang_cabang extends Admin_Controller
     public function index()
     {
         //echo"<pre>";print_r($this->db->database);exit;
-		$session 		= $this->session->userdata('app_session');		
+		$session 		= $this->session->userdata('app_session');
         $data_cabang 	= $this->Piutang_cabang_model->get_data_Cabang();
-        $this->template->set('rows_cabang', $data_cabang);		
+        $this->template->set('rows_cabang', $data_cabang);
 		$this->template->set('user_cabang', $session['kdcab']);
         $this->template->title('Hutang Cabang');
         $this->template->render('list_bayar');
@@ -46,15 +46,13 @@ class Piutang_cabang extends Admin_Controller
 	 public function daftar_piutang()
     {
         //$this->auth->restrict($this->viewPermission);
-		$session 	= $this->session->userdata('app_session');		
+		$session 	= $this->session->userdata('app_session');
         $data 		= $this->db->get_where('ar_cabang',array('kdcab'=>$session['kdcab'],'saldo_akhir !='=>'0','bln'=>date('n'),'thn'=>date('Y')))->result();
         $this->template->set('results', $data);
         $this->template->title('Hutang Cabang');
         $this->template->render('list_piutang');
     }
 	function get_data_display(){
-		include APPPATH.'helpers/extend_helper.php';
-		$det_Akses	= akses_server_side();
 		$session 	= $this->session->userdata('app_session');
 		$WHERE		="";
 		if($session['kdcab'] !='100'){
@@ -68,13 +66,13 @@ class Piutang_cabang extends Admin_Controller
 			$YearL			= $bulanP[1];
 			$MonthL			= array_search($bulanP[0],$ArrBulan);
 			$bulanCek		= date('Y-m',mktime(0,0,0,$MonthL,1,$YearL));
-			
+
 			if(!empty($WHERE))$WHERE	.=" AND ";
 			$WHERE	.="datet LIKE '".$bulanCek."-%'";
 		}
-		
-		
-		
+
+
+
 		$table 		= 'ar_cabang_payment';
 		$primaryKey = 'jurnalid';
 		$columns 	= array(
@@ -88,42 +86,42 @@ class Piutang_cabang extends Admin_Controller
 			array( 'db' => 'descr', 'dt' => 'descr'),
 			array( 'db' => 'flag_batal', 'dt' => 'flag_batal'),
 			array( 'db' => 'bum_ho', 'dt' => 'bum_ho'),
-			array( 
-				'db' => 'datet', 
+			array(
+				'db' => 'datet',
 				'dt'=> 'datet',
 				'formatter' => function($d,$row){
 					return date('d M Y',strtotime($d));
 				}
 			),
-			
-			array( 
-				'db' => 'total', 
+
+			array(
+				'db' => 'total',
 				'dt'=> 'total',
 				'formatter' => function($d,$row){
 					return number_format($d);
 				}
 			),
-			
-			array( 
-				'db' => 'jurnalid', 
+
+			array(
+				'db' => 'jurnalid',
 				'dt'=> 'action',
 				'formatter' => function($d,$row){
 					return '';
 				}
 			)
-			
+
 		);
-	
-	
+
+
 		$sql_details = array(
-			'user' => $det_Akses['hostuser'],
-			'pass' => $det_Akses['hostpass'],
-			'db'   => $det_Akses['hostdb'],
-			'host' => $det_Akses['hostname']
+			'user' => $this->db->username,
+			'pass' => $this->db->password,
+			'db'   => $this->db->database,
+			'host' => $this->db->hostname
 		);
 		include( 'ssp.class.php' );
-		
-		
+
+
 		echo json_encode(
 			SSP::complex ($_POST, $sql_details, $table, $primaryKey, $columns,null, $WHERE)
 		);
@@ -133,7 +131,7 @@ class Piutang_cabang extends Admin_Controller
   			$Data_Ambil		      	= $this->input->post('dataPilih');
 			$session 				= $this->session->userdata('app_session');
 			$Cabang_Bayar			= $session['kdcab'];
-			
+
 			$det_Coa				= $this->Piutang_cabang_model->get_Coa_Kas_Bank($Cabang_Bayar);
 			$det_Cabang				= $this->db->get_where('pastibisa_tb_cabang',array('nocab'=>'100'))->result();
 			$this->db->where_in('id',$Data_Ambil);
@@ -152,7 +150,7 @@ class Piutang_cabang extends Admin_Controller
 		}
 
     }
-	
+
 	function save_jurnal(){
 		$Arr_Return	= array();
 		if($this->input->post()){
@@ -179,13 +177,13 @@ class Piutang_cabang extends Admin_Controller
 			$Update_BUK 	= $this->Jurnal_model->update_Nomor_Jurnal_BUK($Cabang_Bayar,$Jenis_Pay);
 			$Nomor_BUM		= $this->Jurnal_model->get_Nomor_Jurnal_BUM($Cabang_Pusat,$Tgl_Jurnal);
 			$Update_BUM 	= $this->Jurnal_model->update_Nomor_Jurnal($Cabang_Pusat,'BUM');
-			
+
 			## COA ##
 			$Coa_Piutang	= $this->Jurnal_model->get_COA_Piutang($Cabang_Bayar);
 			$Coa_Hutang		= '2101-01-01';
 			$Coa_Bank_Pusat	= '1101-01-02';
 			$det_Cabang		= $this->db->get_where('pastibisa_tb_cabang',array('nocab'=>$Cabang_Bayar))->result();
-		
+
 			$Header_Payment	= array(
 				'jurnalid'		=> $Nomor_BUK,
 				'datet'			=> $Tgl_Jurnal,
@@ -197,7 +195,7 @@ class Piutang_cabang extends Admin_Controller
 				'created_date'	=> date('Y-m-d H:i:s'),
 				'created_by'	=> $session['id_user']
 			);
-			
+
 			$Header_BUK		= array(
 				'nomor'			=> $Nomor_BUK,
 				'tgl'			=> $Tgl_Jurnal,
@@ -232,7 +230,7 @@ class Piutang_cabang extends Admin_Controller
 				'no_reff'       => '-',
 				'debet'         => $Grand_Total,
 				'kredit'        => 0
-			);	
+			);
 			$intL				= 0;
 			if($dataDet){
 				foreach($dataDet as $key=>$vals){
@@ -259,7 +257,7 @@ class Piutang_cabang extends Admin_Controller
 						'debet'         => 0,
 						'kredit'        => $Bayar_Nil
 					);
-					
+
 					$Cek_Data			= $this->db->get_where('ar_cabang',array('id'=>$vals['kode']))->result();
 					if($Cek_Data){
 						$Saldo_Awal		= $Cek_Data[0]->saldo_awal;
@@ -270,8 +268,8 @@ class Piutang_cabang extends Admin_Controller
 					}
 				}
 			}
-			
-			
+
+
 			$Detail_BUK[0]		= array(
 				  'nomor'         => $Nomor_BUK,
 				  'tanggal'       => $Tgl_Jurnal,
@@ -283,15 +281,15 @@ class Piutang_cabang extends Admin_Controller
 				  'kredit'        => $Grand_Total
 
 			);
-			
-			
+
+
 			## BUK  ##
 			$this->db->insert('japh',$Header_BUK);
 			$this->db->insert_batch('jurnal',$Detail_BUK);
 			## BUM ##
 			$this->db->insert('jarh',$Header_BUM);
 			$this->db->insert_batch('jurnal',$Detail_BUM);
-			
+
 			## PAYMENT
 			$this->db->insert('ar_cabang_payment',$Header_Payment);
 			$this->db->trans_complete();
@@ -314,10 +312,10 @@ class Piutang_cabang extends Admin_Controller
   				'pesan'			=> 'No Record Was Found To Process. Please Try Again...'
   		   );
 		}
-		
+
 		echo json_encode($Arr_Return);
 	}
-    
+
 	function print_buk($jurnal){
 		$uk1 	= 9;
 		$ukk 	= 17;
@@ -370,13 +368,13 @@ class Piutang_cabang extends Admin_Controller
 			$this->mpdf->SetHTMLHeader($header,'0',true);
 			$this->mpdf->SetHTMLFooter('
 				<table width="100%" border="0" style="font-size: '.$ukk.'px !important;">
-				
+
 				<tr>
 					<td width="30%"><center>Dibuat Oleh,</center></td>
 					<td width="40%"><center>Disetujui Oleh,</center></td>
 					<td width="30%"><center>Dibukukan Oleh,</center></td>
 				</tr>
-				<tr>					
+				<tr>
 					<td width="15%" colspan="3" style="height: 50px;"></td>
 				</tr>
 				<tr>
@@ -404,7 +402,7 @@ class Piutang_cabang extends Admin_Controller
 			$this->mpdf->WriteHTML($show);
 			$this->mpdf->Output();
 		}
-	
 
-    
+
+
 }

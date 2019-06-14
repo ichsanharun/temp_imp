@@ -1,9 +1,9 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-/* 
+/*
  * @author Yunas Handra
  * @copyright Copyright (c) 2018, Yunas Handra
- * 
+ *
  * This is model class for table "Barang_koli_model"
  */
 
@@ -55,7 +55,7 @@ class Giro_model extends BF_Model
      * and $deleted_by_field.
      */
     protected $log_user = true;
-    
+
     /**
      * Function construct used to load some library, do some actions, etc.
      */
@@ -74,5 +74,34 @@ class Giro_model extends BF_Model
         $this->db->where($kunci);
         $query=$this->db->get($tabel);
         return $query->row();
+    }
+
+    function generate_bank(){
+
+        $cek = 'B0';
+        /*$query_cek = $this->db->query("SELECT MAX(no_so) as max_id FROM trans_so_header
+        WHERE no_so LIKE '%$cek%'")->num_rows();*/
+        $query = "SELECT MAX(kd_bank) as max_id
+        FROM
+        bank WHERE kd_bank LIKE '%$cek%'";
+        $q = $this->db->query($query);
+        $query_cek = $q->num_rows();
+        if ($query_cek == 0) {
+          $kode = 1;
+          $next_kode = str_pad($kode, 3, "0", STR_PAD_LEFT);
+          $fin = 'B0'.$next_kode;
+        }else {
+          $query = "SELECT MAX(kd_bank) as max_id
+          FROM
+          bank WHERE kd_bank LIKE '%$cek%'";
+          $q = $this->db->query($query);
+          $r = $q->row();
+          $kode = (int)substr($r->max_id,2)+1;
+          $next_kode = str_pad($kode, 3, "0", STR_PAD_LEFT);
+          $fin =  'B0'.$next_kode;
+        }
+
+
+      return $fin;
     }
 }

@@ -32,7 +32,8 @@
              <td><center><?php echo date('d/m/Y',strtotime($vp->tgl_po))?></center></td>
              <td style="text-align: center">
                <?php if ($stat != 1) {
-                 echo $stat;
+                 //echo $stat;
+                 echo'<a href="'.base_url("receiving/konfrimasi/$vp->id_supplier/$vp->no_po").'">Confrim</a>';
                }else {
                  echo'<a href="'.base_url("receiving/konfrimasi/$vp->id_supplier/$vp->no_po").'">Confrim</a>';
                } ?>

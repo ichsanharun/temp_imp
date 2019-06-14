@@ -79,7 +79,8 @@
     <div class="form-group ">
       <label for="jml_bayar" class="col-sm-4 control-label">Jml Pembayaran </label>
       <div class="col-sm-8" style="padding-top: 8px;">
-        <input type="text" name="jml_bayar" id="jml_bayar" class="form-control input-sm" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
+        <input type="text" name="jml_bayar" id="jml_bayar" class="form-control input-sm" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');cek_sisa()">
+        <input type="hidden" name="jml_sisa" id="jml_sisa" class="form-control input-sm" onkeyup="this.value=this.value.replace(/[^0-9]/g,'');">
       </div>
     </div>
 
@@ -159,7 +160,7 @@
             <div class="row">
             <div class="col-sm-6">
               <div class="form-group ">
-                <label for="tgl_transaksi_giro" class="col-sm-4 control-label">Tanggal Transaksi </label>
+                <label for="tgl_transaksi_giro" class="col-sm-4 control-label">Tanggal Transaksis </label>
                 <div class="col-sm-8" style="padding-top: 8px;">
                   <input type="text" class="form-control input-sm datepicker" name="tgl_transaksi_giro" id="tgl_transaksi_giro">
                 </div>
@@ -255,6 +256,25 @@
       $('#bank').val('');
     }
   }
+  function cek_sisa(){
+    var jenis_bayar = $('#jenis_bayar').val();
+    if (jenis_bayar == 'BG') {
+      var sisa = parseFloat($('#jml_sisa').val());
+      var bayar = parseFloat($('#jml_bayar').val());
+      if (bayar>sisa) {
+        swal({
+              title: "Peringatan !",
+              text: "Jumlah pembayaran tidak boleh melebihi sisa nilai Giro!",
+              type: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#DD6B55",
+              confirmButtonText: false,
+              closeOnConfirm: false,
+              closeOnCancel: false
+            });
+      }
+    }
+  }
   function batalbayar(id,inv){
     swal({
           title: "Peringatan !",
@@ -290,7 +310,7 @@
     $('#no_reff').val(no_giro);
   }
   function setdatagiro(){
-    var no_inv = '1';
+    var no_inv = '<?php echo @$invoice->no_invoice?>';
     var url = siteurl+'pembayaranpiutang/setdatagiro';
     $.post(url,{'NO_INV':no_inv},function(result){
       $('#div-tabel-data-giro').html(result);
@@ -340,8 +360,14 @@
   }
   function pilihgiro(no,nilai){
     //var no_giro = $('#no_giro').val();
+    var get_piu = <?php echo @$invoice->piutang?>;
+    if (nilai>get_piu) {
+      $('#jml_bayar').val(get_piu);
+    }else {
+      $('#jml_bayar').val(nilai);
+    }
+    $('#jml_sisa').val(nilai);
     $('#dialog-detail-giro').modal('hide');
     $('#no_reff').val(no);
-    $('#jml_bayar').val(nilai);
   }
 </script>

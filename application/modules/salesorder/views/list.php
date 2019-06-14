@@ -43,11 +43,11 @@
           </div>
         </div>
     </div>
-    <div class="box-body">
+    <div class="box-body" style="overflow-x:auto !important">
 
         <table id="example1" class="table table-bordered table-striped">
         <thead>
-            <tr>
+            <tr class="bg-blue">
                 <th width="2%">#</th>
                 <th>NO. SO</th>
                 <th>NO. Surat Jalan</th>
@@ -81,7 +81,7 @@
                   $badge = "bg-orange";
                 }else if($vso->stsorder == "PENDING"){
                   $badge = "bg-yellow";
-                }else if($vso->stsorder == "CLS PENDING"){
+                }else if($vso->stsorder == "CLS-PENDING"){
                   $badge = "bg-red";
                   $disbtn = 'style="cursor: not-allowed;';
                 }
@@ -123,7 +123,7 @@
 
 
                        <?php
-                     }elseif ($vso->stsorder == "CLS PENDING") {
+                     }elseif ($vso->stsorder == "CLS-PENDING") {
 
                      }else { ?>
 
@@ -137,7 +137,7 @@
                     <?php if($vso->stsorder != "CANCEL"){ ?>
                       <?php if($ENABLE_MANAGE) {
                         if ($vso->stsorder != "CLOSE") {
-                          if ($vso->stsorder != "PENDING") {
+                          if ($vso->stsorder != "PENDING" && $vso->stsorder != "CLS-PENDING") {
                         ?>
                       <a href="javascript:void(0)" data-toggle="tooltip" data-placement="bottom" title="Edit" onclick="edit_data('<?php echo $vso->no_so?>')">
                       <span class="glyphicon glyphicon-edit"></span>
@@ -153,7 +153,7 @@
                     <!--<a class="text-red" href="javascript:void(0)" title="Delete" onclick="delete_data('<?php //echo $vso->no_so?>')" <?php //echo $disbtn ?>><i class="fa fa-trash"></i>-->
                     </a>
                     <?php //} ?>
-                    <?php if($vso->stsorder != "CLOSE" && $vso->stsorder != "CLS PENDING"){ ?>
+                    <?php if($vso->stsorder != "CLOSE" && $vso->stsorder != "CLS-PENDING"){ ?>
                      <a class="text-red" href="javascript:void(0)" title="Cancel SO" onclick="setcancelso('<?php echo $vso->no_so?>')"><i class="fa fa-times"></i>
                     </a>
                     <?php } ?>

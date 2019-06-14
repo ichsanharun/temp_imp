@@ -65,11 +65,12 @@ class Barang_model extends BF_Model
     }
 
     public function get_kode_barang($param,$id_group,$id_jenis) {
-      $query = $this->db->query("SELECT MAX(id_barang) as max_id FROM barang_master WHERE jenis='".$id_jenis."' AND id_group = '".$id_group."'");
+      //$query = $this->db->query("SELECT MAX(id_barang) as max_id FROM barang_master WHERE jenis='".$id_jenis."' AND id_group = '".$id_group."'");
+      $query = $this->db->query("SELECT MAX(id_barang) as max_id FROM barang_master WHERE id_barang LIKE '%".$param."%'");
       $row = $query->row_array();
       $max_id = $row['max_id'];
       $max_id1 =(int) substr($max_id,4,3);
-      $kode_barang = $max_id1 +1;
+      $kode_barang = $max_id1 +10;
       $maxkode_barang = $param.str_pad($kode_barang, 3, "0", STR_PAD_LEFT);
       return $maxkode_barang;
     }
@@ -100,11 +101,13 @@ class Barang_model extends BF_Model
         barang_group.nm_group,
         barang_master.nm_barang,
         barang_master.satuan,
+        barang_master.sts_aktif,
         barang_master.qty
         FROM
         barang_master
         INNER JOIN barang_jenis ON barang_master.jenis = barang_jenis.id_jenis
-        INNER JOIN barang_group ON barang_master.id_group = barang_group.id_group";
+        INNER JOIN barang_group ON barang_master.id_group = barang_group.id_group
+        WHERE barang_master.deleted = '0'";
         return $this->db->query($query);
     }
 

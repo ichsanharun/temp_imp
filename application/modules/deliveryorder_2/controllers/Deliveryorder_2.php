@@ -32,7 +32,7 @@ class Deliveryorder_2 extends Admin_Controller {
                                  'Trans_stock/Trans_stock_model'
                                 ));
 
-        $this->template->title('Delivery Order');
+        $this->template->title('Surat Jalan');
         $this->template->page_icon('fa fa-table');
 
         date_default_timezone_set("Asia/Bangkok");
@@ -47,11 +47,11 @@ class Deliveryorder_2 extends Admin_Controller {
         $this->template->set('results', $data);
         $this->template->set('results_INV', $data_INV);
         $this->template->set('results_CCL', $data_CCL);
-        $this->template->title('Delivery Order');
+        $this->template->title('Surat Jalan');
         $this->template->render('list');
     }
 
-    //Create New Delivery Order
+    //Create New Surat Jalan
     public function create(){
       $session = $this->session->userdata('app_session');
 
@@ -67,7 +67,7 @@ class Deliveryorder_2 extends Admin_Controller {
         }
         $this->template->set('results', $data);
 
-        $this->template->title('Input Delivery Order');
+        $this->template->title('Input Surat Jalan');
         $this->template->render('list_so');
     }
 
@@ -81,11 +81,11 @@ class Deliveryorder_2 extends Admin_Controller {
             $data = $this->Pendingso_model->where("LEFT(trans_so_pending_header.no_so,3)='".$session['kdcab']."' ")->order_by('no_so','ASC')->find_all_by(array('id_customer'=>$this->uri->segment(3)));
         }
         $this->template->set('results', $data);
-        $this->template->title('Input Delivery Order From Pending');
+        $this->template->title('Input Surat Jalan From Pending');
         $this->template->render('list_so_pending');
     }
 
-    //Create New Delivery Order
+    //Create New Surat Jalan
     public function proses(){
       $session = $this->session->userdata('app_session');
           $getparam = explode(";",$_GET['param']);
@@ -119,11 +119,11 @@ class Deliveryorder_2 extends Admin_Controller {
           $this->template->set('getitemso',$getitemso);
           $this->template->set('arr_driver',$Arr_Driver);
           $this->template->set('kendaraan',$Arr_Kendaraan);
-          $this->template->title('Input Delivery Order');
+          $this->template->title('Input Surat Jalan');
           $this->template->render('deliveryorder_form');
     }
 
-    //Create New Delivery Order
+    //Create New Surat Jalan
     public function prosesdopending(){
       $session = $this->session->userdata('app_session');
           $getparam = explode(";",$_GET['param']);
@@ -295,6 +295,8 @@ class Deliveryorder_2 extends Admin_Controller {
   		$Arr_Detail		= array();
   		$intL			= 0;
   		$Total_Landed	= 0;
+      $total_sub_qty = 0;
+      $total_sub_qty_booked = 0;
 
   		for($x=0;$x < count($detail['noso_todo']);$x++){
   			$intL++;
@@ -312,7 +314,7 @@ class Deliveryorder_2 extends Admin_Controller {
   				$Harga_Landed		= 0;
   				$det_barang			= $this->db->get_where('barang_stock',array('id_barang'=>$_POST['id_barang'][$x],'kdcab'=>$Kode_Cabang))->result();
   				if($det_barang){
-  					$Harga_Landed	= $det_barang[0]->landed_cost;
+  					$Harga_Landed	= round($det_barang[0]->landed_cost);
   				}
   				$Total_Landed		+= ($Harga_Landed * $Qty_Supp);
   				$Arr_Detail			= array(
@@ -335,14 +337,21 @@ class Deliveryorder_2 extends Admin_Controller {
   			## POSES DO BIASA ##
   			if($this->input->post('status_do') == "DO"){
   				$New_Qty 	= $getitemso->qty_supply + $Qty_Supp;
-          if($Qty_Supp == $Qty_Conf){
+				if($Qty_Supp == $Qty_Conf){
                       ## CLOSE SO ##
   					$this->db->update('trans_so_detail',array('proses_do'=>'DO','qty_supply'=>$New_Qty,'no_do'=>$Nomor_DO),$WHR_SO);
   					$cek_close +=1;
   					$this->db->update('trans_so_header',array('do_supplied'=>$cek_close),array('no_so' => $_POST['noso_todo'][$x]));
-  			  }else{
-  				  $this->db->update('trans_so_detail',array('proses_do'=>'PENDING','qty_supply'=>$New_Qty),$WHR_SO);//Jika masih ada sisa qty
-  			  }
+				}else{
+					if ($New_Qty == $getitemso->qty_booked) {
+						$this->db->update('trans_so_detail',array('proses_do'=>'DO','qty_supply'=>$New_Qty,'no_do'=>$Nomor_DO),$WHR_SO);
+    					$cek_close +=1;
+    					$this->db->update('trans_so_header',array('do_supplied'=>$cek_close),array('no_so' => $_POST['noso_todo'][$x]));
+					}else {
+              // code...
+						$this->db->update('trans_so_detail',array('proses_do'=>'PENDING','qty_supply'=>$New_Qty),$WHR_SO);//Jika masih ada sisa qty
+					}
+				}
   			}else{
   				$Qty_Pend	 = $getitemsopending->qty_supply + $Qty_Supp;
   				if($Qty_Supp == $Qty_Conf){
@@ -352,6 +361,8 @@ class Deliveryorder_2 extends Admin_Controller {
   					$this->db->update('trans_so_pending_detail',array('qty_supply'=>$Qty_Pend),$WHR_SO);//Jika masih ada sisa qty
   				}
   			}
+			$total_sub_qty_booked += $getitemso->qty_booked;
+			$total_sub_qty += $New_Qty;
 
   			  //Update STOK REAL
   			$count 			= $this->Deliveryorder_model->cek_data(array('id_barang'=>$getitemso->id_barang,'kdcab'=>$Kode_Cabang),'barang_stock');
@@ -383,22 +394,13 @@ class Deliveryorder_2 extends Admin_Controller {
 
   		}
       /*
-  		for($x=0;$x < count($detail['noso_todo']);$x++){
-  			$getkeyso 		= $this->db->where(array('no_so' => $_POST['noso_todo'][$x]))
-                                   ->from('trans_so_detail')
-                                   ->count_all_results();
-              $getsosupplied 	= $this->Salesorder_model->cek_data(array('no_so' => $_POST['noso_todo'][$x]),'trans_so_header');
-              $csosupplied 	= $getsosupplied->do_supplied;
-              if ($getkeyso == $csosupplied) {
-  				$this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
-  				$this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
-              }else {
-  				$this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
-  				$this->db->update('trans_so_header',array('pending_counter'=>$getkeyso.$csosupplied));
-              }
-  		}*/
+      if ($total_sub_qty_booked == $total_sub_qty) {
+        $this->db->where(array('no_so' => $_POST['noso_todo'][$x]));
+        $this->db->update('trans_so_header',array('stsorder'=>'CLOSE'));
+      }*/
+
       for($x=0;$x < count($detail['noso_todo']);$x++){
-        $cek_pendingan = $this->db->where(array('qty_booked != qty_supply'))
+        $cek_pendingan = $this->db->where(array('proses_do'=>'PENDING','no_so'=>$detail['noso_todo'][$x]))
                                    ->from('trans_so_detail')
                                    ->count_all_results();
         if ($cek_pendingan == 0) {
@@ -494,21 +496,34 @@ class Deliveryorder_2 extends Admin_Controller {
             $Harga_Landed   = 0;
             $Qty_Supp       = 0;
             $Total_Landed   = 0;
+            $intL = 0;
            foreach($getitemdo as $k=>$v){
+             $intL++;
+             $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$v->id_barang,'kdcab'=>$kdcab),'barang_stock');
+
+              $qty_stock_awal   = $count->qty_stock;
+              $qty_avl_awal     = $count->qty_avl;
+              $qty_stock_akhir  = $count->qty_stock+$v->qty_supply;
+              $qty_avl_akhir    = $count->qty_avl;
                 //Update STOK REAL
-                $count = $this->Deliveryorder_model->cek_data(array('id_barang'=>$v->id_barang,'kdcab'=>$kdcab),'barang_stock');
                 $this->db->where(array('id_barang'=>$v->id_barang,'kdcab'=>$kdcab));
                 $this->db->update('barang_stock',array('qty_stock'=>$count->qty_stock+$v->qty_supply));
                 //Update STOK REAL
 
                 //Update QTY SUPPLY SO
                 $qtysuppso = $this->Salesorder_model->cek_data(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so),'trans_so_detail');
-                $hitung_sup = $qtysuppso->qty_supply - $v->qty_supply - $v->return_do - $v->return_do_rusak - $v->return_do_hilang ;
+                $hitung_sup = $qtysuppso->qty_supply - $v->qty_supply;// - $v->return_do - $v->return_do_rusak - $v->return_do_hilang ;
                 if ($hitung_sup > 0) {
-                  $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
-                  $this->db->update('trans_so_detail',array('proses_do'=>"PENDING",'qty_supply'=>$hitung_sup));
+                  if ($qtysuppso->qty_supply == 0) {
+                    $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
+                    $this->db->update('trans_so_detail',array('proses_do'=>NULL));
+                  }else {
+                    $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
+                    $this->db->update('trans_so_detail',array('proses_do'=>"PENDING",'qty_supply'=>$hitung_sup));
+                  }
                 }else {
-                  // code...
+                  $this->db->where(array('id_barang'=>$v->id_barang,'no_so'=>$v->no_so));
+                  $this->db->update('trans_so_detail',array('proses_do'=>NULL,'qty_supply'=>$hitung_sup));
                 }
                 $this->db->where(array('no_so'=>$v->no_so));
                 $this->db->update('trans_so_header',array('do_supplied'=>NULL));
@@ -520,10 +535,30 @@ class Deliveryorder_2 extends Admin_Controller {
                 $Qty_Supp = $v->qty_supply;
                 $Total_Landed		+= ($Harga_Landed * $Qty_Supp);
 
+                $id_st 			= $this->Trans_stock_model->gen_st($this->auth->user_cab()).$intL;
+                $data_adj_trans 	= array(
+                  'id_st'				=> $id_st,
+                  'tipe'				=> 'IN',
+                  'jenis_trans'		=> 'IN_CCL_PENJUALAN',
+                  'noreff'			=> $nodo,
+                  'id_barang'			=> $v->id_barang,
+                  'nm_barang'			=> $v->nm_barang,
+                  'kdcab'				=> $this->auth->user_cab(),
+                  'date_stock'		=> date('Y-m-d H:i:s'),
+                  'qty'				=> $v->qty_supply,// + $v->return_do + $v->return_do_rusak + $v->return_do_hilang ,
+                  'nilai_barang'		=> $getitemso->harga_normal,
+                  'notes'				=> 'CANCEL DO',
+                  'qty_stock_awal'	=> $qty_stock_awal,
+                  'qty_avl_awal' 		=> $qty_avl_awal,
+                  'qty_stock_akhir'	=> $qty_stock_akhir,
+                  'qty_avl_akhir' 	=> $qty_avl_akhir
+                );
+                $this->Trans_stock_model->insert($data_adj_trans);
+
            }
 
           if($Total_Landed > 0){
-       			$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Memorial($Kode_Cabang,$Tgl_DO);
+       			$Nomor_JV				= $this->Jurnal_model->get_Nomor_Jurnal_Memorial($this->auth->user_cab(),date("Y-m-d"));
        			$Keterangan_JV			= ' BATAL HPP#DO '.$nodo.'#'.$head->nm_customer;
 
        			$dataJVhead = array(
@@ -567,7 +602,7 @@ class Deliveryorder_2 extends Admin_Controller {
 
        			$this->db->insert('javh',$dataJVhead);
        			$this->db->insert_batch('jurnal',$det_Jurnal);
-       			$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($Kode_Cabang,'JM');
+       			$Update_JV = $this->Jurnal_model->update_Nomor_Jurnal($this->auth->user_cab(),'JM');
        		}
 
 
@@ -585,7 +620,7 @@ class Deliveryorder_2 extends Admin_Controller {
         echo json_encode($param);
     }
 
-    function print_request_old($nodo){
+    function xprint_request_old($nodo){
         $mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
@@ -605,7 +640,7 @@ class Deliveryorder_2 extends Admin_Controller {
         $this->mpdf->Output();
     }
 
-    function print_request_coba($nodo){
+    function xprint_request_coba($nodo){
         $mpdf=new mPDF('utf-8', array(210,148), 10 ,'Arial', 5, 5, 200, 20, 5, 4);
         //$mpdf=new mPDF('','','','','','','','','','');
         $mpdf->SetImportUse();
@@ -638,7 +673,7 @@ class Deliveryorder_2 extends Admin_Controller {
         $header = '<table width="100%" border="0" id="header-tabel">
                     <tr>
                         <th colspan="3" width="20%" style="text-align: left;">PT IMPORTA JAYA ABADI<br>YOGYAKARTA</th>
-                        <th style="border-right: none;">DELIVERY ORDER (DO)<br>'.@$do_data->no_do.'</th>
+                        <th style="border-right: none;">SURAT JALAN (SJ)<br>'.@$do_data->no_do.'</th>
                         <th colspan="3" style="border-left: none;"></th>
                     </tr>
                     <tr>
@@ -717,7 +752,7 @@ class Deliveryorder_2 extends Admin_Controller {
         $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
-    function print_request($nodo){
+    function print_custom_lawas($nodo){
       $uk1 = 9;
       $ukk = 17;
       $ukkk = 11;
@@ -742,39 +777,39 @@ class Deliveryorder_2 extends Admin_Controller {
         //$this->mpdf->AddPage('L');
 
         $tglprint = date("d-m-Y H:i:s");
-        $header = '<table width="100%" border="0" id="header-tabel">
+        $header = '
+        <table width="100%" border="0" id="header-tabel">
                     <tr>
                       <th width="30%" style="text-align: left;">
                         <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
                       </th>
-                      <th colspan="3" style="border-right: none;text-align: center;padding-left:0% !important;margin-left:-10px !important" width="100%">DELIVERY ORDER (DO)<br>'.@$do_data->no_do.'</th>
+                      <th colspan="3" style="border-right: none;text-align: center;padding-left:0% !important;margin-left:-10px !important" width="100%">SURAT JALAN (SJ)<br>'.@$do_data->no_do.'</th>
                       <th colspan="4" style="border-left: none;"></th>
                     </tr>
                     </table>
                     <hr style="padding:0;margin:0">
-                    <table width="100%" border="0" id="header-tabel">
-                    <tr>
-                        <td width="15%">No. Sales Order</td>
-                        <td width="1%">:'.@$det_do->no_so.'</td>
-                        <td colspan="2"></td>
-                        <td></td>
-                        <td width="15%">'.@$cabang->namacabang.',</td>
-                        <td>'.date('d-M-Y',strtotime(@$do_data->tgl_do)).'</td>
-                    </tr>
+                    <table width="100%" border="0" id="header-tabel" style="font-size:10.5pt">
                     <tr>
                         <td width="10%">SALES</td>
-                        <td width="1%">:'.strtoupper(@$do_data->nm_salesman).'</td>
+                        <td width="10%">: '.strtoupper(@$do_data->nm_salesman).'</td>
                         <td colspan="2"></td>
+
+                        <td width="15%">'.@$cabang->namacabang.',</td>
+                        <td colspan="2">'.date('d-M-Y',strtotime(@$do_data->tgl_do)).'</td>
+                    </tr>
+                    <tr>
                         <td></td>
-                        <td width="8%">Kepada Yth,</td>
+                        <td></td>
+                        <td colspan="2"></td>
+
+                        <td colspan="2" width="8%">Kepada Yth,</td>
 
                     </tr>
                     <tr>
                         <td width="10%" valign="top">KETERANGAN</td>
                         <td width="1%" valign="top">:'.strtoupper(@$do_data->keterangan).'</td>
                         <td colspan="2"></td>
-                        <td></td>
-                        <td width="10%" colspan="3">'.strtoupper(@$do_data->nm_customer).'<br>'.@$customer->alamat.'</td>
+                        <td width="10%" colspan="4">'.strtoupper(@$do_data->nm_customer).'<br>'.@$customer->alamat.'</td>
                     </tr>';
                     if('{PAGENO}' == 1){
                         $header .= '<tr>
@@ -809,7 +844,7 @@ class Deliveryorder_2 extends Admin_Controller {
                 <td width="15%" colspan="3" style="height: 50px;"></td>
             </tr>
             <tr>
-                <td width="17%"><center>( Admin Sales )</center></td>
+                <td width="17%"><center>( Admin Gudang )</center></td>
                 <td width="15%"><center>( KA.Gudang )</center></td>
                 <td width="15%"><center>( Sopir )</center></td>
                 <td width="15%"><center>( TTD & CAP TOKO )</center></td>
@@ -825,6 +860,169 @@ class Deliveryorder_2 extends Admin_Controller {
                 'orientation' => 'P',
                 'sheet-size'=> [210,148],
                 'margin-top' => 40,
+                'margin-bottom' => 50,
+                'margin-left' => 5,
+                'margin-right' => 10,
+                'margin-header' => 1,
+                'margin-footer' => 0,
+            ]);
+        $this->mpdf->WriteHTML($show);
+        $this->mpdf->Output();
+    }
+
+    function print_custom_baru($nodo){
+      $uk1 = 9;
+      $ukk = 17;
+      $ukkk = 11;
+        $mpdf=new mPDF('utf-8', array(210,145), 10 ,'Arial', 5, 5, 16, 16, 1, 4, 'P');
+        //$mpdf=new mPDF('','','','','','','','','','');
+        $mpdf->SetImportUse();
+        //$mpdf->RestartDocTemplate();
+        $session = $this->session->userdata('app_session');
+        $do_data = $this->Deliveryorder_model->find_data('trans_do_header',$nodo,'no_do');
+        $cabang = $this->Deliveryorder_model->find_data('cabang',$session['kdcab'],'kdcab');
+        $customer = $this->Deliveryorder_model->cek_data(array('id_customer'=>$do_data->id_customer),'customer');
+        $prov = $this->Deliveryorder_model->cek_data(array('id_prov'=>$customer->provinsi),'provinsi');
+        $detail = $this->Detaildeliveryorder_model->find_all_by(array('no_do' => $nodo,'qty_supply >'=>0));
+        $det_do = $this->Deliveryorder_model->find_data('trans_do_detail',$nodo,'no_do');
+
+        $ambil_so = $this->Deliveryorder_model->find_data('trans_so_header',$det_do->no_so,'no_so');
+
+        $this->template->set('do_data', $do_data);
+        $this->template->set('customer', $customer);
+        $this->template->set('detail', $detail);
+
+        //$show = $this->template->load_view('print_data_custom',$data);
+        $show = $this->template->load_view('print_data_baru',$data);
+
+        //$this->mpdf->AddPage('L');
+
+        $tglprint = date("d-m-Y H:i:s");
+        $header = '
+        <table width="100%" border="0"  style="font-size:7.5pt !important;max-height:100px;border-spacing:-1px">
+          <tr>
+            <td width="30%" style="text-align: left;">
+              <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
+            </td>
+            <td colspan="2"  width="65%">
+
+              Kantor cabang:<br>
+
+              '.@$cabang->alamat.'<br>
+              '.@$cabang->namacabang.'
+
+            </td>
+            <td colspan="2"  width="65%">
+
+              Alamat:<br>
+
+              '.@$customer->alamat.'<br>
+              '.@$prov->nama.'
+
+            </td>
+
+            <th colspan="3" style="border-left: none;"></th>
+          </tr>
+          <tr>
+            <th colspan="8" style="font-size:10pt">
+              SURAT JALAN
+            </th>
+          </tr>
+        </table>
+        <table border="0" id="header-tabel" style="font-size:9pt !important;border-spacing:-1px;margin: 0 0 0 15%; min-width:90%">
+          <tr>
+              <td width="15%" nowrap>NO. Surat Jalan</td>
+
+              <td width="15%">: '.$nodo.'</td>
+              <td width="15%" nowrap>Call Center</td>
+              <td width="35%" nowrap>: </td>
+          </tr>
+          <tr>
+              <td nowrap>Sales</td>
+
+              <td nowrap>: '. @$do_data->nm_salesman.'</td>
+              <td nowrap>Kirim Lewat Ekspedisi</td>
+              <td  nowrap>: '.@$do_data->nm_supir.'</td>
+
+          </tr>
+          <tr>
+              <td nowrap>Jangka Pembayaran</td>
+
+              <td nowrap>:
+                  '.$ambil_so->top.' HARI
+              </td>
+              <td nowrap>
+                  Alamat Ekspedisi
+              </td>
+              <td nowrap>: '.$customer->alamat.'</td>
+
+          </tr>
+          <tr>
+              <td nowrap>Jatuh tempo</td>
+
+              <td nowrap>: '.date('Y-m-d', strtotime("+".$ambil_so->top." days")).'</td>
+              <td nowrap>
+                  Keterangan
+              </td>
+              <td  nowrap>: '.@$inv_data->keterangan.'</td>
+          </tr>
+        </table>
+
+        <div style="margin-left:75% !important;margin-top:1%; font-size:7pt;text-align:justify">
+        <strong>CATATAN :</strong><br>
+          Penerima wajib membubuhkan tanda tangan dan stempel toko
+          setelah :<br>
+          <br>
+          1. Mengetahui dan memeriksa barang yang diterima sesuai
+          betul dengan yang dicantumkan di surat jalan, baik jenis
+          maupun jumlahnya.<br>
+          (Jumlah PENJUALAN dan EXTRA)<br><br>
+          2. Barang yang diterima dalam keadaan yang baik dan utuh
+          (Termasuk kaca dan kelengkapan lainnya)<br><br>
+          3. Mengetahui dan menyetujui bahwa barang yang belum lunas
+          masih merupakan milik PT. Importa Jaya Abadi sehingga tidak
+          keberatan apabila sewaktu - waktu ditarik kembali<br>
+        </div>
+        ';
+
+        $this->mpdf->SetHTMLHeader($header,'0',true);
+        $this->mpdf->SetHTMLFooter('
+            <table width="100%" border="0" style="font-size: '.$ukk.'px !important;">
+            <tr>
+                <td colspan="4" style="font-size: '.$ukk.'px !important;font-weight:bold">
+                    Keterangan :<br>
+                    Mohon setelah barang diterima surat jalan & lembar copy an wajib dicap toko, tanda tangan & cantumkan nama penerima barang
+                </td>
+            </tr>
+            <tr>
+                <td width="35%"><center>Dibuat Oleh,</center></td>
+                <td width="40%"><center>Diperiksa 1 Oleh,</center></td>
+                <td width="30%"><center>Diperiksa 2 Oleh,</center></td>
+                <td width="30%"><center>Diterima Oleh,</center></td>
+            </tr>
+            <tr>
+                <td style="text-align:right">
+                  <img src="assets/img/logo.JPG" style="height: 50px;width: auto;">
+                </td>
+                <td width="15%" colspan="3" style="height: 50px;"></td>
+            </tr>
+            <tr>
+                <td width="17%"><center>( Admin Gudang )</center></td>
+                <td width="15%"><center>( KA.Gudang )</center></td>
+                <td width="15%"><center>( Sopir )</center></td>
+                <td width="15%"><center>( TTD & CAP TOKO )</center></td>
+            </tr>
+        </table>
+
+        <div id="footer">
+        <table>
+            <tr><td>PT IMPORTA JAYA ABADI - Printed By '.ucwords($this->auth->nama()) ." On ". $tglprint.'</td></tr>
+        </table>
+        </div>');
+        $this->mpdf->AddPageByArray([
+                'orientation' => 'P',
+                'sheet-size'=> [210,148],
+                'margin-top' => 35,
                 'margin-bottom' => 50,
                 'margin-left' => 5,
                 'margin-right' => 10,

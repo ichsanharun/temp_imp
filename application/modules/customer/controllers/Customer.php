@@ -418,6 +418,7 @@ class Customer extends Admin_Controller {
         $website        = strtoupper($this->input->post('website'));
         $diskontoko        = $this->input->post('diskon_toko');
         $sts_aktif      = $this->input->post('sts_aktif');
+		$limit_piutang	= str_replace(',','',$this->input->post('limit_piutang'));
 
         if($type=="edit")
         {
@@ -449,6 +450,7 @@ class Customer extends Admin_Controller {
                                 //'foto'=>$foto,
                                 //'notes'=>$notes,
                                 'sts_aktif'=>$sts_aktif,
+								'limit_piutang'	=> $limit_piutang
                             )
                         );
 
@@ -506,6 +508,7 @@ class Customer extends Admin_Controller {
                             //'foto'=>$foto,
                             //'notes'=>$notes,
                             'sts_aktif'=>$sts_aktif,
+							'limit_piutang'	=> $limit_piutang
                         );
 
             //Add Data

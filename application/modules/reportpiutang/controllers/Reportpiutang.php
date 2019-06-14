@@ -25,13 +25,14 @@ class Reportpiutang extends Admin_Controller {
     {
         parent::__construct();
 
-        $this->load->library(array('Mpdf'));
+        
         $this->load->model(array('Barang/Barang_model',
                                  'Invoice/Invoice_model',
                                  'Invoice/Detailinvoice_model',
                                  'Cabang/Cabang_model',
                                  'Customer/Customer_model',
                                  'Salesorder/Salesorder_model',
+								  'Piutang_cabang/Piutang_cabang_model',
                                  'Aktifitas/aktifitas_model'
                                 ));
 
@@ -40,21 +41,16 @@ class Reportpiutang extends Admin_Controller {
         $this->template->title('Report Piutang');
         $this->template->page_icon('fa fa-table');
     }
-
+	/*
+	## ORIGINAL ##
     public function index()
     {
-        /*
-        $this->auth->restrict($this->viewPermission);
-        $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
-        $data = $this->Reportstok_model
-        ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")
-        ->find_all();
-        $this->template->set('results', $data);
-        $this->template->set('cabang', $cabang);
-        */
+       
         $session = $this->session->userdata('app_session');
         $kdcab = $session['kdcab'];
-        $data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
+		$Query_Data	= "SELECT * FROM view_invoice_payment WHERE (hargajualtotal - jum_bayar) > 0 ORDER BY nm_salesman,nm_customer,tanggal_invoice ASC";
+		$data		= $this->db->query($Query_Data)->result();
+        //$data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $customer = $this->Customer_model->find_all_by(array('deleted'=>0));
         $marketing = $this->Salesorder_model->pilih_marketing($kdcab)->result();
@@ -66,7 +62,102 @@ class Reportpiutang extends Admin_Controller {
         $this->template->set('results', $data);
         $this->template->render('list');
     }
-
+	*/
+	
+	function index(){
+		$session 	= $this->session->userdata('app_session');
+        $cab_user	= $session['kdcab'];
+		if($this->input->post()){
+			$Salesman		= $this->input->post('salesman');
+			$Customer_Pilih	= $this->input->post('pelanggan');
+			$kdcab			= $this->input->post('kdcab');
+			if(strtolower($Salesman)=='all')$Salesman='';
+			if(strtolower($Customer_Pilih)=='all')$Customer_Pilih='';
+		}else{
+			$Salesman		= '';
+			$Customer_Pilih		= '';
+			$kdcab 			= $session['kdcab'];
+		}
+		$WHERE		= "(hargajualtotal - jum_bayar) != 0";
+		if($kdcab){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="kdcab='".$kdcab."'";
+		}
+		
+		if($Salesman){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="id_salesman='".$Salesman."'";
+		}
+		
+		if($Customer_Pilih){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="id_customer='".$Customer_Pilih."'";
+		}
+		$Query_Data	= "SELECT * FROM view_invoice_payment WHERE  ".$WHERE." ORDER BY nm_customer,tanggal_invoice ASC";
+		$data		= $this->db->query($Query_Data)->result();		
+		$cabang 	= $this->Piutang_cabang_model->get_data_Cabang();
+		$customer 	= $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$kdcab));
+        $marketing = $this->Salesorder_model->pilih_marketing($kdcab)->result();
+		
+        $this->template->title('Report Piutang');
+        $this->template->set('cabang', $cabang);
+        $this->template->set('customer', $customer);
+        $this->template->set('marketing', $marketing);
+        $this->template->set('results', $data);
+		$this->template->set('rows_cab_user', $cab_user);
+		$this->template->set('cab_pilih', $kdcab);
+		$this->template->set('sales_pilih', $Salesman);
+		$this->template->set('cust_pilih', $Customer_Pilih);
+        $this->template->render('list');
+	}
+	
+	function preview_data($kdcab,$Salesman,$Customer_Pilih,$Tipe){
+		$session 	= $this->session->userdata('app_session');
+        $cab_user	= $session['kdcab'];
+		if(strtolower($Salesman)=='all')$Salesman='';
+		if(strtolower($Customer_Pilih)=='all')$Customer_Pilih='';
+		
+		$WHERE		= "(hargajualtotal - jum_bayar) != 0";
+		if($kdcab){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="kdcab='".$kdcab."'";
+		}
+		
+		if($Salesman){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="id_salesman='".$Salesman."'";
+		}
+		
+		if($Customer_Pilih){
+			if(!empty($WHERE))$WHERE	.=" AND ";
+			$WHERE	.="id_customer='".$Customer_Pilih."'";
+		}
+		$Query_Data	= "SELECT * FROM view_invoice_payment WHERE  ".$WHERE." ORDER BY nm_customer,tanggal_invoice ASC";
+		$datas		= $this->db->query($Query_Data)->result();		
+		$cabang 	= $this->Piutang_cabang_model->get_data_Cabang();
+		$customer 	= $this->Customer_model->find_all_by(array('deleted'=>0,'kdcab'=>$kdcab));
+        $marketing = $this->Salesorder_model->pilih_marketing($kdcab)->result();
+		
+		
+		if($Tipe=='excel'){	
+			
+			$data		= array(
+				'rows_header'	=> $datas,
+				'sales_pilih'	=> $Salesman
+			);
+			$this->load->view('excel_preview',$data); 
+		}else{
+			$this->template->set('rows_header', $datas);
+			$this->template->set('rows_cab_user', $cab_user);
+			$this->template->set('cab_pilih', $kdcab);
+			$this->template->set('sales_pilih', $Salesman);
+			$this->template->set('cust_pilih', $Customer_Pilih);
+			$this->template->render('print_preview');
+		}
+        
+	}
+	
+	
     public function filter()
       {
         $session = $this->session->userdata('app_session');

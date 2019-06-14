@@ -7,7 +7,7 @@
                 <div class="form-horizontal">
                 <div class="box-body">
                     <div class="col-sm-6">
-                      <div class="form-group">
+                      <!--div class="form-group">
                           <label for="idcustomer" class="col-sm-4 control-label">NOMOR SJ LAMA <font size="4" color="red"><B>*</B></font></label>
                           <div class="col-sm-8">
                               <div class="input-group">
@@ -15,7 +15,7 @@
                               <input type="text" name="nd" id="nd" class="form-control input-sm" value="<?php echo $headerso[0]->ns?>">
                               </div>
                           </div>
-                      </div>
+                      </div-->
                         <div class="form-group">
                             <label for="idcustomer" class="col-sm-4 control-label">Nama Customer </font></label>
                             <div class="col-sm-8" style="padding-top: 8px;">

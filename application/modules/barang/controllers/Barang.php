@@ -77,7 +77,13 @@ class Barang extends Admin_Controller
         $jenis_barang = $this->Barang_jenis_model->pilih_jb()->result();
         $koli = $this->Barang_koli_model->pilih_koli()->result();
         $cp_barang = $this->Barang_cp_model->pilih_cp()->result();
+        $model = $this->Barang_koli_model->koli_model()->result();
+        $warna = $this->Barang_koli_model->koli_warna()->result();
+        $varian = $this->Barang_koli_model->koli_varian()->result();
 
+        $this->template->set('model', $model);
+        $this->template->set('warna', $warna);
+        $this->template->set('varian', $varian);
         $this->template->set('cp_barang', $cp_barang);
         $this->template->set('koli', $koli);
         $this->template->set('jenis_barang', $jenis_barang);
@@ -192,14 +198,14 @@ class Barang extends Admin_Controller
             $this->auth->restrict($this->managePermission);
             /*
             //====Muhaemin here====//
-        $harga    = $this->input->post("harga");
-        $diskon_standart    = $this->input->post("diskon_standart");
-        $diskon_promo_rp    = $this->input->post("diskon_promo_rp");
-        $diskon_promo_persen    = $this->input->post("diskon_promo_persen");
-        $diskon_jika_qty    = $this->input->post("diskon_jika_qty");
-        $diskon_qty_gratis    = $this->input->post("diskon_qty_gratis");
-        //===========//
-            */
+          $harga    = $this->input->post("harga");
+          $diskon_standart    = $this->input->post("diskon_standart");
+          $diskon_promo_rp    = $this->input->post("diskon_promo_rp");
+          $diskon_promo_persen    = $this->input->post("diskon_promo_persen");
+          $diskon_jika_qty    = $this->input->post("diskon_jika_qty");
+          $diskon_qty_gratis    = $this->input->post("diskon_qty_gratis");
+          //===========//
+              */
 
             if ($id_barang != '') {
                 $data = array(
@@ -994,10 +1000,10 @@ class Barang extends Admin_Controller
         } else {
             $data->foto_barang = $data->foto_barang;
         } ?>
-    <a target='_blank' href="<?php echo $link_foto.'photobarang/'.$data->foto_barang; ?>">
-    <img class="img-thumbnail" src="<?php echo $link_foto.'photobarang/'.$data->foto_barang; ?>"/>
-    </a>
-    <?php
+      <a target='_blank' href="<?php echo $link_foto.'photobarang/'.$data->foto_barang; ?>">
+      <img class="img-thumbnail" src="<?php echo $link_foto.'photobarang/'.$data->foto_barang; ?>"/>
+      </a>
+      <?php
     }
 
     public function load_koli()
@@ -1184,6 +1190,55 @@ class Barang extends Admin_Controller
 
     public function downloadExcel()
     {
+        //$brg_data = $this->Barang_model->tampil_produk()->result_array();
+        $data = $this->Barang_model->select('barang_master.id_barang,
+                                            barang_jenis.nm_jenis,
+                                            barang_group.nm_group,
+                                            barang_master.nm_barang,
+                                            barang_master.satuan AS setpcs,
+                                            barang_master.netto_weight,
+                                            barang_master.cbm_each,
+                                            barang_master.gross_weight,
+                                            barang_master.spesifikasi,
+                                            barang_master.sts_aktif,
+                                            barang_master.qty as qty')
+                                            ->join('barang_group', 'barang_group.id_group = barang_master.id_group', 'left')
+                                            ->join('barang_jenis', 'barang_master.jenis = barang_jenis.id_jenis', 'left')
+                                            ->group_by('barang_master.id_barang')
+                                            ->where('barang_master.deleted', 0)
+                                            ->order_by('barang_group.nm_group', 'ASC')->find_all();
+        //print_r($brg_data);die();
+        $kol_data = $this->Barang_koli_model->tampil_dkoli()->result_array();
+        $kom_data = $this->Barang_komponen_model->tampil_dkomponen()->result_array();
+
+        $session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
+        $filter = $this->input->get('filter');
+        $param = $this->input->get('param');
+        $where ='';
+        if ($this->uri->segment(4) == "All") {
+          $per = $this->uri->segment(5)."-";
+        }else {
+          $per = $this->uri->segment(5)."-".$this->uri->segment(4);
+        }
+
+
+
+
+        $data = array(
+    			'title2'		     => 'Report',
+    			'brg_data'	       => $data
+    		);
+        /*$this->template->set('results', $data_so);
+        $this->template->set('head', $sts);
+        $this->template->title('Report SO');*/
+        $this->load->view('view_report',$data);
+
+
+    }
+
+    public function downloadExcel_old()
+    {
         $brg_data = $this->Barang_model->tampil_produk()->result_array();
         //print_r($brg_data);die();
         $kol_data = $this->Barang_koli_model->tampil_dkoli()->result_array();
@@ -1224,10 +1279,10 @@ class Barang extends Admin_Controller
                 'name' => 'Verdana',
             ),
         );
-        $objPHPExcel->getActiveSheet()->getStyle('A1:N2')
+        $objPHPExcel->getActiveSheet()->getStyle('A1:O2')
                 ->applyFromArray($header)
                 ->getFont()->setSize(14);
-        $objPHPExcel->getActiveSheet()->mergeCells('A1:N2');
+        $objPHPExcel->getActiveSheet()->mergeCells('A1:O2');
         $objPHPExcel->setActiveSheetIndex(0)
             ->setCellValue('A1', 'Rekap Data Produk')
             ->setCellValue('A3', 'No.')
@@ -1243,10 +1298,12 @@ class Barang extends Admin_Controller
             ->setCellValue('K3', 'ID Komponen')
             ->setCellValue('L3', 'Nama Komponen')
             ->setCellValue('M3', 'Qty')
-            ->setCellValue('N3', 'Satuan');
+            ->setCellValue('N3', 'Satuan')
+            ->setCellValue('O3', '');
 
         $ex = $objPHPExcel->setActiveSheetIndex(0);
         $no = 1;
+        $NN = 0;
         $counter = 4;
         foreach ($brg_data as $row):
             $ex->setCellValue('A'.$counter, $no++);
@@ -1255,6 +1312,7 @@ class Barang extends Admin_Controller
         $ex->setCellValue('D'.$counter, strtoupper($row['nm_group']));
         $ex->setCellValue('E'.$counter, $row['nm_barang']);
         $ex->setCellValue('F'.$counter, $row['satuan']);
+        $nco = $counter;
 
         foreach ($kol_data as $key => $y) {
             //$counter
@@ -1269,7 +1327,9 @@ class Barang extends Admin_Controller
                         $ex->setCellValue('L'.$counter, strtoupper($xy['nm_komponen']));
                         $ex->setCellValue('M'.$counter, $xy['qty']);
                         $ex->setCellValue('N'.$counter, $xy['satuan']);
+                        //$ex->setCellValue('O'.$counter, $row['sts_aktif']);
                         $counter = $counter + 1;
+                        $NN =1;
                     } else {
                         $counter = $counter;
                     }
@@ -1284,9 +1344,13 @@ class Barang extends Admin_Controller
                 $ex->setCellValue('L'.$counter, '');
                 $ex->setCellValue('M'.$counter, '');
                 $ex->setCellValue('N'.$counter, '');
+                //$ex->setCellValue('O'.$counter, $row['sts_aktif']);
                 $counter = $counter;
             }
         }
+
+          $ex->setCellValue('O'.$nco, $row['sts_aktif']);
+
         $counter = $counter + 1;
         endforeach;
 

@@ -1,6 +1,6 @@
 <?php if (!defined('BASEPATH')) exit('No direct script access allowed');
 /**
- * This library for authentication user 
+ * This library for authentication user
  */
 class Auth
 {
@@ -37,7 +37,12 @@ class Auth
     {
         return $this->user['kdcab'];
     }
-    
+
+		public function nama()
+    {
+        return $this->user['nm_lengkap'];
+    }
+
     public function userdata()
     {
         $userdata =  $this->ci->users_model->select(array("users.*"))
@@ -126,7 +131,7 @@ class Auth
 
         $data = $this->ci->users_model->join('user_groups','users.id_user = user_groups.id_user')
                                     ->find_by(array('users.id_user' => $id, 'id_group' => 1));
-                                    
+
         if($data)
         {
             return TRUE;

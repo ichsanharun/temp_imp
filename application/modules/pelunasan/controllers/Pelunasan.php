@@ -86,8 +86,14 @@ class Pelunasan extends Admin_Controller {
         //======//
 
         //UPDATE STATUS GIRO CAIR
-        $this->db->where(array('no_giro'=>$byr->no_reff));
-        $this->db->update('giro',array('status'=>'CAIR'));
+        $cekgir = $this->db->where(array('no_giro'=>$byr->no_reff))->get("giro")->row();
+        if ($cekgir->nilai_sisa-$nominal > 0) {
+          $this->db->where(array('no_giro'=>$byr->no_reff));
+          $this->db->update('giro',array('status'=>'CAIR SEBAGIAN','nilai_sisa'=>$cekgir->nilai_sisa-$nominal,'status_giro'=>'P'));
+        }else {
+          $this->db->where(array('no_giro'=>$byr->no_reff));
+          $this->db->update('giro',array('status'=>'CAIR','nilai_sisa'=>$cekgir->nilai_sisa-$nominal,'status_giro'=>'Y'));
+        }
         //======//
 
         if ($this->db->trans_status() === FALSE)

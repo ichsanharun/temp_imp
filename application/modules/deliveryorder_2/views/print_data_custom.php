@@ -12,13 +12,14 @@ date_default_timezone_set("Asia/Bangkok");
             margin:0;
             padding:0;
             font-style: kitfont;
-
+            font-family:Arial;
             font-size:10pt;
             color:#000;
         }
         body
         {
             width:100%;
+            font-family:Arial;
             font-style: kitfont;
             font-size:10pt;
             margin:0;
@@ -60,7 +61,7 @@ date_default_timezone_set("Asia/Bangkok");
         #tabel-laporan td{
             border : solid 1px #000;
             margin: 0px;
-            height: 30px;
+            height: 25px;
         }
 
         #footer
@@ -96,16 +97,17 @@ date_default_timezone_set("Asia/Bangkok");
     </style>
 </head>
 <?php
-$uk1 = 9;
+$uk1 = 9.5;
 $ukk = 17;
-$ukkk = 11;
+$ukkk = 14;
 ?>
 <body style=<?php echo '"font-size: '.$uk1.'pt !important;"';?>>
-    <div id="content-report1" style="padding-top:7px !important">
+    <div id="content-report1" style="padding-top:0px !important">
     <table width="100%" id="tabel-laporan" style=<?php echo '"font-size: '.$ukkk.'px !important;font-weight:bold;padding-top:7px !important"';?>>
         <tr>
             <th width="2%">NO</th>
             <th width="30%">NAMA PRODUK</th>
+            <th width="3%">No. SO</th>
             <th width="7%">QTY</th>
             <th width="5%">SATUAN<br>(SET/PCS)</th>
             <th width="2%">NO</th>
@@ -126,6 +128,7 @@ $ukkk = 11;
         <tr>
             <td rowspan="<?php echo $rs?>"><center><?php echo $no?></center></td>
             <td rowspan="<?php echo $rs?>"><?php echo $vd->nm_barang?></td>
+            <td rowspan="<?php echo $rs?>"><?php echo $vd->no_so?></td>
             <td rowspan="<?php echo $rs?>"><center><?php echo $vd->qty_supply?></center></td>
             <td rowspan="<?php echo $rs?>"><center><?php echo $vd->satuan?></center></td>
 

@@ -117,7 +117,8 @@ header("Expires: 0");
         if(@$header){
         foreach(@$header as $kr=>$vr){
           $no = $n++;
-          $total += $vr->piutang;
+		  $piutang	= $vr->hargajualtotal - $vr->jum_bayar;
+          $total += $piutang;
           $umur = selisih_hari($vr->tanggal_invoice,date('Y-m-d'));
           if ($cus1 != $vr->nm_customer && $cus1 !="") {
             ?>
@@ -147,7 +148,7 @@ header("Expires: 0");
           <td><center><?php echo $vr->no_invoice?></center></td>
           <td><center><?php echo date('d-m-Y',strtotime($vr->tgljatuhtempo))?></center></td>
           <td style="text-align: right;"><?php echo formatnomor($vr->hargajualtotal)?></td>
-          <td style="text-align: right;"><?php echo formatnomor($vr->piutang)?></td>
+          <td style="text-align: right;"><?php echo formatnomor($piutang)?></td>
           <td></td>
           <td></td>
           <td></td>
@@ -160,7 +161,7 @@ header("Expires: 0");
         </tr>
         <?php
         $cus1 = $vr->nm_customer;
-        $total_sub += $vr->piutang;
+        $total_sub += $piutang;
         } ?>
         <tr>
             <td colspan="6"><center><b>TOTAL</b></center></td>

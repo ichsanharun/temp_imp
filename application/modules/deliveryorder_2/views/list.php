@@ -7,8 +7,8 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#DO" data-toggle="tab" aria-expanded="true" id="data">List DO</a></li>
-        <li class=""><a href="#INV" data-toggle="tab" aria-expanded="false" id="data_inv">List DO->INV</a></li>
+        <li class="active"><a href="#DO" data-toggle="tab" aria-expanded="true" id="data">List SJ</a></li>
+        <li class=""><a href="#INV" data-toggle="tab" aria-expanded="false" id="data_inv">List SJ->INV</a></li>
         <li class=""><a href="#CCL" data-toggle="tab" aria-expanded="false" id="data_ccl">List CCL</a></li>
     </ul>
     <!-- /.tab-content -->
@@ -18,7 +18,7 @@
             <div class="box">
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New SJ</a>
                           <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
@@ -29,9 +29,9 @@
                 <div class="box-body">
                     <table id="example1" class="table table-bordered table-striped">
                     <thead>
-            	        <tr>
+            	        <tr class="bg-blue">
             	            <th width="2%">#</th>
-                          <th>NO. DO</th>
+                          <th>NO. SJ</th>
                           <th>NO. SO</th>
             	            <th>Nama Customer</th>
                           <th>Tanggal</th>
@@ -89,8 +89,11 @@
                             <td>
                               <?php if($vso->status != "CCL"){ ?>
                                 <?php if($ENABLE_VIEW) { ?>
-                                  <a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
+                                  <!--a href="#dialog-popup" data-toggle="modal" onclick="PreviewPdf('<?php echo $vso->no_do?>')">
                                   <span class="glyphicon glyphicon-print"></span>
+                                </a-->
+                                  <a href="#dialog-a" data-toggle="modal" class="btn bg-primary btn-xs" onclick="CustomePrint('<?php echo $vso->no_do?>')">
+                                      <span class="glyphicon glyphicon-print"></span>
                                   </a>
                                 <?php } ?>
                                 <?php if($ENABLE_VIEW) { ?>
@@ -105,17 +108,19 @@
                       <?php } ?>
                     </tbody>
                     <tfoot>
-                      <tr>
-                          <th width="2%">#</th>
-                          <th>NO. DO</th>
-                          <th>Nama Customer</th>
-                          <th>Tanggal</th>
-                          <th>Nama Salesman</th>
-                          <th>Nama Supir</th>
-                          <th>Helper</th>
-                          <th>Kendaraan</th>
-                          <th>Status</th>
-                          <th>Aksi</th>
+                      <tr class="bg-blue">
+                        <th width="2%">#</th>
+                        <th>NO. SJ</th>
+                        <th>NO. SO</th>
+                        <th>Nama Customer</th>
+                        <th>Tanggal</th>
+                        <th>Nama Salesman</th>
+                        <th>Nama Supir</th>
+                        <th>Helper</th>
+                        <th>Kendaraan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                        <th>Cetak</th>
                       </tr>
                     </tfoot>
                     </table>
@@ -129,7 +134,7 @@
             <div class="box">
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New SJ</a>
                           <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
@@ -142,7 +147,7 @@
                     <thead>
             	        <tr>
             	            <th width="2%">#</th>
-                          <th>NO. DO</th>
+                          <th>NO. SJ</th>
                           <th>NO. SO</th>
             	            <th>Nama Customer</th>
                           <th>Tanggal</th>
@@ -218,7 +223,7 @@
                     <tfoot>
                       <tr>
                           <th width="2%">#</th>
-                          <th>NO. DO</th>
+                          <th>NO. SJ</th>
                           <th>Nama Customer</th>
                           <th>Tanggal</th>
                           <th>Nama Salesman</th>
@@ -240,7 +245,7 @@
             <div class="box">
               	<div class="box-header">
                       <?php if ($ENABLE_ADD) : ?>
-                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New DO</a>
+                          <a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New SJ</a>
                           <!--a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data_from_pending()"><i class="fa fa-plus">&nbsp;</i>New From Pending</a-->
                       <?php endif; ?>
 
@@ -253,7 +258,7 @@
                     <thead>
             	        <tr>
             	            <th width="2%">#</th>
-                          <th>NO. DO</th>
+                          <th>NO. SJ</th>
                           <th>NO. SO</th>
             	            <th>Nama Customer</th>
                           <th>Tanggal</th>
@@ -329,7 +334,7 @@
                     <tfoot>
                       <tr>
                           <th width="2%">#</th>
-                          <th>NO. DO</th>
+                          <th>NO. SJ</th>
                           <th>Nama Customer</th>
                           <th>Tanggal</th>
                           <th>Nama Salesman</th>
@@ -356,9 +361,9 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file-pdf-o"></span>&nbsp;Delivery Order (DO)</h4>
+        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file-pdf-o"></span>&nbsp;Surat Jalan (SJ)</h4>
       </div>
-      <div class="modal-body" id="MyModalBody">
+      <div class="modal-body" id="MyModalBodyPrintPreview">
     ...
       </div>
       <div class="modal-footer">
@@ -369,12 +374,47 @@
   </div>
 </div>
 
+<div class="modal modal-primary" id="dialog-a" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file-pdf-o"></span>&nbsp;Surat Jalan (SJ)</h4>
+      </div>
+      <div class="modal-body" id="MyModalBodyCustomPrint" style="background: #FFF !important;color:#000 !important;">
+        <div class="form-group ">
+
+          <div class="col-sm-12">
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" value="lawas" name="radio_layout" checked>Tampilkan Layout Lawas
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" value="baru" name="radio_layout">Tampilkan Layout Terbaru
+                  </label>
+                </div>
+                <input type="hidden" name="no_do" id="no_do" value="">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">
+        <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
+        <button type="button" class="btn btn-warning" onclick="CetakInvoice()">
+        <span class="glyphicon glyphicon-print"></span>  Cetak Invoice</button>
+        </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal modal-primary" id="dialog-edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file"></span>&nbsp;Delivery Order (DO)</h4>
+        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file"></span>&nbsp;Surat Jalan (SJ)</h4>
       </div>
       <div class="modal-body" id="MyModalBodyEdit">
 
@@ -476,7 +516,7 @@
     function setcanceldo(nodo){
       swal({
           title: "Peringatan!",
-          text: "Yakin Cancel Delivery Order "+nodo+"?",
+          text: "Yakin Cancel Surat Jalan "+nodo+"?",
           type: "warning",
           showCancelButton: true,
           confirmButtonColor: "#DD6B55",
@@ -533,6 +573,27 @@
       tujuan = 'deliveryorder_2/print_request/'+param;
 
         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+    }
+    function CustomePrint(inv){
+      $('#no_do').val(inv);
+
+      $('#dialog-print-invoice').modal('show');
+
+  	}
+    function CetakInvoice(){
+      var noinv = $('#no_do').val();
+      var layout = $('input[name="radio_layout"]:checked').val();
+      if (layout == 'lawas') {
+        var url = siteurl+'deliveryorder_2/print_custom_lawas/'+noinv;
+      }else {
+        var url = siteurl+'deliveryorder_2/print_custom_baru/'+noinv;
+      }
+      $('#dialog-a').modal('hide');
+
+      //$.post(url,{'NO_INV':noinv,'DISPLAY_DISKON':customediskon},function(result){
+      $('#dialog-popup').modal('show');
+      $("#MyModalBodyPrintPreview").html('<iframe src="'+url+'" frameborder="no" width="100%" height="400"></iframe>');
+      //});
     }
     function PreviewProforma(nodo)
     {

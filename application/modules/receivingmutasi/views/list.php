@@ -123,7 +123,7 @@
     }
     function PreviewPdf(nomutasi)
     {
-      tujuan = 'mutasi/print_request/'+nomutasi;
+      tujuan = 'receivingmutasi/print_request/'+nomutasi;
       $("#MyModalBodyCetakRecMutasi").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
     }
     function prosesrecmutasi(no){

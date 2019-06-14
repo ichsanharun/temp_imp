@@ -176,7 +176,7 @@ class Barang_koli_model extends BF_Model
                 barang_koli.netto_weight,
                 barang_koli.cbm_each
                 FROM
-                barang_koli";
+                barang_koli WHERE deleted = '0'";
         return $this->db->query($query);
     }
 }

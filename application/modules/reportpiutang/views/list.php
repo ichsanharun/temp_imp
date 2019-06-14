@@ -1,4 +1,5 @@
 <?php
+//print_r(@$results);
 /*
     $ENABLE_ADD     = has_permission('Reportstok.Add');
     $ENABLE_MANAGE  = has_permission('Reportstok.Manage');
@@ -8,169 +9,181 @@
 ?>
 <style type="text/css">
 thead input {
-  width: 100%;
+	width: 100%;
 }
 </style>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 
 <div class="box">
-  <div class="col-lg-12">
-    <div class="box-header text-left">
-      <div class="form-inline">
-        <div class="form-group">
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-share"></i></span>
-              <select class="form-control input-sm" id="filtercabang" style="width: 200px;" disabled="disabled">
-                <option value="">Pilih Cabang</option>
-                <?php
-                foreach(@$cabang as $k=>$v){
-                  $selected = '';
-                  $session = $this->session->userdata('app_session');
-                  $kdcab = $session['kdcab'];
-                  if($this->uri->segment(3) == $v->kdcab){
-                    $selected='selected="selected"';
-                  }
-                  if($kdcab == $v->kdcab){
-                    $selected='selected="selected"';
-                  }
-                ?>
-                <option value="<?php echo $v->kdcab?>" <?php echo $selected?>><?php echo $v->kdcab.', '.$v->namacabang?></option>
-                <?php } ?>
-              </select>
-          </div>
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-user"></i></span>
-              <select class="form-control input-sm" id="filtersales" style="width: 200px;">
-                <option value="">Pilih Sales</option>
-                <option value="All">All</option>
-                <?php
-                foreach(@$marketing as $km=>$vm){
-                  $selected = '';
-                  if($this->uri->segment(4) == $vm->id_karyawan){
-                    $selected='selected="selected"';
-                  }
-                ?>
-                <option value="<?php echo $vm->id_karyawan?>" <?php echo $selected?>><?php echo $vm->nama_karyawan?></option>
-                <?php } ?>
-              </select>
-          </div>
-          <div class="input-group">
-              <span class="input-group-addon"><i class="fa fa-users"></i></span>
-              <select class="form-control input-sm" id="filtercustomer" style="width: 300px;">
-                <option value="">Pilih Customer</option>
-                <option value="All">All</option>
-                <?php
-                foreach(@$customer as $kc=>$vc){
-                  $selected = '';
-                  if($this->uri->segment(5) == $vc->id_customer){
-                    $selected='selected="selected"';
-                  }
-                ?>
-                <option value="<?php echo $vc->id_customer?>" <?php echo $selected?>><?php echo $vc->id_customer.', '.$vc->nm_customer?></option>
-                <?php } ?>
-              </select>
-          </div>
-          <input type="button" id="submit" class="btn btn-sm btn-warning" value="Tampilkan">
-          <a class="btn btn-primary btn-sm" title="PDF" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>CETAK</a>
-
-          <a class="btn btn-primary btn-sm" title="EXCEL" onclick="PreviewExc()"><i class="fa fa-download">&nbsp;</i>EXCEL</a>
-        </div>
-      </div>
-      <!--<span class="pull-right">
-      <?php //echo anchor(site_url('reportpenjualan/downloadExcel').'?tglawal='.$pawal.'&tglakhir='.$pakhir.'&idcabang='.$this->uri->segment(5), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-      <!--<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-rekap" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>-->
-    <!--</span>-->
-    </div>
-  </div>
-  <!-- /.box-header -->
-  <div class="box-body">
-    <table id="example1" class="table table-bordered table-striped table-condensed" width="100%">
-        <thead>
-          <tr>
-              <th width="2%" rowspan="2">#</th>
-              <th width="12%" rowspan="2">NO. Invoice</th>
-              <th rowspan="2">Customer</th>
-              <th rowspan="2">Salesman</th>
-              <th rowspan="2">Tgl Invoice</th>
-              <th rowspan="2">Umur Piutang</th>
-              <th rowspan="2">Total Jual</th>
-              <th rowspan="2">Piutang</th>
-              <th colspan="5" class="text-center">Kategori Range Umur Piutang (Hari)</th>
-          </tr>
-          <tr>
-              <?php
-              foreach(kategori_umur_piutang() as $c=>$b){
-              ?>
-              <th><center><?php echo $b?></center></th>
-              <?php } ?>
-          </tr>
+	<form action="<?= site_url(strtolower($this->uri->segment(1).'/index'))?>" method="POST" id='form_proses'>
+		<div class="col-lg-12">
+			
+		
+			<div class="box-header text-left"><b>Pilih Cabang : </b>				
+				<div class="form-inline">
+					<div class="form-group">
+						<div class="input-group">
+							<?php
+								if($rows_cab_user=='100'){
+									if($cabang){
+										echo"<select name='kdcab' id='kdcab' class='form-control input-sm'>";
+										foreach($cabang as $key=>$vals){
+											$nama_cabang	= $key.', '.$vals;
+											$yuup=($key==$cab_pilih)?'selected':'';
+											echo"<option value='$key' $yuup>".$nama_cabang."</option>";
+										}
+										echo"</select>";
+									}
+								}else{
+									$Cabang_data	= $rows_cab_user.', '.$cabang[$rows_cab_user];
+									echo"<input type='text' class='form-control input-sm' name='nama_cabang' id='nama_cabang' value='$Cabang_data' disabled>";
+									echo"<input type='hidden' class='form-control input-sm' name='kdcab' id='kdcab' value='$rows_cab_user'>";
+								}
+							?>
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="fa fa-user"></i></span>
+							<?php
+							echo"<select name='salesman' id='salesman' class='form-control input-sm'>";
+								echo"<option value=''>All Salesman</option>";
+								foreach($marketing as $key=>$val){
+								
+								$yuup=($val->id_karyawan == $sales_pilih)?'selected':'';
+								echo"<option value='".$val->id_karyawan."' $yuup>".$val->nama_karyawan."</option>";
+								}
+							echo"</select>";
+							?>
+						</div>
+						<div class="input-group">
+							<span class="input-group-addon"><i class="fa fa-user"></i></span>
+							<?php
+							echo"<select name='pelanggan' id='pelanggan' class='form-control input-sm'>";
+								echo"<option value=''>All Customer</option>";
+								foreach($customer as $key=>$val){
+								
+									$yuup=($val->id_customer == $cust_pilih)?'selected':'';
+								echo"<option value='".$val->id_customer."' $yuup>".$val->id_customer.", ".$val->nm_customer."</option>";
+								}
+							echo"</select>";
+							?>
+						</div>
+						
+						<input type="button" id="btn-submit" class="btn btn-md btn-warning" value="Tampilkan">
+					</div>
+				</div>
+			</div>
+		</div>
+	</form>
+	<!-- /.box-header -->
+	<div class="col-sm-12" style="padding-bottom: 20px;">
+		<span class="pull-right">
+			<button type="button" id="btn-excel" class="btn btn-md btn-success"><i class="fa fa-download">&nbsp;</i>Excel</button>&nbsp;&nbsp;
+			<button type="button" id="btn-print" class="btn btn-md bg-maroon"><i class="fa fa-print">&nbsp;</i>Print</button>
+				
+		</span>
+	</div>
+	<div class="box-body" style="overflow-x:auto">
+		<table id="example1" class="table table-bordered table-striped">
+			<thead>
+				<tr class="bg-blue">
+					<th class="text-center" rowspan="2">No</th>
+					<th class="text-center" rowspan="2">No Invoice</th>
+					<th class="text-center" rowspan="2">Tgl Invoice</th>
+					<th class="text-center" rowspan="2">Customer</th>					
+					<th class="text-center" rowspan="2">Salesman</th>					
+					<th class="text-center" rowspan="2">Total Invoice</th>
+					<th class="text-center" rowspan="2">Piutang</th>
+					<th class="text-center" rowspan="2">Aging</th>
+					<th class="text-center" colspan="5">Range Umur Piutang (Hari)</th>
+				</tr>
+				<tr class="bg-blue">
+					<th class="text-center">0-15</th>
+					<th class="text-center">16-30</th>
+					<th class="text-center">31-60</th>
+					<th class="text-center">61-90</th>
+					<th class="text-center">>90</th>
+				</tr>
         </thead>
         <tbody>
         <?php
-        $n=1;
-        $totalpiutang=0;
-        if(@$results){
-        foreach(@$results as $kr=>$vr){
-          $no = $n++;
-          $ar = $this->Invoice_model->cek_data(array('no_invoice'=>$vr->no_invoice),'ar');
-          $totalpiutang += $vr->piutang;
-        ?>
-        <tr>
-          <td><center><?php echo $no?></center></td>
-          <td><center><?php echo $vr->no_invoice?></center></td>
-          <td><?php echo $vr->nm_customer?></td>
-          <td><?php echo $vr->nm_salesman?></td>
-          <td><center><?php echo date('d M Y',strtotime($vr->tanggal_invoice))?></center></td>
-          <td><center><?php echo selisih_hari($vr->tanggal_invoice,date('Y-m-d')).' hari'?></center></td>
-          <td class="text-right"><?php echo formatnomor($vr->hargajualtotal)?></td>
-          <td class="text-right"><?php echo formatnomor($vr->piutang)?></td>
-          <?php
-          foreach(kategori_umur_piutang() as $cd=>$bd){
-            $ex = explode('|',$cd);
-            $um = selisih_hari($vr->tanggal_invoice,date('Y-m-d'));
-            $ku = '-';
-            if($ex[0] != 90){
-              if($um >= $ex[0] && $um <= $ex[1]){
-                //$ku = '<span class="fa fa-check"></span>';
-                $ku = '<span class="badge bg-green" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Saldo Akhir">'.formatnomor($ar->saldo_akhir).'</span>';
-              }
-            }else{
-              if($um >= $ex[0]){
-                //$ku = '<span class="fa fa-check"></span>';
-                $ku = '<span class="badge bg-green" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="Saldo Akhir">'.formatnomor($ar->saldo_akhir).'</span>';
-              }
-            }
-          ?>
-          <td><center><?php echo $ku?></center></td>
-          <?php } ?>
-        </tr>
-        <?php } ?>
-        <?php } ?>
-        </tbody>
-        <tfoot>
-        	<tr>
-        		<td colspan="6"><center><b>TOTAL</b></center></td>
-        		<td colspan="2" style="text-align: right;"><b><?php echo formatnomor($totalpiutang)?></b></td>
-        		<td colspan="5"></td>
-        	</tr>
-        </tfoot>
+		$intL	= 0;
+		$Total_Invoice	= $Total_Piutang	= $Total_15	= $Total_30 = $Total_60 = $Total_90 = $Total_91 = 0;
+		if(@$results){
+			foreach($results as $key=>$vals){
+				$intL++;
+				$tot_inv				= $vals->hargajualtotal;
+				$tot_piutang			= $vals->hargajualtotal - $vals->jum_bayar;
+				$Umur					= $vals->umur;
+				
+				$Total_Invoice		+= $tot_inv;
+				$Total_Piutang		+= $tot_piutang;
+				$A_15 = $A_30 = $A_60 = $A_90 =$A_91 ='-';
+				if($Umur <= 15){
+					$Total_15 +=$tot_piutang;
+					$A_15		="<span class='badge bg-green'>".number_format($tot_piutang)."</span>";
+				}else  if($Umur > 15 && $Umur <=30){
+					$Total_30 +=$tot_piutang;
+					$A_30		="<span class='badge bg-green'>".number_format($tot_piutang)."</span>";
+				}else  if($Umur > 30 && $Umur <=60){
+					$Total_60 +=$tot_piutang;
+					$A_60		="<span class='badge bg-green'>".number_format($tot_piutang)."</span>";
+				}else  if($Umur > 60 && $Umur <=90){
+					$Total_90 +=$tot_piutang;
+					$A_90		="<span class='badge bg-green'>".number_format($tot_piutang)."</span>";
+				}else if($Umur > 90){
+					$Total_91 +=$tot_piutang;
+					$A_91		="<span class='badge bg-green'>".number_format($tot_piutang)."</span>";
+				}
+				echo"<tr>";
+					echo"<td class='text-center'>".$intL."</td>";
+					echo"<td class='text-center'>".$vals->no_invoice."</td>";
+					echo"<td class='text-center'>".date('d M Y',strtotime($vals->tanggal_invoice))."</td>";
+					echo"<td class='text-left'>".$vals->nm_customer."</td>";
+					echo"<td class='text-left'>".$vals->nm_salesman."</td>";
+					echo"<td class='text-right'>".number_format($tot_inv)."</td>";
+					echo"<td class='text-right'>".number_format($tot_piutang)."</td>";
+					echo"<td class='text-right'>".number_format($Umur)."</td>";
+					echo"<td class='text-center'>".$A_15."</td>";
+					echo"<td class='text-center'>".$A_30."</td>";
+					echo"<td class='text-center'>".$A_60."</td>";
+					echo"<td class='text-center'>".$A_90."</td>";
+					echo"<td class='text-center'>".$A_91."</td>";
+				echo"</tr>";
+			}
+			
+		}
+		echo"</tbody>";
+		echo"<tfoot>";
+			echo"<tr class='bg-gray text-red'>";
+				echo"<td class='text-right' colspan='5'><b>Grand Total</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Invoice)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_Piutang)."</b></td>";
+				echo"<td class='text-center'><b>-</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_15)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_30)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_60)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_90)."</b></td>";
+				echo"<td class='text-right'><b>".number_format($Total_91)."</b></td>";
+			echo"</tr>";
+		echo"</tfoot>";
+		?>
         </table>
-  </div>
-  <!-- /.box-body -->
+	</div>
+	<!-- /.box-body -->
 </div>
-<!-- Modal -->
-<div class="modal modal-primary" id="dialog-rekap" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+
+<div class="modal modal-primary" id="dialog-popup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h4 class="modal-title" id="myModalLabel"></h4>
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true" id="btn-close">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"><span class="fa fa-file-pdf-o"></span>&nbsp;Report TTNT</h4>
       </div>
-      <div class="modal-body" id="MyModalBodyFilter">
+      <div class="modal-body" id="MyModalBody">
     ...
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="btn-close2">
         <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
         </div>
     </div>
@@ -182,61 +195,59 @@ thead input {
 
 <!-- page script -->
 <script type="text/javascript">
-  $(document).ready(function(){
-    $("#filtercabang,#filtersales,#filtercustomer").select2();
-    $("#submit").on('click', function(){
-      var cabang = $("#filtercabang").val();
-      var sales = $("#filtersales").val();
-      var customer = $("#filtercustomer").val();
-      window.location.href = siteurl+"reportpiutang/filter/"+cabang+"/"+sales+"/"+customer;
-    });
-  });
+	$(document).ready(function(){
+		$('#btn-close, #btn-close2').click(function(){
+			 $('#MyModalBody').empty();
+			 $('#dialog-popup').hide();
+		 });
+		var dataTable = $("#example1").DataTable().draw();
+		$(".datepicker").datepicker({
+			todayHighlight: true,
+			format : "yyyy-mm-dd",
+			showInputs: true,
+			autoclose:true
+		});
+		$("#btn-submit").on('click', function(){
+			$('#form_proses').submit();
+		});
+		
+   
+	});
+	$('#btn-excel').click(function(){
+		var cabang	= $('#kdcab').val();
+		var sales	= $('#salesman').val();
+		var customer= $('#tahun').val();
+		if(customer=='' || customer==null){
+			customer='all';
+		}
+		if(sales=='' || sales==null){
+			sales='all';
+		}
+		var Links		= siteurl+'reportpiutang/preview_data/'+cabang+'/'+sales+'/'+customer+'/excel';
+		//alert(Links);
+		window.open(Links,'_blank');
+	});
+	
+	$('#btn-print').click(function(){
+		var cabang	= $('#kdcab').val();
+		var sales	= $('#salesman').val();
+		var customer= $('#tahun').val();
+		if(customer=='' || customer==null){
+			customer='all';
+		}
+		if(sales=='' || sales==null){
+			sales='all';
+		}
+		//tujuan = 'reportpiutang/preview_data/'+cabang+'/'+sales+'/'+customer+'/pdf';
+		//$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+		//$('#dialog-popup').show();
+		var Links		= siteurl+'reportpiutang/preview_data/'+cabang+'/'+sales+'/'+customer+'/pdf';
+		//alert(Links);
+		window.open(Links,'_blank');
+	});
+	
+	
 
-  $(function() {
-    var dataTable = $('#example1').DataTable({
-          "serverSide": false,
-          "stateSave" : false,
-          "bAutoWidth": true,
-          "searching": false,
-          "bLengthChange" : false,
-          "bPaginate": false,
-          "aaSorting": [[ 0, "asc" ]],
-          "columnDefs": [
-              {"aTargets":[0], "sClass" : "column-hide"},
-              {"aTargets": 'no-sort', "orderable": false}
-          ],
-          "sPaginationType": "simple_numbers",
-          "iDisplayLength": 10,
-          "aLengthMenu": [[10, 20, 50, 100, 150], [10, 20, 50, 100, 150]]
-      });
-    /*
-      var dataTable = $("#example1").DataTable(
-        "bAutoWidth": true
-        ).draw();
-        */
-    });
 
-  function PreviewRekap()
-  {
-    var kdcab = '<?php echo $this->uri->segment(3) ?>';
-    var sales = '<?php echo $this->uri->segment(4) ?>';
-    var customer = '<?php echo $this->uri->segment(5) ?>';
-    tujuan = siteurl+'reportpiutang/print_request/'+kdcab+'/'+sales+'/'+customer;
-    var win = window.open(tujuan, '_blank');
-    win.focus();
-    //alert(tujuan);
-    $("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-  }
-  function PreviewExc()
-  {
-    var kdcab = '<?php echo $this->uri->segment(3) ?>';
-    var sales = '<?php echo $this->uri->segment(4) ?>';
-    var customer = '<?php echo $this->uri->segment(5) ?>';
-    tujuan = siteurl+'reportpiutang/excel_request/'+kdcab+'/'+sales+'/'+customer;
-    var win = window.open(tujuan, '_blank');
-    win.focus();
-    //alert(tujuan);
-    //$("#MyModalBodyFilter").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
-  }
-
+	
 </script>

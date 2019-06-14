@@ -290,7 +290,7 @@
             var uri4 = '<?php echo $this->uri->segment(4)?>';
             //console.log(tglso);
             //window.location.href =
-            window.location.href= siteurl+"reportso/downloadExcel_old/"+uri3+"/"+tglso;
+            window.location.href= siteurl+"reportso/downloadExcel/"+uri3+"/"+tglso;
             //$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Sales Order (SO)');
             //param=noso;
             //tujuan = siteurl+'reportso/print_request/'+param;

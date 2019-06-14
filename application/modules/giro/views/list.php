@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
     $ENABLE_ADD     = has_permission('Koli.Add');
     $ENABLE_MANAGE  = has_permission('Koli.Manage');
@@ -11,14 +11,14 @@
 <div class="box">
 	<div class="box-header">
 		<?php //if ($ENABLE_ADD) : ?>
-			<div class="col-sm-1">		
+			<div class="col-sm-1">
 			<a class="btn btn-success" href="javascript:void(0)" title="Add" onclick="add_data()"><i class="fa fa-plus">&nbsp;</i>New</a>
 			</div>
 			<div class="col-sm-2">
 			<select class="form-control" id="filter-giro" onchange="filtergiro()">
 				<option value="">Pilih Filter</option>
-				<?php 
-				foreach(is_status_giro() as $k=>$v){ 
+				<?php
+				foreach(is_status_giro() as $k=>$v){
 					$selected='';
 					if(@$filter_status == $k){
 						$selected='selected="selected"';
@@ -27,8 +27,8 @@
 				<option value="<?php echo $k?>" <?php echo $selected?>><?php echo $v?></option>
 				<?php } ?>
 			</select>
-			</div>	
-			<a class="btn btn-primary" data-toggle="modal" href="#dialog-giro" title="Print" onclick="PreviewPdf()"><i class="fa fa-print">&nbsp;</i>Cetak PDF</a>		
+			</div>
+			<a class="btn btn-primary" data-toggle="modal" href="#dialog-giro" title="Print" onclick="PreviewPdf()"><i class="fa fa-print">&nbsp;</i>Cetak PDF</a>
 		<?php //endif; ?>
 	</div>
 	<!-- /.box-header -->
@@ -42,12 +42,13 @@
 			<th width="10%">Tgl Transaksi</th>
 			<th width="15%">Nama Bank</th>
 			<th width="10%">Nilai Fisik</th>
-			<th width="10%">Tgl JTT</th>			
+			<th width="10%">Nilai Sisa</th>
+			<th width="10%">Tgl JTT</th>
 			<th width="30%">JTT</th>
 			<th width="5%">Status</th>
 		</tr>
 		</thead>
-        
+
 		<tbody>
 			<?php
 			$n=1;
@@ -76,6 +77,7 @@
 				<td><center><?php echo date('d-M-Y',strtotime($v->tgl_giro))?></center></td>
 				<td><center><?php echo $v->nm_bank?></center></td>
 				<td style="text-align: right;"><?php echo formatnomor($v->nilai_fisik)?></td>
+				<td style="text-align: right;"><?php echo formatnomor($v->nilai_sisa)?></td>
 				<td><center><?php echo date('d-M-Y',strtotime($v->tgl_jth_tempo))?></center></td>
 				<td><center><span class="badge <?php echo $badge?>"><?php echo $viewhari ?></span></center></td>
 				<td><center><span class="badge bg-green"><?php echo $v->status?></span></center></td>
@@ -83,7 +85,7 @@
 			<?php } ?>
 			<?php } ?>
 		</tbody>
-		
+
 		<tfoot>
 		<tr>
 			<th width="2%">#</th>
@@ -92,8 +94,8 @@
 			<th width="15%">Tgl Transaksi</th>
 			<th>Nama Bank</th>
 			<th width="15%">Nilai Fisik</th>
-			<th width="15%">Tgl JTT</th>	
-			<th width="10%">Ket JTT</th>		
+			<th width="15%">Tgl JTT</th>
+			<th width="10%">Ket JTT</th>
 			<th width="5%">Status</th>
 		</tr>
 		</tfoot>
@@ -129,9 +131,9 @@
 <!-- page script -->
 <script type="text/javascript">
 
-  	$(function() {  	
-    	$("#example1").DataTable(); 
-    	$("#form-area").hide();   
+  	$(function() {
+    	$("#example1").DataTable();
+    	$("#form-area").hide();
   	});
 
   	function add_data(){
@@ -149,9 +151,9 @@
 
   	function edit_data(kodebarang){
 		if(kodebarang!=""){
-			var url = 'koli/edit/'+kodebarang;	
-			$(".box").hide(); 
-			$("#form-area").show();	
+			var url = 'koli/edit/'+kodebarang;
+			$(".box").hide();
+			$("#form-area").show();
 
 			$("#form-area").load(siteurl+url);
 

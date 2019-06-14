@@ -60,8 +60,8 @@
                     <?php // echo $vso->stsorder?>
                 </td>-->
                 <td class="text-center">
-                    <!--input <?php //echo $disabled?> type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $no?>" value="<?php echo $vso->no_so?>" onclick="cekcus('<?php echo $vso->id_customer?>','<?php echo $no?>','<?php echo $vso->nm_customer?>','<?php echo "set_choose_do".$no?>')"-->
-                    <button onclick="proses_do_ind('<?php echo $vso->no_so?>')" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button>
+                    <input <?php //echo $disabled?> type="checkbox" class="set_choose_do" name="set_choose_do" id="set_choose_do<?php echo $no?>" value="<?php echo $vso->no_so?>" onclick="cekcus('<?php echo $vso->id_customer?>','<?php echo $no?>','<?php echo $vso->nm_customer?>','<?php echo "set_choose_do".$no?>')">
+                    <!--button onclick="proses_do_ind('<?php echo $vso->no_so?>')" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button-->
                 </td>
             </tr>
             <?php } ?>
@@ -75,7 +75,7 @@
     <div class="box-body">
       <input type="hidden" name="cekcus" id="cekcus" class="form-control input-sm">
       <input type="hidden" id="cekcustomer" class="form-control input-sm">
-      <!--button onclick="proses_do()" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button-->
+      <button onclick="proses_do()" class="btn btn-primary" id="btn-proses-do" <?php // echo $disabled?> type="button"> Proses DO</button>
     </div>
   </div>
 </div>

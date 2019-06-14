@@ -53,7 +53,7 @@ class Pembayaranpiutang extends Admin_Controller {
         $session = $this->session->userdata('app_session');
         $kdcab = $session['kdcab'];
         //$kdcab = '102';
-        $data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
+        $data = $this->Invoice_model->where(array('piutang >'=>0,'kdcab'=>$kdcab,'flag_cancel'=>'N'))->order_by('no_invoice','DESC')->find_all();
         /*$data = $this->db
         ->select("ar.*,trans_invoice_header.nm_salesman as inv_sales,karyawan.nama_karyawan as sales")
         ->from("ar")
@@ -99,7 +99,9 @@ class Pembayaranpiutang extends Admin_Controller {
 
     function setdatagiro(){
         $no_inv = $this->input->post('NO_INV');
-        $giro = $this->Invoice_model->get_data(array("status_giro"=>'N'),'giro');
+        $ambil_cus = $this->db->where(array('no_invoice'=>$no_inv))->get('trans_invoice_header')->row();
+        //$giro = $this->Invoice_model->get_data(array("status_giro"=>'N'),'giro');
+        $giro = $this->db->where(array('id_customer'=>$ambil_cus->id_customer))->where_in(array("status_giro",array('N','INV-PDG')))->get('giro')->result();
         $this->template->set('invoice', $no_inv);
         $this->template->set('giro', $giro);
         $this->template->render('setdatagiro');
@@ -185,6 +187,12 @@ class Pembayaranpiutang extends Admin_Controller {
 
         $pembayaran_ke = $this->Invoice_model->get_data(array("no_invoice"=>$this->input->post('no_invoice')),'pembayaran_piutang');
         $newpiutang = $this->input->post('jml_piutang')-$this->input->post('jml_bayar');
+        $bulan_bayar = date("n",strtotime($this->input->post('tgl_bayar')));
+        $tahun_bayar = date("Y",strtotime($this->input->post('tgl_bayar')));
+        $kelebihan_bayar = 0;
+        if ($this->input->post('jml_bayar')>$this->input->post('jml_piutang')) {
+          $kelebihan_bayar = $this->input->post('jml_bayar') - $this->input->post('jml_piutang');
+        }
         $nomor_jurnal_jarh = $this->generatenomorjurnaljarh($this->input->post('kdcab'));
 
         $datapost = array(
@@ -192,7 +200,7 @@ class Pembayaranpiutang extends Admin_Controller {
             'no_invoice' => $this->input->post('no_invoice'),
             'jenis_reff' => $this->input->post('jenis_bayar'),
             'no_reff' => $this->input->post('no_reff'),
-            'kdcab' => $this->input->post('kdcab'),
+            'kdcab' => $this->auth->user_cab(),
             'tgl_pembayaran' => $this->input->post('tgl_bayar'),
             'jumlah_piutang' => $this->input->post('jml_piutang'),
             'jumlah_pembayaran' => $this->input->post('jml_bayar'),
@@ -266,15 +274,15 @@ class Pembayaranpiutang extends Admin_Controller {
 
         if($this->input->post('jenis_bayar') != 'BG'){ //SELAIN GIRO
         //UPDATE PIUTANG
-        $this->db->where(array('no_invoice'=>$this->input->post('no_invoice')));
+        $this->db->where(array('no_invoice'=>$this->input->post('no_invoice'),'kdcab'=>$this->auth->user_cab()));
         $this->db->update('trans_invoice_header',array('piutang'=>$newpiutang));
         //-----//
         }
 
          //UPDATE AR
-        $debetold = $this->Invoice_model->cek_data(array('no_invoice'=>$this->input->post('no_invoice')),'ar');
+        $debetold = $this->Invoice_model->cek_data(array('no_invoice'=>$this->input->post('no_invoice'),'kdcab'=>$this->auth->user_cab(),'bln'=>$bulan_bayar,'thn'=>$tahun_bayar),'ar');
         $debetnow = $debetold->debet+$this->input->post('jml_bayar');
-        $this->db->where(array('no_invoice'=>$this->input->post('no_invoice')));
+        $this->db->where(array('no_invoice'=>$this->input->post('no_invoice'),'kdcab'=>$this->auth->user_cab(),'bln'=>$bulan_bayar,'thn'=>$tahun_bayar));
         $this->db->update('ar',array('kredit'=>$debetnow,'saldo_akhir'=>$newpiutang));
         //-----//
 
@@ -359,7 +367,7 @@ class Pembayaranpiutang extends Admin_Controller {
 
             if($byr->jenis_reff != 'BG'){
             //UPDATE PIUTANG INVOICE
-            $this->db->where(array('no_invoice'=>$inv));
+            $this->db->where(array('no_invoice'=>$inv,'kdcab'=>$this->auth->user_cab()));
             $this->db->update('trans_invoice_header',array('piutang'=>$headerinv->piutang+$byr->jumlah_pembayaran));
             //-----//
             }
@@ -396,7 +404,7 @@ class Pembayaranpiutang extends Admin_Controller {
         $mpdf->SetImportUse();
         $mpdf->RestartDocTemplate();
 
-        $data_inv = $this->Invoice_model->where(array('piutang >'=>0,'no_invoice'=>$this->uri->segment(3)))->order_by('no_invoice','DESC')->find_all();
+        $data_inv = $this->Invoice_model->where(array('piutang >'=>0,'no_invoice'=>$this->uri->segment(3),'kdcab'=>$this->auth->user_cab()))->order_by('no_invoice','DESC')->find_all();
 
         $this->template->set('header',$data_inv);
 
@@ -500,6 +508,59 @@ class Pembayaranpiutang extends Admin_Controller {
 
         $objWriter->save('php://output');
 
+    }
+
+
+    public function Bismillaah($value='')
+    {
+      $cekpem = $this->db->get('pembayaran_piutang')->result();
+      $cekinv = $this->db->where(array('flag_cancel'=>'N'))->get('trans_invoice_header')->result();
+      //$datains_ar = array();
+      $set = 0;
+      foreach ($cekinv as $key => $value) {
+
+        $bln_inv = date('n',strtotime($value->tanggal_invoice));
+        $thn_inv = date('Y',strtotime($value->tanggal_invoice));
+        $bln_now = date('n');
+        $thn_now = date('Y');
+        $jangka = (($thn_now-$thn_inv)*12) + ($bln_now-$bln_inv);
+        for ($i=0; $i <= $jangka; $i++) {
+          if ($bln_inv+$i > 12)  {
+            $bln = $bln_inv+$i-12;
+            $thn = $thn_inv+1;
+          }else {
+            $bln = $bln_inv+$i;
+            $thn = $thn_inv;
+          }
+          $cek_ar = $this->db->where(array('no_invoice'=>$value->no_invoice,'bln'=>$bln,'thn'=>$thn))->get('ar')->num_rows();
+          if ($cek_ar==0) {
+            if ($i == 0) {
+              $saldo_awal = 0;
+              $debet = $value->hargajualtotal;
+            }else {
+              $saldo_awal = $value->hargajualtotal;
+              $debet = 0;
+            }
+            $datains_ar = array(
+              'no_invoice' 		=> $value->no_invoice,
+              'tgl_invoice'		=> $value->tanggal_invoice,
+              'customer_code'	=> $value->id_customer,
+              'customer' 			=> $value->nm_customer,
+              'bln'				    => $bln,
+              'thn'				    => $thn,
+              'saldo_awal' 		=> 0, //nilai invoice
+              'debet'				  => $value->hargajualtotal,
+              'kredit'			  => 0,
+              'saldo_akhir'		=> $value->hargajualtotal, //nilai invoice
+              'kdcab'				  => $this->auth->user_cab(),
+              'last_update'   => date("Y-m-d H:i:s")
+            );
+            $this->db->insert('ar',$datains_ar);
+            //$set++;
+          }
+        }
+        //$cek_ar = $this->db
+      }
     }
 }
 ?>

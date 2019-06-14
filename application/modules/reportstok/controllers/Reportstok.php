@@ -59,7 +59,7 @@ class Reportstok extends Admin_Controller {
 
         $this->template->set('barang',$barang);
         $this->template->title('Stock');
-		$this->template->render('report_stok_form');
+		      $this->template->render('report_stok_form');
    	}
 
    	//Edit barang
@@ -302,7 +302,7 @@ class Reportstok extends Admin_Controller {
 
       $dataexcel = $this->Reportstok_model
       ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")
-      ->where(array('barang_stock.kdcab'=>$this->auth->user_cab(),'kategori'=>'set'))->find_all();
+      ->where(array('barang_stock.kdcab'=>$this->auth->user_cab(),'kategori'=>'set','barang_stock.deleted'=>0))->find_all();
 
 
       $data = array(

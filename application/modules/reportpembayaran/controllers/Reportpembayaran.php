@@ -45,7 +45,21 @@ class Reportpembayaran extends Admin_Controller {
         $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
         $data = $this->Reportpembayaran_model
         ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
-        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab()));
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'trans_invoice_header.kdcab'=>$this->auth->user_cab()));
+        $this->template->title('Report Pembayaran Piutang');
+        $this->template->set('cabang', $cabang);
+        $this->template->set('results', $data);
+        $this->template->render('list');
+    }
+
+    public function get_filter($id)
+    {
+
+        $data = array();
+        $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
+        $data = $this->Reportpembayaran_model
+        ->join("trans_invoice_header","trans_invoice_header.no_invoice=pembayaran_piutang.no_invoice","left")
+        ->order_by('kd_pembayaran','ASC')->find_all_by(array('kd_pembayaran IS NOT NULL','pembayaran_piutang.kdcab'=>$this->auth->user_cab(),'trans_invoice_header.kdcab'=>$this->auth->user_cab(),'trans_invoice_header.id_customer'=>$id));
         $this->template->title('Report Pembayaran Piutang');
         $this->template->set('cabang', $cabang);
         $this->template->set('results', $data);

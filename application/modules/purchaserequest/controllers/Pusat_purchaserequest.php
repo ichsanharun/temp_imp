@@ -24,7 +24,7 @@ class Pusat_purchaserequest extends Admin_Controller {
         $data = $this->Purchaserequest_model
         ->select("*,trans_pr_header.no_pr AS nopr")
         ->join('cabang','trans_pr_header.kdcab = cabang.kdcab','left')
-        //->where_in('trans_pr_header.proses_po',  array('Proses','REVISI'))
+        ->where_in('trans_pr_header.proses_po',  array('ACC'))
         ->order_by('trans_pr_header.no_pr','ASC')->find_all();
         $datan = $this->Purchaserequest_model
         ->select("*,trans_pr_header.no_pr AS nopr")

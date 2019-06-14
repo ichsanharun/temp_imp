@@ -7,7 +7,7 @@
 <style type="text/css">
 thead input {
 	width: 100%;
-}
+}	
 </style>
 <div id='alert_edit' class="alert alert-success alert-dismissable" style="padding: 15px; display: none;"></div>
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css'); ?>">
@@ -20,20 +20,21 @@ thead input {
 
 		<span class="pull-right">
 			<?php echo anchor(site_url('supplier/downloadExcel'), ' <i class="fa fa-download"></i> Excel ', 'class="btn btn-primary btn-sm"'); ?>
-			<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-popup" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>
+			<a class="btn btn-primary btn-sm" data-toggle="modal" href="#dialog-popup" title="Pdf" onclick="PreviewRekap()"><i class="fa fa-print">&nbsp;</i>PDF</a>	
 		</span>
 	</div>
 	<!-- /.box-header -->
-	<div class="box-body" style="overflow-x:auto">
+	<div class="box-body">
 		<table id="example1" class="table table-bordered table-striped">
 		<thead>
 		<tr>
 			<th width="5">#</th>
+			<th>ID Supplier</th>
 			<th>Nama Supplier</th>
 			<th>Negara</th>
 			<th>Alamat</th>
 			<th>Telpon / Fax</th>
-			<th>Kontak Person</th>
+			<th>Kotak Person</th>
 			<th>HP Kotak Person / WeChat ID</th>
 			<th>Email</th>
 			<th>Status</th>
@@ -48,14 +49,14 @@ thead input {
 } else {
     $numb = 0;
     foreach ($results as $record) {
-      $in = strlen($record->alamat) > 20 ? substr($record->alamat,0,20)."..." : $record->alamat;
         ++$numb; ?>
 		<tr>
 		    <td><?= $numb; ?></td>
-			<td><?= $record->id_supplier." / ".$record->nm_supplier; ?></td>
+			<td><?= $record->id_supplier; ?></td>
+			<td><?= $record->nm_supplier; ?></td>
 			<td><?= strtoupper($record->nm_negara); ?></td>
-			<td><span title="<?=$record->alamat?>"><?= $in ?></span></td>
-			<td><?= $record->telpon.' / '.$record->fax; ?></td>
+			<td><?= $record->alamat; ?></td>
+			<td><?= $record->telpon.' / '.$record->fax; ?></td>			
 			<td><?= $record->cp; ?></td>
 			<td><?= $record->hp_cp.' / '.$record->id_webchat; ?></td>
 			<td><?= $record->email; ?></td>
@@ -71,7 +72,7 @@ thead input {
         } ?>
 			</td>
 			<td style="padding-left:20px">
-			    <a class="label label-primary" href="<?= base_url('supplier/produk/'.$record->id_supplier); ?>" >
+			    <a href="<?= base_url('supplier/produk/'.$record->id_supplier); ?>" >
                     PRODUK
                 </a>
 			<?php if ($ENABLE_VIEW) : ?>
@@ -99,6 +100,7 @@ thead input {
 		<tfoot>
 		<tr>
 			<th width="5">#</th>
+			<th>ID Supplier</th>
 			<th>Nama Supplier</th>
 			<th>Negara</th>
 			<th>Alamat</th>
@@ -147,7 +149,7 @@ thead input {
 
 <!-- page script -->
 <script type="text/javascript">
-	$(function() {
+	$(function() {  	
     	$('#example1 thead tr').clone(true).appendTo( '#example1 thead' );
 	    $('#example1 thead tr:eq(1) th').each( function (i) {
 	        var title = $(this).text();
@@ -155,9 +157,9 @@ thead input {
 	        if (title == "#" || title =="Action" ) {
 	        	$(this).html( '' );
 	        }else{
-	        	$(this).html( '<input type="text" />' );
+	        	$(this).html( '<input type="text" />' );        
 	        }
-
+	        
 	        $( 'input', this ).on( 'keyup change', function () {
 	            if ( table.column(i).search() !== this.value ) {
 	                table
@@ -172,12 +174,12 @@ thead input {
 	            }
 	        } );
 	    } );
-
+	 
 	    var table = $('#example1').DataTable( {
 	        orderCellsTop: true,
 	        fixedHeader: true
 	    } );
-    	$("#form-area").hide();
+    	$("#form-area").hide();   
   	});
 
   	function add_data(){
@@ -219,7 +221,7 @@ thead input {
 		            dataType : "json",
 		            type: 'POST',
 		            success: function(msg){
-		                if(msg['delete']=='1'){
+		                if(msg['delete']=='1'){		                	
 		                    swal({
 		                      title: "Terhapus!",
 		                      text: "Data berhasil dihapus",
@@ -264,8 +266,8 @@ thead input {
 
 	function PreviewRekap()
 	{
-		$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Rekap Supplier');
-		tujuan = 'supplier/print_rekap';
+		$('#myModalLabel').html('<span class="fa fa-file-pdf-o"></span> Rekap Supplier');      
+		tujuan = 'supplier/print_rekap';	   	
 	   	$(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
 	}
 </script>

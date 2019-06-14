@@ -23,7 +23,7 @@ class Receiving extends Admin_Controller
     public function __construct()
     {
         parent::__construct();
-        $this->load->library(array('Mpdf', 'upload', 'Image_lib'));
+        $this->load->library(array('upload', 'Image_lib'));
         $this->load->model(array('Receiving/Receiving_model',
                                  'Receiving/Detailreceiving_model',
                                  'Trans_stock/Trans_stock_model',
@@ -65,15 +65,58 @@ class Receiving extends Admin_Controller
         $this->db->from('trans_po_detail');
         $this->db->where('trans_po_detail.no_po', $no);
         $itembarang = $this->db->get()->result();
-
+		$det_Cabang		   = $this->db->get_where('cabang',array('kdcab'=>$this->auth->user_cab()))->result();
         $query_pr_tambahan = $this->db->query("SELECT * FROM `trans_pr_tambahan` WHERE no_pr='$no'");
-
+        $barang    = $this->db->where(array('id_supplier'=>$sup,'barang_stock.kdcab'=>$this->auth->user_cab()))->join("barang_stock","barang_stock.id_barang = supplier_barang.id_barang","left")->get('supplier_barang')->result();
+        $this->template->set('barang',$barang);
+		$this->template->set('cabang',$det_Cabang);
         $this->template->set('supplier', $sup);
         $this->template->set('no_pr', $no);
         $this->template->set('pr_tambahan', $query_pr_tambahan);
         $this->template->set('itembarang', $itembarang);
         $this->template->title('Receiving');
         $this->template->render('konfirmasi');
+    }
+
+
+    public function konfrimasi_tam($nopo)
+    {
+
+        $session = $this->session->userdata('app_session');
+        $tgl = $this->input->post('tglreceive');
+        $id 	= $this->input->post('tambahan_id');
+        $np = $this->db->group_by('no_pr')->get('trans_po_detail')->row();
+              $this->db->trans_begin();
+        for ($i=0; $i < count($id); $i++) {
+          $bar = $this->db->where(array('kdcab'=>$this->auth->user_cab(),'id_barang'=>$id[$i]))->get('barang_stock')->row();
+          $datadet = array('no_po'=>$nopo,
+                            'no_pr'=>$np->no_pr,
+                            'id_barang'=>$id[$i],
+                            'nm_barang'=>$bar->nm_barang,
+                          );
+                          $this->db->insert('trans_po_detail', $datadet);
+        }
+        //print_r($id);
+
+
+
+  		## END JURNAL HO ##
+  		$this->db->trans_complete();
+          if ($this->db->trans_status() === false) {
+              $this->db->trans_rollback();
+              $param = array(
+                  'save' => 0,
+                  'msg' => 'GAGAL, perubahan..!!!',
+                  );
+          } else {
+              $this->db->trans_commit();
+              $param = array(
+                  'save' => 1,
+                  'msg' => 'SUKSES, melakukan perubahaan..!!!',
+                  );
+          }
+
+          echo json_encode($param);
     }
 
     public function konfrimasi_save()
@@ -108,6 +151,7 @@ class Receiving extends Admin_Controller
             'administrator' => $this->input->post('administrator'),
             'head' => $this->input->post('head'),
             'branch' => $this->input->post('branch'),
+            'keterangan_tambahan' => $this->input->post('keterangan_tambahan'),
             );
         $this->db->trans_begin();
         $this->db->insert('trans_receive', $dataheader);
@@ -1016,7 +1060,24 @@ class Receiving extends Admin_Controller
         }
         echo json_encode($param);
     }
+	
+	 public function print_request($norec)
+    {
+      if ($this->uri->segment(5)!="") {
+        $norec = $this->uri->segment(3)."/".$this->uri->segment(4)."/".$this->uri->segment(5);
+      }
+       
+        $rec_data = $this->Receiving_model->find_data('trans_receive', $norec, 'po_no');
+        //$customer = $this->Invoice_model->cek_data(array('id_customer'=>$inv_data->id_customer),'customer');
+        //$detail = $this->Detailreceiving_model->find_all_by(array('nolpb' => $norec));
 
+        $this->template->set('header', $rec_data);
+        $this->template->set('no_po', $norec);
+		//$this->template->set('detail', $detail);
+       $this->template->render('print_data_new');        
+    }
+	## ORIGINAL ##
+	/*
     public function print_request($norec)
     {
       if ($this->uri->segment(5)!="") {
@@ -1040,4 +1101,5 @@ class Receiving extends Admin_Controller
         $this->mpdf->WriteHTML($show);
         $this->mpdf->Output();
     }
+	*/
 }

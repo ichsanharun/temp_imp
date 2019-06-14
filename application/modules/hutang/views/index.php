@@ -26,8 +26,13 @@
       if ($row->rupiah_total == 0) {
         $dolar = 0;
       }else {
+        if ($row->rupiah ==0) {
+          $kurs_dollar_saat_ini = $this->db->where(array('kode'=>'USD'))->get("mata_uang")->row();
+          $dolar = $row->rupiah_total / $kurs_dollar_saat_ini->kurs;
+        }else {
+          $dolar = $row->rupiah_total / $row->rupiah;
+        }
         // code...
-        $dolar = $row->rupiah_total / $row->rupiah;
       }
 
       if ($row->tipe_payment == "persen") {

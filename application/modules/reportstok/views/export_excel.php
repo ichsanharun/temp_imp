@@ -40,7 +40,7 @@ if(empty($results)){
 }else{
   $total = 0;
   $numb=0; foreach($results AS $record){ $numb++;
-    $total += $record->landed_cost*$record->qty_stock;
+    $total += round($record->landed_cost,2)*$record->qty_stock;
     ?>
 <tr>
   <?php
@@ -59,14 +59,14 @@ if(empty($results)){
   <td><?= $record->qty_stock ?></td>
   <td><?= $record->qty_avl ?></td>
   <td><?= $record->qty_rusak ?></td>
-  <td><?= number_format($record->landed_cost) ?></td>
-  <td><?= number_format($record->harga) ?></td>
-  <td><?= number_format($record->landed_cost*$record->qty_stock) ?></td>
+  <td><?= number_format(round($record->landed_cost,2), 2, ',','.') ?></td>
+  <td><?= $record->harga ?></td>
+  <td><?= number_format(round($record->landed_cost,2)*$record->qty_stock, 2, ',','.') ?></td>
   <td>
     <?php if($record->sts_aktif == 'aktif'){ ?>
-      <label class="label label-success">Aktif</label>
+      <strong>Aktif</strong>
     <?php }else{ ?>
-      <label class="label label-danger">Non Aktif</label>
+      Non Aktif
     <?php } ?>
   </td>
 </tr>
@@ -76,7 +76,7 @@ if(empty($results)){
     Total Persediaan
   </td>
   <td>
-    <?=$total?>
+    <?=number_format($total, 2, ',','.')?>
   </td>
 </tr>
 </tbody>

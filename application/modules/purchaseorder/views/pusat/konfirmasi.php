@@ -68,7 +68,7 @@
                         <div class="form-group">
                             <label class="col-sm-4 control-label">NO. PI</label>
                             <div class="col-sm-8" style="padding-top: 11px;">
-                                <input type="text" name="no_pi" id="no_pi" class="form-control input-sm toolt" value="" required="required" data-toggle="tooltip" data-placement="top" title="Required!">
+                                <input type="text" name="no_pi" id="no_pi" class="form-control input-sm" value="">
                             </div>
                         </div>
                         <div class="form-group">
@@ -158,7 +158,7 @@
                             <div class="col-sm-8" style="">
                               <div class="input-group">
                                 <span class="input-group-addon">$</span>
-                                <input type="text" name="shipping" id="shipping"  class="form-control input-sm" value="" required="" onkeyup="this.value = this.value.match(/^[0-9]+$/)" data-toggle="tooltip" data-placement="top" title="Required!">
+                                <input type="text" name="shipping" id="shipping"  class="form-control input-sm" value="" onkeyup="this.value = this.value.match(/^[0-9]+$/)">
                               </div>
                             </div>
                         </div>
@@ -376,11 +376,12 @@
       }else {
         $("input[name='harga_satuan[]']").prop('readonly', false);
       }
-
+	/*
     $(".toolt").click(function(){
      $(".toolt").tooltip('destroy');
     });
-
+	
+	
     $('#no_pi').tooltip({
      disabled: true,
      close: function( event, ui ) { $(this).tooltip('disable'); }
@@ -389,7 +390,7 @@
     $('#no_pi').on('click', function () {
      $(this).tooltip('enable').tooltip('open');
    });
-
+	*/
     var max_fields      = 10; //maximum input boxes allowed
     var wrapper         = $(".input_fields_wrap"); //Fields wrapper
     var add_button      = $(".add_field_button"); //Add button ID
@@ -437,9 +438,10 @@
 
     function get_payterm(){
       var persen          = $("input:radio.radio_logo:checked").val();
-      var nominal         = ($("#total_rupiah").val()/parseFloat(document.getElementById('kurs_rp').value));
-      var values          = $("input[name='pembayaran[]']")
-              .map(function(){return $(this).val();}).get();
+	  var total_rupiah	  = $("#total_rupiah").val().replace(/\,/g,'');
+	  var kurs_rupiah	  = $("#kurs_rp").val().replace(/\,/g,'');
+      var nominal         = parseFloat(total_rupiah) / parseFloat(kurs_rupiah);
+      var values          = $("input[name='pembayaran[]']").map(function(){return $(this).val();}).get();
               //console.log(values);
       var pembayaran_all = 0;
       for (var i = 0; i < values.length; i++) {
@@ -493,56 +495,67 @@
     }
 
     function saveheaderpr(){
-
-      var persen          = $("input:radio.radio_logo:checked").val();
-      var nominal         = rubah($("#total_dollar").text());
-      var values          = $("input[name='pembayaran[]']")
-              .map(function(){return $(this).val();}).get();
+		var test_nominal	= $("#total_dollar").text().replace(/\,/g,'');
+		var persen          = $("input:radio.radio_logo:checked").val();
+		var nominal         = parseFloat(test_nominal).format(2,3,',');
+		var nominal_bayar	= parseFloat(test_nominal);
+		var values          = $("input[name='pembayaran[]']").map(function(){return $(this).val();}).get();
               //console.log(values);
-      var pembayaran_all = 0;
-      for (var i = 0; i < values.length; i++) {
-        pembayaran_all = pembayaran_all + parseFloat(values[i]);
-      }
-
-      if ($('#no_pi').val() == "") {
-        $("#no_pi").tooltip('show');
-        $("html, body").animate({scrollTop: 0}, 1000);
-      }else if ($('#shipping').val() == "") {
-        $("#shipping").tooltip('show');
-        $("html, body").animate({scrollTop: 0}, 1000);
-      }else {
-        if (persen == "persen") {
-          if (pembayaran_all < 100) {
-            swal({
-              title: "Peringatan!",
-              text: "Mohon Isi jumlah persen sampai dengan 100%",
-              type: "warning",
-              timer: 2500,
-              showConfirmButton: false
-            });
-            $("input[name='pembayaran[]']").val(0);
-          }else {
-            save();
-          }
-        }else if (persen == "nominal") {
-          if (pembayaran_all < nominal) {
-            swal({
-              title: "PERINGATAN!",
-              text: "Mohon Isi jumlah nominal sesuai yang tertera hingga $."+nominal,
-              type: "warning",
-              timer: 2500,
-              showConfirmButton: false
-            });
-            $("input[name='pembayaran[]']").val(0);
-          }else {
-            save();
-          }
-        }
-
-      }
-
-
-
+		var pembayaran_all = 0;
+		for (var i = 0; i < values.length; i++) {
+			pembayaran_all = pembayaran_all + parseFloat(values[i]);
+		}
+		var nomor_pi	= $('#no_pi').val();
+		var tipe_ship	= $('#shipping').val();
+		if(nomor_pi=='' || nomor_pi==null){
+			swal({
+			  title: "Peringatan!",
+			  text: "Mohon Isi No PI terlebih dahulu...",
+			  type: "warning",
+			  timer: 2500,
+			  showConfirmButton: false
+			});
+			return false;
+			
+		 }
+		 if(tipe_ship=='' || tipe_ship==null){
+			swal({
+			  title: "Peringatan!",
+			  text: "Mohon Isi Ocean Freight terlebih dahulu...",
+			  type: "warning",
+			  timer: 2500,
+			  showConfirmButton: false
+			});
+			return false;
+			
+		 }
+		 if(persen=='persen'){
+			 if (pembayaran_all < 100) {
+				swal({
+				  title: "Peringatan!",
+				  text: "Mohon Isi jumlah persen sampai dengan 100%",
+				  type: "warning",
+				  timer: 2500,
+				  showConfirmButton: false
+				});
+				$("input[name='pembayaran[]']").val(0);
+				return false;
+			 }
+		 }else{
+			 if (pembayaran_all < nominal_bayar) {
+				swal({
+				  title: "PERINGATAN!",
+				  text: "Mohon Isi jumlah nominal sesuai yang tertera hingga $."+nominal,
+				  type: "warning",
+				  timer: 2500,
+				  showConfirmButton: false
+				});
+				$("input[name='pembayaran[]']").val(0);
+				return false;
+			 }
+		 }
+		 save();
+     
 
     }
     function save(){
@@ -632,8 +645,192 @@
     })
 
     var jum = <?php echo count($itembarang); ?>;
-
+	
+	/*
+	## ALI 05 MEI 2019 ##
+	*/
     $('.harga_beli,.qtyconfirm, #kurs_rp,#kurs_usd,.usd_rubah, .fiskal').on('keyup', function(){
+        var total_qty = 0;
+        var total_harga_beli = 0;
+        var total_dollar = 0;
+        var total_rupiah = 0;
+        var subtot_dollar = 0;
+        var total_fiskal = 0;
+        var total_nofiskal = 0;
+        var total_ppn = 0;
+        var payterm         = $("input:radio.radio_paycon:checked").val();
+        ppn_cek				= document.getElementById('ppnD').value;
+        usdK				= parseFloat($('#kurs_usd').val().replace(/\,/g,''));
+        rpK					= parseFloat($('#kurs_rp').val().replace(/\,/g,''));
+        cek					= $('#kurs_usd').val().replace(/\,/g,'');
+        if(payterm=="dollar"){
+                for (var i = 0; i < jum; i++) {
+                    confirm 		= parseInt($('.qtyconfirm').eq(i).val().replace(/\,/g,''));
+                    harga_beli 		= parseFloat($('.usd_rubah').eq(i).val().replace(/\,/g,''));
+                    fiskal 			= parseFloat($('.fiskal').eq(i).val().replace(/\,/g,''));
+                    noFiskal		= 100-fiskal;
+                    usd_s			= confirm*harga_beli*rpK;
+                    rupiah_s		= usd_s;
+                     //console.log($('.usd').eq(i).val());
+                    $('.usd').eq(i).val(harga_beli);
+                    $('.rupiah').eq(i).val(rupiah_s);
+                    $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
+                    $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
+					
+					$('.rupiah_rubah').eq(i).val(rupiah_s.format(2,3,','));
+					$('.subtotal_rubah').eq(i).val((rupiah_s*fiskal/100).format(2,3,','));
+                    $('.subtotal_no_rubah').eq(i).val((rupiah_s*noFiskal/100).format(2,3,','));
+					
+					
+                    if(ppn_cek=="yes"){
+                        fiskalSubtotal = parseFloat($('.subtotal').eq(i).val().replace(/\,/g,''));
+						$('.subtotal_ppn').eq(i).val((fiskalSubtotal*10)/100);						
+                        $('.subtotal_ppn_rubah').eq(i).val((fiskalSubtotal*0.1).format(2,3,','));				
+                        
+                    }
+					
+                   
+                   
+                    nomerzz					= parseFloat(i)+1;
+					var nil_qty_conf		= parseInt($('.qtyconfirm').eq(i).val().replace(/\,/g,''));
+					
+					var nil_beli			= $('.harga_beli').eq(i).val().replace(/\,/g,'');
+					var nil_usd_rubah		= $('#usd_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_rupiah_rubah	= $('#rupiah_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_subtotal_rubah	= $('#subtotal_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_subno_rubah		= $('#subtotal_no_rubah_'+nomerzz).val().replace(/\,/g,'');
+					
+					if(nil_qty_conf=='' || nil_qty_conf==null){
+						var nil_qty_conf			= 0;
+					}
+					if(nil_beli=='' || nil_beli==null){
+						var nil_beli			= 0;
+					}
+					
+					if(nil_usd_rubah=='' || nil_usd_rubah==null){
+						var nil_usd_rubah		= 0;
+					}
+					if(nil_rupiah_rubah=='' || nil_rupiah_rubah==null){
+						var nil_rupiah_rubah	= 0;
+					}
+					if(nil_subtotal_rubah=='' || nil_subtotal_rubah==null){
+						var nil_subtotal_rubah	= 0;
+					}
+					if(nil_subno_rubah=='' || nil_subno_rubah==null){
+						var nil_subno_rubah		= 0;
+					}
+					
+					var total_qty		= parseInt(total_qty) + nil_qty_conf;
+					subtot_dollar		+= (parseInt(nil_qty_conf) * parseFloat(nil_usd_rubah));
+                    total_harga_beli	+= parseFloat(nil_beli);
+                    total_dollar 		+= parseFloat(nil_usd_rubah);
+                    total_rupiah 		+= parseFloat(nil_rupiah_rubah);
+                    total_fiskal 		+= parseFloat(nil_subtotal_rubah);
+                    total_nofiskal 		+= parseFloat(nil_subno_rubah);
+					
+                    if(ppn_cek=="yes"){
+						var total_ppn	= parseFloat(total_ppn) + parseFloat($('.subtotal_ppn').eq(i).val().replace(/\,/g,''));
+						$('#total_ppn').val(total_ppn);
+                        $('#total_ppn_rubah').val(total_ppn.format(2,3,','));
+						
+                    }
+					
+					$('#total_qty').text(total_qty.format(0,3,','));
+					$('#total_harga_beli').text(total_harga_beli.format(2,3,','));
+					var text_dollar		= parseFloat(total_dollar.toFixed(2)).format(2,3,',')+"<br>"+"@Total $."+parseFloat(subtot_dollar.toFixed(2)).format(2,3,',');
+					$('#total_dollar').html(text_dollar);
+                    $('#total_rupiah').val(total_rupiah);
+                    $('#total_fiskal').val(total_fiskal);
+                    $('#total_nofiskal').val(total_nofiskal);					
+					$('#total_rupiah_rubah').val(total_rupiah.format(2,3,','));
+					$('#total_fiskal_rubah').val(total_fiskal.format(2,3,','));
+					$('#total_nofiskal_rubah').val(total_nofiskal.format(2,3,','));
+					
+                }
+            }else{
+                for (var i = 0; i < jum; i++) {
+                    confirm 		= parseInt($('.qtyconfirm').eq(i).val().replace(/\,/g,''));
+                    harga_beli 		= parseFloat($('.harga_beli').eq(i).val().replace(/\,/g,''));
+                    fiskal 			= parseFloat($('.fiskal').eq(i).val().replace(/\,/g,''));
+                    noFiskal		= 100-fiskal;
+                    usd_s			= (confirm*harga_beli)/usdK;
+                    rupiah_s		= usd_s*rpK;
+					var rupiah_des	= rupiah_s.toFixed(2);
+                    $('.usd').eq(i).val(usd_s);
+                    $('.rupiah').eq(i).val(rupiah_s);
+                    $('.subtotal').eq(i).val(rupiah_s*fiskal/100);
+                    $('.subtotal_no').eq(i).val(rupiah_s*noFiskal/100);
+
+					$('.usd_rubah').eq(i).val(usd_s.format(2,3,','));
+					$('.rupiah_rubah').eq(i).val(rupiah_s.format(2,3,','));
+					$('.subtotal_rubah').eq(i).val((rupiah_des*fiskal/100).format(2,3,','));
+                    $('.subtotal_no_rubah').eq(i).val((rupiah_des*noFiskal/100).format(2,3,','));
+                   
+                    if(ppn_cek=="yes"){
+                        fiskalSubtotal = parseFloat($('.subtotal').eq(i).val().replace(/\,/g,''));
+						
+						$('.subtotal_ppn').eq(i).val((fiskalSubtotal.toFixed(2)*10)/100);						
+                        $('.subtotal_ppn_rubah').eq(i).val((fiskalSubtotal.toFixed(2)*0.1).format(2,3,','));
+						
+                    }
+                    nomerzz=parseFloat(i)+1;
+					var nil_beli			= $('#harga_beli_'+nomerzz).val().replace(/\,/g,'');
+					var nil_usd_rubah		= $('#usd_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_rupiah_rubah	= $('#rupiah_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_subtotal_rubah	= $('#subtotal_rubah_'+nomerzz).val().replace(/\,/g,'');
+					var nil_subno_rubah		= $('#subtotal_no_rubah_'+nomerzz).val().replace(/\,/g,'');
+					
+					if(nil_beli=='' || nil_beli==null){
+						var nil_beli			= 0;
+					}
+					if(nil_usd_rubah=='' || nil_usd_rubah==null){
+						var nil_usd_rubah		= 0;
+					}
+					if(nil_rupiah_rubah=='' || nil_rupiah_rubah==null){
+						var nil_rupiah_rubah	= 0;
+					}
+					if(nil_subtotal_rubah=='' || nil_subtotal_rubah==null){
+						var nil_subtotal_rubah	= 0;
+					}
+					if(nil_subno_rubah=='' || nil_subno_rubah==null){
+						var nil_subno_rubah		= 0;
+					}
+					
+                    total_harga_beli	+= parseFloat(nil_beli);
+                    total_dollar 		+= parseFloat(nil_usd_rubah);
+                    total_rupiah 		+= parseFloat(nil_rupiah_rubah);
+                    total_fiskal 		+= parseFloat(nil_subtotal_rubah);
+                    total_nofiskal 		+= parseFloat(nil_subno_rubah);
+					
+					var total_qty	= parseInt(total_qty) +  parseInt($('.qtyconfirm').eq(i).val().replace(/\,/g,''));
+					$('#total_qty').text(total_qty.format(0,3,','));
+					
+                    if(ppn_cek=="yes"){
+						total_ppn	+= parseFloat($('.subtotal_ppn').eq(i).val().replace(/\,/g,''));
+						$('#total_ppn').val(total_ppn);
+                        $('#total_ppn_rubah').val(total_ppn.format(2,3,','));
+						
+                    }
+
+                }
+
+                $('#total_harga_beli').text(total_harga_beli.format(2,3,','));
+                $('#total_dollar').text(total_dollar.format(2,3,','));
+                $('#total_rupiah').val(total_rupiah);
+                $('#total_fiskal').val(total_fiskal);
+                $('#total_nofiskal').val(total_nofiskal);
+
+				$('#total_rupiah_rubah').val(total_rupiah.format(2,3,','));
+                $('#total_fiskal_rubah').val(total_fiskal.format(2,3,','));
+                $('#total_nofiskal_rubah').val(total_nofiskal.format(2,3,','));
+        }
+
+
+    });
+
+	/*
+	## ORIGINAL ##
+	$('.harga_beli,.qtyconfirm, #kurs_rp,#kurs_usd,.usd_rubah, .fiskal').on('keyup', function(){
         var total_qty = 0;
         var total_harga_beli = 0;
         var total_dollar = 0;
@@ -762,8 +959,8 @@
         }
 
 
-    });
-
+    });	
+	*/
     function formatCurrency(c){
       var   number_string = c.toString(),
         sisa    = number_string.length % 3,
@@ -787,4 +984,11 @@
         a=ini.toString().replace(".","");
         return a;
     }
+	
+	Number.prototype.format = function(n, x, s, c) {
+		var re = '\\d(?=(\\d{' + (x || 3) + '})+' + (n > 0 ? '\\D' : '$') + ')',
+			num = this.toFixed(Math.max(0, ~~n));
+
+		return (c ? num.replace('.', c) : num).replace(new RegExp(re, 'g'), '$&' + (s || ','));
+	};
 </script>

@@ -85,20 +85,21 @@ class Purchaseorder_pusat extends Admin_Controller
 
     public function konfirmasi_save()
     {
+		//echo"<pre>";print_r($this->input->post());exit;
         $session = $this->session->userdata('app_session');
         $nopo = $this->input->post('no_pr');
 
         $headerpr = array(
-            'fiskal' => $this->input->post('total_fiskal'),
-            'non_fiskal' => $this->input->post('total_nofiskal'),
-            'ppn' => $this->input->post('total_ppn'),
-            'dollar' => $this->input->post('kurs_usd'),
-            'rupiah' => $this->input->post('kurs_rp'),
-            'rupiah_total' => $this->input->post('total_rupiah'),
-            'no_pi' => $this->input->post('no_pi'),
-            'status' => 'PI',
-            'shipping' => $this->input->post('shipping'),
-            'status_cabang' => 'HUTANG'
+            'fiskal' 			=> str_replace(',','',$this->input->post('total_fiskal')),
+            'non_fiskal' 		=> str_replace(',','',$this->input->post('total_nofiskal')),
+            'ppn' 				=> str_replace(',','',$this->input->post('total_ppn')),
+            'dollar' 			=> str_replace(',','',$this->input->post('kurs_usd')),
+            'rupiah' 			=> str_replace(',','',$this->input->post('kurs_rp')),
+            'rupiah_total' 		=> str_replace(',','',$this->input->post('total_rupiah')),
+            'no_pi' 			=> $this->input->post('no_pi'),
+            'status' 			=> 'PI',
+            'shipping' 			=> $this->input->post('shipping'),
+            'status_cabang' 	=> 'HUTANG'
         );
 
         $this->db->trans_begin();
@@ -109,20 +110,20 @@ class Purchaseorder_pusat extends Admin_Controller
 
         for ($i = 0; $i < $jumlah; ++$i) {
             ++$no;
-            if ($this->input->post('kurs_usd') == 0) {
-                $hrg_satuan = $_POST['usd'][$i];
+            if (str_replace(',','',$this->input->post('kurs_usd')) == 0) {
+                $hrg_satuan = str_replace(',','',$_POST['usd'][$i]);
             } else {
-                $hrg_satuan = $_POST['harga_satuan'][$i];
+                $hrg_satuan = str_replace(',','',$_POST['harga_satuan'][$i]);
             }
             $detil = array(
-                        'qty_acc' => $_POST['qty_acc'][$i],
-                        'harga_satuan' => $hrg_satuan,
-                        'persen_fiskal' => $_POST['fiskal'][$i],
-                        'fiskal' => $_POST['subtotal'][$i],
-                        'non_fiskal' => $_POST['subtotal_no'][$i],
-                        'ppn' => $_POST['subtotal_ppn'][$i],
-                        'harga_rp' => $_POST['rupiah'][$i],
-                    );
+					'qty_acc' 		=> str_replace(',','',$_POST['qty_acc'][$i]),
+					'harga_satuan' 	=> $hrg_satuan,
+					'persen_fiskal' => str_replace(',','',$_POST['fiskal'][$i]),
+					'fiskal' 		=> str_replace(',','',$_POST['subtotal'][$i]),
+					'non_fiskal' 	=> str_replace(',','',$_POST['subtotal_no'][$i]),
+					'ppn' 			=> str_replace(',','',$_POST['subtotal_ppn'][$i]),
+					'harga_rp' 		=> str_replace(',','',$_POST['rupiah'][$i]),
+				);
             $iddet = $_POST['idet'][$i];
             $this->Purchaseorder_pusat_model->update_po_detail($iddet, $detil);
         }
@@ -133,23 +134,25 @@ class Purchaseorder_pusat extends Admin_Controller
           for ($i = 0; $i < $jumlahx; ++$i) {
             ++$no;
             $detil = array(
-              'no_po' => "$nopo",
-              'persen' => $_POST['pembayaran'][$i],
+              'no_po' 			=> "$nopo",
+              'persen' 			=> $_POST['pembayaran'][$i],
               'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
-              'status' => 'open',
-              'tipe_payment'=>'persen'
+              'status' 			=> 'open',
+              'tipe_payment'	=>'persen'
             );
             $this->Purchaseorder_pusat_model->insert_po_payment($detil);
           }
         }else {
           for ($i = 0; $i < $jumlahx; ++$i) {
             ++$no;
+            $pers = $_POST['pembayaran'][$i]/str_replace(',','',$this->input->post('total_rupiah'))*100;
             $detil = array(
-              'no_po' => "$nopo",
-              'nominal' => $_POST['pembayaran'][$i],
+              'no_po' 			=> "$nopo",
+              'persen' 			=> $pers,
+              'nominal' 		=> $_POST['pembayaran'][$i],
               'perkiraan_bayar' => $_POST['perkiraan_bayar'][$i],
-              'status' => 'open',
-              'tipe_payment'=>'nominal'
+              'status' 			=> 'open',
+              'tipe_payment'	=> 'nominal'
             );
             $this->Purchaseorder_pusat_model->insert_po_payment($detil);
           }

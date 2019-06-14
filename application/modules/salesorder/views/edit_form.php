@@ -882,43 +882,87 @@
     //sethitung();
     var formdata = $("#form-header-so,#form-so").serialize();
     if($('#idcustomer').val() != "" && $('#pic').val() != "" && $('#top').val() != "" && $('#tglso').val() != "" && $('#idsalesman').val() != ""){
-      $.ajax({
-        url: siteurl+"salesorder/saveso_edit",
-        dataType : "json",
-        type: 'POST',
-        data: formdata,
-        success: function(result){
-          if(result.save=='1'){
-            swal({
-              title: "Sukses!",
-              text: result['msg'],
-              type: "success",
-              timer: 1500,
-              showConfirmButton: false
-            });
-            setTimeout(function(){
-              window.location.href=siteurl+'salesorder';
-            },1600);
-          } else {
-            swal({
-              title: "Gagal!",
-              text: "Data Gagal Di Simpan",
-              type: "error",
-              timer: 1500,
-              showConfirmButton: false
-            });
-          };
+      if ($('#totalso').val() =='' || $('#totalso').val() == 0) {
+
+
+        swal({
+          title: "Gagal!",
+          text: "Server/Jaringan tidak stabil atau anda tidak memasukkan data dengan valid, silahkan refresh!",
+          type: "error",
+          showConfirmButton: true,
+          closeOnConfirm: false,
+          closeOnCancel: false,
+          showLoaderOnConfirm: true
         },
-        error: function(){
+        function(isConfirm) {
+          window.location.href=siteurl+'salesorder/editso/<?=$this->uri->segment(3)?>';
+        });
+
+
+      }else {
+        var empty = 0;
+        $("form#form-so :input").each(function(){
+          var input = $(this); // This is the jquery object of the input, do what you will
+          console.log($(this).attr('name') + " = " + $(this).val());
+          if ($(this).attr('name') == 'subtotal[]' && $(this).val() == 0) {
+            empty +=1;
+
+          }
+        });
+        if (empty>0) {
           swal({
             title: "Gagal!",
-            text: "Ajax Data Gagal Di Proses",
+            text: "Server/Jaringan tidak stabil atau anda tidak memasukkan data dengan valid, silahkan refresh!",
             type: "error",
-            timer: 1500,
-            showConfirmButton: false
+            showConfirmButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: false,
+            showLoaderOnConfirm: true
+          },
+          function(isConfirm) {
+            window.location.href=siteurl+'salesorder/editso/<?=$this->uri->segment(3)?>';
+          });
+        }else {
+          $.ajax({
+            url: siteurl+"salesorder/saveso_edit",
+            dataType : "json",
+            type: 'POST',
+            data: formdata,
+            success: function(result){
+              if(result.save=='1'){
+                swal({
+                  title: "Sukses!",
+                  text: result['msg'],
+                  type: "success",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
+                setTimeout(function(){
+                  window.location.href=siteurl+'salesorder';
+                },1600);
+              } else {
+                swal({
+                  title: "Gagal!",
+                  text: "Data Gagal Di Simpan",
+                  type: "error",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
+              };
+            },
+            error: function(){
+              swal({
+                title: "Gagal!",
+                text: "Ajax Data Gagal Di Proses",
+                type: "error",
+                timer: 1500,
+                showConfirmButton: false
+              });
+            }
           });
         }
-      });
+
+      }
     }else{
       swal({
         title: "Peringatan!",

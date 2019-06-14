@@ -1,57 +1,132 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
-<div class="box">
-    <div class="box-body">
-        <table id="example1" class="table table-bordered table-striped">
-        <thead>
-          <tr>
-              <th width="2%">#</th>
-              <th width="15%">NO. Invoice</th>
-              <th>Nama Customer</th>
-              <th>Tanggal</th>
-              <th>Jatuh Tempo</th>
-              <th>Nama Salesman</th>
-              <th>Total</th>
-              <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php if(@$results){ ?>
-            <?php
-            $n = 1;
-            foreach(@$results as $kso=>$vso){
-                $no = $n++;
-            ?>
-            <tr>
-              <td><center><?php echo $no?></center></td>
-              <td><center><?php echo $vso->no_invoice?></center></td>
-              <td><?php echo $vso->nm_customer?></td>
-              <td><center><?php echo date('d M Y',strtotime($vso->tanggal_invoice))?></center></td>
-              <td><center><?php echo date('d M Y',strtotime($vso->tgljatuhtempo))?></center></td>
-              <td><?php echo $vso->nm_salesman?></td>
-              <td class="text-right"><?php echo formatnomor($vso->hargajualtotal)?></td>
-                <td>
-                  <button type="button" class="btn btn-sm btn-info" onclick="claim('<?php echo $vso->no_invoice?>')">
-                      <span class="glyphicon glyphicon-edit"></span> CLAIM
-                  </button>
-                </td>
-            </tr>
-            <?php } ?>
-          <?php } ?>
-        </tbody>
-        <tfoot>
-          <tr>
-              <th width="2%">#</th>
-              <th width="15%">NO. Invoice</th>
-              <th>Nama Customer</th>
-              <th>Tanggal</th>
-              <th>Jatuh Tempo</th>
-              <th>Nama Salesman</th>
-              <th>Total</th>
-              <th>Aksi</th>
-          </tr>
-        </tfoot>
-        </table>
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+        <li class="active"><a href="#INV" data-toggle="tab" aria-expanded="true" id="data">List INV</a></li>
+        <li class=""><a href="#RK" data-toggle="tab" aria-expanded="false" id="data_retur">List Retur</a></li>
+    </ul>
+    <!-- /.tab-content -->
+    <div class="tab-content">
+        <div class="tab-pane active" id="INV">
+            <!-- form start-->
+            <div class="box">
+              <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th width="2%">#</th>
+                      <th width="15%">NO. Invoice</th>
+                      <th>Nama Customer</th>
+                      <th>Tanggal</th>
+                      <th>Jatuh Tempo</th>
+                      <th>Nama Salesman</th>
+                      <th>Total</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(@$results){ ?>
+                      <?php
+                      $n = 1;
+                      foreach(@$results as $kso=>$vso){
+                        $no = $n++;
+                        ?>
+                        <tr>
+                          <td><center><?php echo $no?></center></td>
+                          <td><center><?php echo $vso->no_invoice?></center></td>
+                          <td><?php echo $vso->nm_customer?></td>
+                          <td><center><?php echo date('d M Y',strtotime($vso->tanggal_invoice))?></center></td>
+                          <td><center><?php echo date('d M Y',strtotime($vso->tgljatuhtempo))?></center></td>
+                          <td><?php echo $vso->nm_salesman?></td>
+                          <td class="text-right"><?php echo formatnomor($vso->hargajualtotal)?></td>
+                          <td>
+                            <button type="button" class="btn btn-sm btn-info" onclick="claim('<?php echo $vso->no_invoice?>')">
+                              <span class="glyphicon glyphicon-edit"></span> CLAIM
+                            </button>
+                          </td>
+                        </tr>
+                      <?php } ?>
+                    <?php } ?>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th width="2%">#</th>
+                      <th width="15%">NO. Invoice</th>
+                      <th>Nama Customer</th>
+                      <th>Tanggal</th>
+                      <th>Jatuh Tempo</th>
+                      <th>Nama Salesman</th>
+                      <th>Total</th>
+                      <th>Aksi</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <!-- Data Produk -->
+        </div>
+
+        <div class="tab-pane" id="RK">
+            <!-- form start-->
+            <div class="box">
+              <div class="box-body">
+                <table id="example1" class="table table-bordered table-striped">
+                  <thead>
+                    <tr>
+                      <th width="2%">#</th>
+                      <th width="15%">NO. Retur</th>
+                      <th>Nama Customer</th>
+                      <th>Tanggal Retur</th>
+                      <th>Tanggal Kirim</th>
+                      <th>Nama Salesman</th>
+
+                      <th>Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <?php if(@$rk){ ?>
+                      <?php
+                      $n = 1;
+                      foreach(@$rk as $kso=>$vso){
+                        $no = $n++;
+                        ?>
+                        <tr>
+                          <td><center><?php echo $no?></center></td>
+                          <td><center><?php echo $vso->no_invoice?></center></td>
+                          <td><?php echo $vso->nm_customer?></td>
+                          <td><center><?php echo date('d M Y',strtotime($vso->tgl_retur))?></center></td>
+                          <td><center><?php echo date('d M Y',strtotime($vso->tgl_kirim))?></center></td>
+                          <td><?php echo $vso->nm_salesman?></td>
+
+                          <td>
+                            <button type="button" class="btn btn-sm btn-info" onclick="view('<?php echo $vso->no_retur?>')">
+                              <span class="glyphicon glyphicon-view"></span> View
+                            </button>
+                          </td>
+                        </tr>
+                      <?php } ?>
+                    <?php } ?>
+                  </tbody>
+                  <tfoot>
+                    <tr>
+                      <th width="2%">#</th>
+                      <th width="15%">NO. Retur</th>
+                      <th>Nama Customer</th>
+                      <th>Tanggal Retur</th>
+                      <th>Tanggal Kirim</th>
+                      <th>Nama Salesman</th>
+
+                      <th>Aksi</th>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+            <!-- Data Produk -->
+        </div>
+
+
     </div>
+    <!-- /.tab-content -->
 </div>
 
 <!-- Modal -->
@@ -91,7 +166,7 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">
         <span class="glyphicon glyphicon-remove"></span>  Tutup</button>
         <button type="button" class="btn btn-warning" type="button" id="savekonfirmdo" onclick="savekonfirmdo()">
-        <span class="fa fa-save"></span>  Save Konfirmasi</button>
+        <span class="fa fa-save"></span>  Proses Retur</button>
       </div>
     </div>
   </div>
@@ -155,7 +230,7 @@
     }
     function claim(nodo){
       $('#savekonfirmdo').show();
-      var url = siteurl+'returndo_claim/setkonfirmasido';
+      var url = siteurl+'returndo_claim/setkonfirmasi';
       $('#dialog-konfirm').modal('show');
       $('#select-konfirm-do').val('');
       $('#nodo_konfirm').val(nodo);
@@ -163,6 +238,11 @@
         $('#div-konfirm-do-detail').html(result);
       });
     }
+
+    function view(nor){
+      window.open(siteurl+"returndo_claim/"+"print_sj/"+nor);
+    }
+
 
     function viewkonfirmdo(nodo){
       $('#savekonfirmdo').hide();
@@ -191,10 +271,12 @@
                     timer: 2000,
                     showConfirmButton: false
                   });
-                  setTimeout(function(){
-                    $('#dialog-konfirm').modal('hide');
-                    window.location.reload();
-                  }, 2500);
+                  if (result.no_retur != '') {
+                    setTimeout(function(){
+                      //$('#dialog-konfirm').modal('hide');
+                      window.location.href=siteurl+"returndo_claim/csjr?n="+result.no_retur;
+                    }, 2500);
+                  }
                 }else{
                   swal({
                     title: "Peringatan!",
@@ -207,6 +289,13 @@
             },
             error: function(xhr,st,msg){
               console.log(xhr);
+              swal({
+                title: "Peringatan!",
+                text: result.pesan,
+                type: result.type,
+                timer: 2500,
+                showConfirmButton: false
+              });
             }
         });
     }

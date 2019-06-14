@@ -42,24 +42,192 @@ class Reportpenjualan extends Admin_Controller {
 
     public function index()
     {
-        /*
-        $this->auth->restrict($this->viewPermission);
-        $cabang = $this->Cabang_model->order_by('kdcab','ASC')->find_all();
-        $data = $this->Reportstok_model
-        ->join("cabang","barang_stock.kdcab = cabang.kdcab","left")
-        ->find_all();
-        $this->template->set('results', $data);
-        $this->template->set('cabang', $cabang);
-        */
-        $session = $this->session->userdata('app_session');
-        $kdcab = $session['kdcab'];
+       $session = $this->session->userdata('app_session');
+       $kdcab = $session['kdcab'];
+	   if($this->input->post()){
+		   $filter_by		= $this->input->post('filter_by');
+		   $filter_value	= $this->input->post('filter_value');
+		   $periode_awal	= $this->input->post('periode_awal');
+		   $periode_akhir	= $this->input->post('periode_akhir');
+	   }else{
+		   $filter_by		= "";
+		   $filter_value	= "";
+		   $periode_awal	= date('Y-m-01');
+		   $periode_akhir	= date('Y-m-d');
+	   }
+	   $order_by	="tanggal_invoice";
+	   $WHERE		= "kdcab='".$kdcab."' AND hargajualtotal !=0 AND (flag_cancel IS NULL OR flag_cancel='' OR flag_cancel='N')";
+	   $rows_filter	= array();
+	   if($filter_by){
+		   $rows_filter	=$this->get_filter_data($filter_by,'N');
+		   if($filter_value){
+			   if(!empty($WHERE))$WHERE	.=" AND ";
+			   if($filter_by=='by_customer'){
+				   $order_by	="nm_customer";
+				   $WHERE		.="id_customer='".$filter_value."'";
+			   }else{
+				   $order_by	="nm_salesman";
+				   $WHERE		.="id_salesman='".$filter_value."'";
+			   }
+		   }
 
-        $data = $this->Invoice_model->where(array('kdcab'=>$kdcab))->order_by('no_invoice','DESC')->find_all();
+	   }
+	   if(!empty($periode_awal) && !empty($periode_akhir)){
+		    if(!empty($WHERE))$WHERE	.=" AND ";
+			 $WHERE		.="(tanggal_invoice BETWEEN '".$periode_awal."' AND '".$periode_akhir."')";
+	   }
+
+
+  		$Qry_Invoice	= "SELECT * FROM trans_invoice_header WHERE ".$WHERE." ORDER BY ".$order_by." ASC";
+  		$data			= $this->db->query($Qry_Invoice)->result();
+        //$data = $this->Invoice_model->where($WHERE)->order_by('no_invoice','DESC')->find_all();
+        $penanda = $this->input->post('ket');
+        $this->template->set('ket', $penanda);
+        $this->template->title('Report Penjualan');
+        $this->template->set('results', $data);
+  		$this->template->set('periode_awal', $periode_awal);
+  		$this->template->set('periode_akhir', $periode_akhir);
+  		$this->template->set('filter_by', $filter_by);
+  		$this->template->set('filter_value', $filter_value);
+  		$this->template->set('rows_filter', $rows_filter);
+        $this->template->render('list_baru');
+    }
+
+    public function get_filter()
+    {
+       $session = $this->session->userdata('app_session');
+       $kdcab = $session['kdcab'];
+	   if($this->input->post()){
+		   $filter_by		= $this->input->post('filter_by');
+		   $filter_value	= $this->input->post('filter_value');
+		   $periode_awal	= $this->input->post('periode_awal');
+		   $periode_akhir	= $this->input->post('periode_akhir');
+	   }else{
+		   $filter_by		= "";
+		   $filter_value	= "";
+		   $periode_awal	= date('Y-m-01');
+		   $periode_akhir	= date('Y-m-d');
+	   }
+	   $order_by	="tanggal_invoice";
+	   $WHERE		= "kdcab='".$kdcab."' AND hargajualtotal !=0 AND (flag_cancel IS NULL OR flag_cancel='' OR flag_cancel='N')";
+	   $rows_filter	= array();
+	   if($filter_by){
+		   $rows_filter	=$this->get_filter_data($filter_by,'N');
+		   if($filter_value){
+			   if(!empty($WHERE))$WHERE	.=" AND ";
+			   if($filter_by=='by_customer'){
+				   $order_by	="nm_customer";
+				   $WHERE		.="id_customer='".$filter_value."'";
+			   }else{
+				   $order_by	="nm_salesman";
+				   $WHERE		.="id_salesman='".$filter_value."'";
+			   }
+		   }
+
+	   }
+	   if(!empty($periode_awal) && !empty($periode_akhir)){
+		    if(!empty($WHERE))$WHERE	.=" AND ";
+			 $WHERE		.="(tanggal_invoice BETWEEN '".$periode_awal."' AND '".$periode_akhir."')";
+	   }
+
+
+
+  		$Qry_Invoice	= "SELECT * FROM trans_invoice_header WHERE ".$WHERE." ORDER BY ".$order_by." ASC";
+  		$data			= $this->db->query($Qry_Invoice)->result();
+        //$data = $this->Invoice_model->where($WHERE)->order_by('no_invoice','DESC')->find_all();
 
         $this->template->title('Report Penjualan');
         $this->template->set('results', $data);
-        $this->template->render('list');
+
+  		$this->template->set('periode_awal', $periode_awal);
+  		$this->template->set('periode_akhir', $periode_akhir);
+  		$this->template->set('filter_by', $filter_by);
+  		$this->template->set('filter_value', $filter_value);
+  		$this->template->set('rows_filter', $rows_filter);
+        $this->template->render('list_baru');
     }
+
+	public function excel_penjualan($periode_awal,$periode_akhir,$filter_by,$filter_value)
+    {
+       $session = $this->session->userdata('app_session');
+       $kdcab = $session['kdcab'];
+	   $Judul		= "LAPORAN PENJUALAN";
+	   $order_by	="tanggal_invoice";
+	   $WHERE		= "kdcab='".$kdcab."' AND hargajualtotal !=0 AND (flag_cancel IS NULL OR flag_cancel='' OR flag_cancel='N')";
+	   $rows_filter	= array();
+	   if($filter_by !='ALL'){
+		   $rows_filter	=$this->get_filter_data($filter_by,'N');
+		   if($filter_value !='ALL'){
+			   if(!empty($WHERE))$WHERE	.=" AND ";
+			   if($filter_by=='by_customer'){
+				   $Judul		.=" (Cust : ".$rows_filter[$filter_value].")";
+				   $order_by	="nm_customer";
+				   $WHERE		.="id_customer='".$filter_value."'";
+			   }else{
+				   $Judul		.=" (Sales : ".$rows_filter[$filter_value].")";
+				   $order_by	="nm_salesman";
+				   $WHERE		.="id_salesman='".$filter_value."'";
+			   }
+		   }
+
+	   }
+	   if(!empty($periode_awal) && !empty($periode_akhir)){
+		   $Judul		.=" PERIODE ".date('d M Y',strtotime($periode_awal))." - ".date('d M Y',strtotime($periode_akhir));
+		    if(!empty($WHERE))$WHERE	.=" AND ";
+			 $WHERE		.="(tanggal_invoice BETWEEN '".$periode_awal."' AND '".$periode_akhir."')";
+	   }
+
+
+		$Qry_Invoice	= "SELECT * FROM trans_invoice_header WHERE ".$WHERE." ORDER BY ".$order_by." ASC";
+		$data			= $this->db->query($Qry_Invoice)->result();
+        //$data = $this->Invoice_model->where($WHERE)->order_by('no_invoice','DESC')->find_all();
+
+        $this->template->set('results', $data);
+		$this->template->set('judul', $Judul);
+        $this->template->render('excel_penjualan');
+    }
+
+	function get_filter_data($kategori='',$tipe='Y'){
+		$session = $this->session->userdata('app_session');
+        $kdcab = $session['kdcab'];
+		if($kategori=='by_customer'){
+			$datafilter = $this->Invoice_model->get_data(array('kdcab'=>$kdcab),'customer');
+		}else if($kategori=='by_sales'){
+			$datafilter = $this->Salesorder_model->pilih_marketing($kdcab)->result();
+		}
+
+		$arr_Data	=  array();
+		if($datafilter){
+			foreach($datafilter as $key=>$vals){
+				if($kategori=='by_customer'){
+					$kode		= $vals->id_customer;
+					$nilai		= $vals->nm_customer;
+				}else{
+					$kode		= $vals->id_karyawan;
+					$nilai		= $vals->nama_karyawan;
+				}
+				$arr_Data[$kode]	= $nilai;
+			}
+		}
+
+		if($tipe=='N'){
+			return $arr_Data;
+		}else{
+			$temp_data	="<select name='filter_value' id='filter_value' class='form-control input-md'>";
+			if($arr_Data){
+				$temp_data	.="<option value=''>Silahkan Pilih</option>";
+				foreach($arr_Data as $ky=>$vals){
+					$temp_data	.="<option value='$ky'>$vals</option>";
+				}
+			}else{
+				$temp_data	.="<option value=''>Empty List</option>";
+			}
+			$temp_data	.="</select>";
+			echo $temp_data;
+
+		}
+
+	}
 
     public function filter()
       {
@@ -352,7 +520,7 @@ class Reportpenjualan extends Admin_Controller {
       $kdcab = $session['kdcab'];
 
       $filter = $this->uri->segment(5);
-      //$param = $this->input->get('param');
+      $param = $this->uri->segment(6);
       $where ='';
       if($filter == "all"){
           $where = "";
@@ -386,10 +554,20 @@ class Reportpenjualan extends Admin_Controller {
       ->find_all();
 
 
+      $datahead = $this->Detailinvoice_model
+
+      ->where("tanggal_invoice BETWEEN '".$this->uri->segment(3)."' AND '".$this->uri->segment(4)."' AND kdcab='".$kdcab."' ".$where)
+      ->join("trans_invoice_header", "trans_invoice_detail.no_invoice = trans_invoice_header.no_invoice", "left")
+      ->group_by('trans_invoice_header.no_invoice')
+
+      ->find_all();
+
+
       $data = array(
   			'title2'		     => 'Report',
         'data_jenis'		 => $data_jenis,
-  			'results'	       => $dataexcel
+  			'results'	       => $dataexcel,
+        'results_head'	       => $datahead
   		);
       /*$this->template->set('results', $data_so);
       $this->template->set('head', $sts);

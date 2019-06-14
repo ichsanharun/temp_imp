@@ -30,6 +30,8 @@
                   <th>QTY PENDING</th>
                   <th>QTY CANCEL</th>
                   <th>QTY SUPPLY</th>
+                  <th>ST. CREATE</th>
+                  <th>ST. MODIFY</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,6 +60,8 @@
                   <td><?= $row->qty_pending ?> </td>
                   <td><?= $row->qty_cancel ?> </td>
                   <td><?= $row->qty_supply ?> </td>
+                  <td><?= $row->con ?> </td>
+                  <td><?= $row->mon ?> </td>
                 </tr>
                 <?php } ?>
                 <?php } ?>

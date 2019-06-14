@@ -1,12 +1,30 @@
 <link rel="stylesheet" href="<?= base_url('assets/plugins/datatables/dataTables.bootstrap.css')?>">
 <!-- FORM HEADER SO-->
+<style>
+.fade-in {
+	opacity: 1;
+	animation-name: fadeInOpacity;
+	animation-iteration-count: 1;
+	animation-timing-function: ease-in;
+	animation-duration: 0.5s;
+}
+
+@keyframes fadeInOpacity {
+	0% {
+		opacity: 0;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+</style>
 <div class="nav-tabs-salesorder">
     <div class="tab-content">
         <div class="tab-pane active" id="salesorder">
             <div class="box box-primary">
                 <form id="form-header-so" method="post">
                 <div class="form-horizontal">
-                <div class="box-body">
+                <div class="box-body" id="fheader">
                   <!-- Header Session -->
                     <?php
                     $headersession = $this->session->userdata('header_so');
@@ -20,7 +38,7 @@
                     }
                     ?>
                   <!-- Header Session -->
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 col-xs-12">
                       <!-- Data Customer -->
                         <div class="form-group">
                             <label for="idcustomer" class="col-sm-4 control-label">Nama Customer <font size="4" color="red"><B>*</B></font></label>
@@ -130,7 +148,7 @@
                       <!-- Data PIC -->
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-6 col-xs-12">
                       <div class="form-horizontal">
 
                         <!-- Data TOP -->
@@ -246,18 +264,14 @@
     </div>
 </div>
 <!-- END FORM HEADER SO-->
-<div class="box box-default ">
+<div class="box box-default fade-in" id="fdetail" style="display:none">
   <div class="box-header">
     <h3>Form SO Detail</h3>
 	</div>
   <hr style="border:1px  solid #ddd">
   <form id="form-so" method="post">
-    <?php
-    //$js_array_brg = json_encode($itembarang);
-    //$arr_brg = implode(",", $itembarang);
-     //print_r($arr_brg); ?>
-    <div class="box-body">
-        <div id="div-form">
+    <div class="box-body ">
+        <div id="div-form" style="overflow-x:auto !important">
         <table id="listadjust" class="table table-bordered table-striped dataTable" width="100%">
             <thead>
                 <tr>
@@ -321,9 +335,11 @@
                         <button class="btn btn-primary" type="button" onclick="save()">
                             <i class="fa fa-save"></i><b> Simpan Data</b>
                         </button>
+                        <?php if (!empty($this->uri->segment(4))) {?>
                         <button class="btn btn-primary" type="button" onclick="TEST()">
                             <i class="fa fa-save"></i><b> TEST</b>
                         </button>
+                      <?php } ?>
                     </th>
                 </tr>
             </tfoot>
@@ -347,6 +363,16 @@
   });
     $(document).ready(function() {
       var tabb = $('#listadjust').DataTable();
+
+      fadein()
+
+      $('#fheader').on( 'click keyup paste keydown blur focus start', function () {
+
+        fadein()
+
+      } );
+
+
       $('#listadjust tbody').on( 'click', 'a.hapus_item_js', function () {
 
         tabb
@@ -365,7 +391,7 @@
         testing($(this));
         hitung_total();
       } );
-      jQuery(document).on( "keyup change", ".qty_order,.disso,.radio_disso", function(){
+      jQuery(document).on( "keyup change click", ".qty_order,.disso,.radio_disso,.btn_disso", function(){
         var penting = $(this);
         testing(penting);
 
@@ -378,10 +404,14 @@
 
         }
       });
+      jQuery(document).on( "change click", "button.btn_daisso", function(){
+        var penting = $(this).parents();
+        testing(penting);
+      });
       jQuery(document).on( "keyup", ".number", function(){
         $(this).val($(this).val().match(/^[0-9]+$/));
       });
-      jQuery(document).on( "blur keyup", ".number", function(){
+      jQuery(document).on( "blur", ".number", function(){
         if ($(this).val() == "") {
           $(this).val(0);
         }
@@ -427,7 +457,7 @@
               ;
 
               var harga =
-                'Normal&nbsp;&nbsp;&nbsp;:<strong>'+data.harga+'</strong><br>'+
+                'Normal&nbsp;&nbsp;&nbsp;:<strong><span id="'+a+'_harga_normal">'+data.harga+'</span></strong><br>'+
                 'Nett&emsp;&emsp;:<strong><span id="'+a+'_harga_nett">'+harga_net+'</span></strong><br>'
               ;
 
@@ -437,10 +467,10 @@
                 '  <div class="input-group">'+
                 '    <div class="input-group-btn">'+
                 '<input type="hidden" id="tipe_disso_'+data.id_barang+'" name="tipe_disso[]" value="persen" class="tipe_disso">'+
-                '      <button type="button" class="btn btn-default dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso_1'+data.id_barang+'" name="tipe_disso[]" value="persen">%<span class="caret"></span></button>'+
+                '      <button type="button" class="btn btn-default dropdown-toggle btn-sm " data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" id="tipe_disso_1'+data.id_barang+'" name="tipe_disso[]" value="persen">%<span class="caret"></span></button>'+
                 '      <ul class="dropdown-menu bg-dark">'+
-                '        <li><a href="javascript:void(0)" onclick="getdisso(\'%\',\''+data.id_barang+'\')">Persen (%)</a></li>'+
-                '        <li><a href="javascript:void(0)" onclick="getdisso(\'Rp\',\''+data.id_barang+'\')">Rupiah (Rp)</a></li>'+
+                '        <li><a href="javascript:void(0)" onclick="getdisso(\'%\',\''+data.id_barang+'\',this)">Persen (%)</a></li>'+
+                '        <li><a href="javascript:void(0)" onclick="getdisso(\'Rp\',\''+data.id_barang+'\',this)">Rupiah (Rp)</a></li>'+
                 '      </ul>'+
                 '    </div><!-- /btn-group -->'+
                 '    <input type="text" class="form-control input-sm disso number" aria-label="" name="disso[]" id="disso_'+data.id_barang+'" class="input-sm" value="0">'+
@@ -453,7 +483,7 @@
                 '    </div>'+
                 '    <div class="radio-inline">'+
                 '      <label>'+
-                '        <input type="radio" value="kurang" class="radio_disso" name="radio_disso_rp_'+a+'" >(-)'+
+                '        <input type="radio" value="kurang" class="radio_disso" name="radio_disso_rp_'+a+'" checked>(-)'+
                 '      </label>'+
                 '    </div>'+
                 '  </div>'
@@ -529,9 +559,20 @@
       //console.log(radio);
       $('#total_'+id_barang).val((subtotal).toFixed(2));
       hitung_total();
-      penting.parents('tr').find("span.subtotal_view").text(formatCurrency((subtotal).toFixed(2),',','.',2))
+      if (isNaN(subtotal)) {
+        subtotal = 0;
+      }
+      penting.parents('tr').find("span.subtotal_view").text(num(subtotal))
       //tabel.cell(rows, 7).data(formatCurrency((subtotal).toFixed(2),',','.',2)).draw();
-      $('#'+id_barang+'_harga_nett').text(formatCurrency((harga_nett).toFixed(2),',','.',2));
+      $('#'+id_barang+'_harga_nett').text(num(harga_nett));
+      $('#'+id_barang+'_harga_normal').text(num(harga_normal));
+    }
+    function fadein(){
+      if ($('#idcustomer').val() != '' && $('#top').val() != '' && $('#tglso').val() != '' && $('#idsalesman').val() != '') {
+         document.getElementById('fdetail').style.display = 'block';
+      }else {
+        document.getElementById('fdetail').style.display = 'none';
+      }
     }
     function TEST(){
       $("form#form-header-so :input").each(function(){
@@ -751,43 +792,86 @@
       //sethitung();
       var formdata = $("#form-header-so,#form-so").serialize();
       if($('#idcustomer').val() != "" && $('#pic').val() != "" && $('#top').val() != "" && $('#tglso').val() != "" && $('#idsalesman').val() != ""){
-        $.ajax({
-          url: siteurl+"salesorder/saveso",
-          dataType : "json",
-          type: 'POST',
-          data: formdata,
-          success: function(result){
-            if(result.save=='1'){
-              swal({
-                title: "Sukses!",
-                text: result['msg'],
-                type: "success",
-                timer: 1500,
-                showConfirmButton: false
-              });
-              setTimeout(function(){
-                window.location.href=siteurl+'salesorder';
-              },1600);
-            } else {
-              swal({
-                title: "Gagal!",
-                text: "Data Gagal Di Simpan",
-                type: "error",
-                timer: 1500,
-                showConfirmButton: false
-              });
-            };
+        if ($('#totalso').val() =='' || $('#totalso').val() == 0) {
+
+
+          swal({
+            title: "Gagal!",
+            text: "Server/Jaringan tidak stabil atau anda tidak memasukkan data dengan valid, silahkan refresh!",
+            type: "error",
+            showConfirmButton: true,
+            closeOnConfirm: false,
+            closeOnCancel: false,
+            showLoaderOnConfirm: true
           },
-          error: function(){
+          function(isConfirm) {
+            window.location.href=siteurl+'salesorder/create';
+          });
+
+
+        }else {
+          var empty = 0;
+          $("form#form-so :input").each(function(){
+            var input = $(this); // This is the jquery object of the input, do what you will
+            console.log($(this).attr('name') + " = " + $(this).val());
+            if ($(this).attr('name') == 'subtotal[]' && $(this).val() == 0) {
+              empty +=1;
+
+            }
+          });
+          if (empty>0) {
             swal({
               title: "Gagal!",
-              text: "Ajax Data Gagal Di Proses",
+              text: "Server/Jaringan tidak stabil atau anda tidak memasukkan data dengan valid, silahkan refresh!",
               type: "error",
-              timer: 1500,
-              showConfirmButton: false
+              showConfirmButton: true,
+              closeOnConfirm: false,
+              closeOnCancel: false,
+              showLoaderOnConfirm: true
+            },
+            function(isConfirm) {
+              window.location.href=siteurl+'salesorder/create';
+            });
+          }else {
+            $.ajax({
+              url: siteurl+"salesorder/saveso",
+              dataType : "json",
+              type: 'POST',
+              data: formdata,
+              success: function(result){
+                if(result.save=='1'){
+                  swal({
+                    title: "Sukses!",
+                    text: result['msg'],
+                    type: "success",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                  setTimeout(function(){
+                    window.location.href=siteurl+'salesorder';
+                  },1600);
+                } else {
+                  swal({
+                    title: "Gagal!",
+                    text: "Data Gagal Di Simpan",
+                    type: "error",
+                    timer: 1500,
+                    showConfirmButton: false
+                  });
+                };
+              },
+              error: function(){
+                swal({
+                  title: "Gagal!",
+                  text: "Ajax Data Gagal Di Proses",
+                  type: "error",
+                  timer: 1500,
+                  showConfirmButton: false
+                });
+              }
             });
           }
-        });
+        }
       }else{
         swal({
           title: "Peringatan!",
@@ -964,7 +1048,7 @@
       hitung_total();
       //alert('#'+c+'_total');
     }
-    function getdisso(dis,id){
+    function getdisso(dis,id,th){
       $('#tipe_disso_1'+id).html(dis);
       if (dis == "%") {
         $('#tipe_disso_'+id).val('persen');
@@ -973,6 +1057,7 @@
         $('#tipe_disso_'+id).val('rupiah_');
         $('.radio_disso_rp_'+id).show();
       }
+      testing($(th))
     }
     function resetform(){
 

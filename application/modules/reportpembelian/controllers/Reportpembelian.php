@@ -83,7 +83,46 @@ class Reportpembelian extends Admin_Controller {
         $this->mpdf->Output();
     }
 
-     function downloadExcel()
+    function downloadExcel()
+    {
+     $cab = $this->auth->user_cab();
+     $tawal = $this->uri->segment(3);
+     $takhir = $this->uri->segment(4);
+     if ($cab == "") {
+       $ket_cab = "";
+       $ket_cab1 = "1=1";
+     }else {
+       $ket_cab = "AND trans_receive.kdcab='".$cab."'";
+       $ket_cab1 = array('trans_receive.kdcab'=>$cab);
+     }
+       if(!empty($tawal) && !empty($takhir)){
+           $data = $this->Purchaseorder_model
+           ->join("trans_receive","trans_po_header.no_po = trans_receive.po_no","left")
+           ->join("receive_detail_barang","trans_po_header.no_po = receive_detail_barang.no_po","left")
+           ->where("tglreceive BETWEEN '".$tawal."' AND '".$takhir."' $ketcab")
+           //->order_by('no_po','DESC')
+           ->find_all();
+       }else{
+         $data = $this->Purchaseorder_model
+         ->join("trans_receive","trans_po_header.no_po = trans_receive.po_no","left")
+         ->join("receive_detail_barang","trans_po_header.no_po = receive_detail_barang.no_po","left")
+         //->where("tglreceive BETWEEN '".$this->input->get('tglawal')."' AND '".$this->input->get('tglakhir')."' $ketcab")
+         //->order_by('no_po','DESC')
+         ->find_all_by($ket_cab1);
+       }
+
+       $data = array(
+   			'title2'		     => 'Report',
+   			'results'	       => $data
+   		);
+       /*$this->template->set('results', $data_so);
+       $this->template->set('head', $sts);
+       $this->template->title('Report SO');*/
+       $this->load->view('view_report',$data);
+
+     }
+
+     function downloadExcel_OLD()
     {
       $cab = $this->input->get('idcabang');
       if ($cab == "") {

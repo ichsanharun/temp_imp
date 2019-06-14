@@ -85,6 +85,10 @@
 <!-- page script -->
 <script type="text/javascript">
     $(function() {
+		$('#btn-close, #btn-close2').click(function(){
+			 $('#MyModalBody').empty();
+			 $('#dialog-popup').hide();
+		 });
       var dataTable = $("#example1").DataTable();
     });
     function add_data(){
@@ -93,7 +97,8 @@
     function PreviewPdf(norec)
     {
       tujuan = 'receiving/print_request/'+norec;
-        $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+         $(".modal-body").html('<iframe src="'+tujuan+'" frameborder="no" width="100%" height="400"></iframe>');
+	  $('#dialog-popup').show();
     }
 
 </script>
